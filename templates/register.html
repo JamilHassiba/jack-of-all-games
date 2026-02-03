@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Register Page</title>
+</head>
+
+<body>
+    <form id="register-form">
+        <input name="username" placeholder="Username" required autocomplete="off">
+        <input type="password" name="password" placeholder="Password" required autocomplete="off">
+        <button>Register</button>
+    </form>
+
+    <p id="error-message"></p>
+    <a href="/login">Login</a>
+
+    <script>
+        const form = document.getElementById("register-form");
+        const error_message = document.getElementById("error-message");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            errorMsg.textContent = "";
+
+            const data = new FormData(form);
+
+            const response = await fetch("/register", {
+                method: "POST",
+                body: data
+            });
+
+            if (response.ok) {
+                window.location.href = "/login";
+            } else {
+                const text = await response.text();
+                error_message.textContent = text;
+            }
+        });
+    </script>
+</body>
+</html>
