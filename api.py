@@ -40,6 +40,7 @@ class Deck:
             deck_id = data["deck_id"]
             return deck_id
         else: 
+            print("Error!!")
             return None 
 
 
@@ -73,6 +74,7 @@ class Deck:
             print(data)
             return 1 
         else: 
+            print("Error!!")
             return None 
     
     def make_pile(self, name=None): 
@@ -81,6 +83,18 @@ class Deck:
         else: 
             raise AttributeError("Pile needs a name!")
         return pile 
+    
+    def return_cards(self, cards=None): 
+        url = self.url + f"{self.id}/return/"
+        params = {"cards":cards}
+        response = requests.get(url, params=params)
+        if response.status_code == 200: 
+            data = response.json() 
+            return 1 
+        else: 
+            print("Error!!")
+            return None 
+
     
 class Pile: 
     def __init__(self, name=None, parent=None): 
@@ -106,6 +120,7 @@ class Pile:
             data = response.json() 
             return 1 
         else: 
+            print("Error!!")
             return None 
     
     def shuffle(self):
@@ -114,7 +129,8 @@ class Pile:
         if response.status_code == 200: 
             data = response.json() 
             return 1 
-        else: 
+        else:
+            print("Error!!") 
             return None 
     
     def show(self): 
@@ -127,6 +143,18 @@ class Pile:
             return cards
             
         else: 
+            print("Error!!")
+            return None 
+    
+    def return_to_deck(self, cards=None): 
+        url = self.url + "/return/"
+        params = {"cards": cards}
+        response = requests.get(url, params)
+        if response.status_code == 200: 
+            data = response.json() 
+            return 1 
+        else: 
+            print("Error!!")
             return None 
 
 
@@ -156,4 +184,8 @@ player2.show()
 player3.show()
 player4.show()
 
+player1.return_to_deck()
+player2.return_to_deck()
+player3.return_to_deck()
+player4.return_to_deck()
 
