@@ -1,5 +1,5 @@
 import requests # used for api
-
+import random 
 
 # DOCUMENTATION 
 #
@@ -11,6 +11,8 @@ import requests # used for api
 # TODO 
 # - Add reshuffle 
 # - Add piles 
+
+chars = ["abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-+_="]
 
 class Deck: 
     def __init__(self, id=None, shuffle=True, decks=1, jokers=False): 
@@ -72,6 +74,15 @@ class Deck:
             return 1 
         else: 
             return None 
+    
+class Pile: 
+    def __init__(self, name=None): 
+        self.url = 
+
+        if name: 
+            self.name == name 
+
+
 
 myDeck = Deck() 
 card = myDeck.draw()
