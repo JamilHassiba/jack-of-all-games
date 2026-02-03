@@ -1,16 +1,10 @@
 from flask import Flask, request, render_template, redirect, session
-from flask_session import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "jack_of_all_games_secret_key"
 # need a secret key for the session retained data
-
-app.config["SESSION_PERMANENT"] = False            # session expires on browser close 
-app.config["SESSION_TYPE"] = "filesystem"          # session held in server storage 
-
-Session(app)                                       # session init 
 
 def db():
     # best way to operate on db with sqlite
@@ -99,11 +93,6 @@ def logout():
     # clear session data on logout
     session.clear()
     return redirect("/login")
-
-
-@app.route("/test_sessions")
-def test_sessions(): 
-    return render_template("test_sessions.html")
 
 if __name__ == '__main__': 
     app.run(debug=True)
