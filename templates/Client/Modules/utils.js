@@ -1,3 +1,5 @@
+let topZIndex = 1
+
 export function SetDivPosition(div, x, y) {
 	let width = div.offsetWidth;
 	let height = div.offsetHeight;
@@ -21,6 +23,9 @@ export function DragDiv(div) {
 		x = e.clientX;
 		y = e.clientY;
 		
+		div.style.zIndex = topZIndex;
+		topZIndex += 1;
+		
 		document.onmouseup = DragEnd;
 		document.onmousemove = Drag;
 	}
@@ -35,8 +40,6 @@ export function DragDiv(div) {
 
 		div.style.top = (div.offsetTop - ny) + 'px';
 		div.style.left = (div.offsetLeft - nx) + 'px';
-
-		console.log("DRAG")
 
 		x = e.clientX;
 		y = e.clientY;
