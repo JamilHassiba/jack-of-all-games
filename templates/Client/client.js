@@ -1,6 +1,7 @@
-import {CreateCard, SetDivPosition, GetCardImageSrc} from './card.js';
+import {CreateCard, GetCardImageSrc} from './Modules/card.js';
+import {SetDivPosition, DragDiv} from './Modules/utils.js'
 
-// INITIAL DATA
+// data
 const BOARD = document.getElementById('DIV_gameContainer')
 const BOARD_WIDTH = BOARD.offsetWidth
 const BOARD_HEIGHT = BOARD.offsetHeight
@@ -20,10 +21,15 @@ let card2 = {
     "suit": "HEARTS"
 }
 
-main();
+
+// functions
 
 
 function main() {
-	CreateCard(BOARD, card1, 500, 300, true)
-	CreateCard(BOARD, card2, 200, 300, false)
+	let e1 = CreateCard(BOARD, card1, 500, 300, true)
+	let e2 = CreateCard(BOARD, card2, 200, 300, false)
+    DragDiv(e1)
 }
+
+// init
+main();
