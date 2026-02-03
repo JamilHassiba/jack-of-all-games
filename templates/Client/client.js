@@ -6,57 +6,34 @@ const BOARD = document.getElementById('DIV_gameContainer')
 const BOARD_WIDTH = BOARD.offsetWidth
 const BOARD_HEIGHT = BOARD.offsetHeight
 
-export let topZIndex = 1
-
-
-let card1 = {
-    "code": "5S", 
-    "image": "https://deckofcardsapi.com/static/img/5S.png", 
-    "value": "5", 
-    "suit": "SPADES"
-}
-
-let card2 = {
-    "code": "QH", 
-    "image": "https://deckofcardsapi.com/static/img/QH.png", 
-    "value": "Q", 
-    "suit": "HEARTS"
-}
-let card3 = {
-    "code": "AS", 
-    "image": "https://deckofcardsapi.com/static/img/AS.png", 
-    "value": "A", 
-    "suit": "SPADES"
-}
-let card4 = {
-    "code": "4C", 
-    "image": "https://deckofcardsapi.com/static/img/4C.png", 
-    "value": "4", 
-    "suit": "CLUBS"
-}
-let card5 = {
-    "code": "6D", 
-    "image": "https://deckofcardsapi.com/static/img/6D.png", 
-    "value": "6", 
-    "suit": "DIAMONDS"
-}
-
+// Interacting with card api temporarily for ease of use
+// (this will be replaced with information being sent from the server)
+fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
+  .then(r => r.json())
+  .then(d => {main(d)})
+  .catch(e => console.error("Fetch failed:", e));
 
 // functions
+function main(Deck) {
+    fetch('https://deckofcardsapi.com/api/deck/' + Deck.deck_id + '/draw/?count=35')
+        .then(r => r.json())
+        .then(data => {
 
-
-function main() {
-	DragDiv(CreateCard(BOARD, card1, 850, 300, false))
-    DragDiv(CreateCard(BOARD, card1, 850, 295, false))
-    DragDiv(CreateCard(BOARD, card1, 850, 290, false))
-    DragDiv(CreateCard(BOARD, card1, 850, 285, false))
-    DragDiv(CreateCard(BOARD, card1, 850, 280, true))
-
-    DragDiv(CreateCard(BOARD, card2, 100, 450, true))
-    DragDiv(CreateCard(BOARD, card3, 250, 450, true))
-    DragDiv(CreateCard(BOARD, card4, 400, 450, true))
-    DragDiv(CreateCard(BOARD, card5, 550, 450, true))
+            if (data.success) {
+                data.cards.forEach(HandleCard);
+            }
+            
+        })
+        .catch(e => console.error("Fetch failed: ", e));
 }
 
-// init
-main();
+function HandleCard(card, index) {
+    if ( index >= 0 && index <= 29 ) {
+        let faceUp = index == 29;
+        // create a card onto the deck pile
+        DragDiv(CreateCard(BOARD, card, BOARD_WIDTH/2, BOARD_HEIGHT/2 - index, faceUp));
+    } else {
+        // create a card into the 'hand'
+        DragDiv(CreateCard(BOARD, card, BOARD_WIDTH/5 + (index-30) * 150, BOARD_HEIGHT/5*4, true));
+    }
+}
