@@ -39,7 +39,7 @@ function SetDivPosition(div, x, y) {
 	let width = div.offsetWidth;
 	let height = div.offsetHeight;
 	div.style.left = x-(width/2)+'px';
-	div.style.top = y-(width/2)+'px';
+	div.style.top = y-(height/2)+'px';
 }
 
 /* GetCardImageSrc()
@@ -60,8 +60,6 @@ function CreateCardObject(xIn, yIn, rankIn, suitIn) {
 	const e = document.createElement('div');
 	e.className = 'OBJ_card'
 	e.style.position = 'absolute';
-	e.style.width = 100+'px';
-	e.style.height = 140+'px';
 
 	// create the image element (div > element)
 	const i = document.createElement('img');
