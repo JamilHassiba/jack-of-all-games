@@ -57,9 +57,26 @@ class Deck:
             return images 
         else: 
             raise AttributeError("No attribute id for class deck. You somehow removed the id from the deck object.")
+    
+    def reshuffle(self, remaining_only=True):
+        params = {
+            "remaining": remaining_only
+        } 
+        url = self.url + f"{self.id}/" + "shuffle/"
+        response = requests.get(url, params=params)
+        if response.status_code == 200: 
+            # info for debug only
+            data = response.json() 
+            print(self.id)
+            print(data)
+            return 1 
+        else: 
+            return None 
 
 myDeck = Deck() 
 card = myDeck.draw()
 print(card)
+
+myDeck.reshuffle()
 
 
