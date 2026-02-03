@@ -33,13 +33,15 @@
 		  transform: scale(1.2);
 		}
 
-
+		#login_text {
+			color: white;
+		}
 
 	</style>
-	 <script src="client.js" type="module"></script> 
+	 <script src="../static/client.js" type="module"></script> 
 </head>
 <body>
-
+<p id="login_text">Successfully logged in as {{ session.username }}, UserID = {{ session.user_id }}, <a href="/logout">Logout</a></p>
 <div id='DIV_gameContainer'>
 
 

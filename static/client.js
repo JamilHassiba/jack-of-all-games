@@ -1,5 +1,5 @@
-import {CreateCard, GetCardImageSrc} from './Modules/card.js';
-import {SetDivPosition, DragDiv} from './Modules/utils.js'
+import {CreateCard, GetCardImageSrc} from './card.js';
+import {SetDivPosition, DragDiv} from './utils.js'
 
 // data
 const BOARD = document.getElementById('DIV_gameContainer')
