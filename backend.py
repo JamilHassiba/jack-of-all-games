@@ -6,10 +6,6 @@ app = Flask(__name__)
 app.secret_key = "jack_of_all_games_secret_key"
 # need a secret key for the session retained data
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 0066ac93749841bc8fea60bbf47d33c4b696c252
 def db():
     # best way to operate on db with sqlite
     conn = sqlite3.connect("../users.db")
