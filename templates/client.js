@@ -19,17 +19,23 @@ function SetDivPosition(div, x, y) {
 
 */
 function CreateCardObject(xIn, yIn, rankIn, suitIn) {
+	// create the div element
 	const e = document.createElement('div');
 	e.className = 'OBJ_card'
-	BOARD.appendChild(e);
-
-	// style
 	e.style.position = 'absolute';
-	e.style.background = '#FEFEFE';
 	e.style.width = 100+'px';
 	e.style.height = 140+'px';
 
-	SetDivPosition(e, BOARD_WIDTH/2, BOARD_HEIGHT/2);
+	// create the image element (div > element)
+	const i = document.createElement('img');
+	i.style['object-fit'] = 'cover';
+	i.style.width = 100+'%';
+	i.style.height = 100+'%';
+	i.src = 'https://deckofcardsapi.com/static/img/5S.png';
+	e.appendChild(i);
+
+	BOARD.appendChild(e);
+	SetDivPosition(e, xIn, yIn);
 
 	const card = {
 		x: xIn,
@@ -42,4 +48,4 @@ function CreateCardObject(xIn, yIn, rankIn, suitIn) {
 	return card
 }
 
-CreateCardObject(0,0,"A","H")
+CreateCardObject(BOARD_WIDTH/2, BOARD_HEIGHT/2, "A", "H")
