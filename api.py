@@ -48,15 +48,15 @@ class Deck:
             "count":count
         }
         if self.id: 
-            images = []
+            cards = []
             url = self.url + f"{self.id}/draw/" 
             response = requests.get(url, params=params)
             if response.status_code == 200: 
                 data = response.json() 
                 for i in data['cards']: 
-                    images.append(i["image"])
+                    cards.append(i)
             
-            return images 
+            return cards 
         else: 
             raise AttributeError("No attribute id for class deck. You somehow removed the id from the deck object.")
     
@@ -75,19 +75,85 @@ class Deck:
         else: 
             return None 
     
+    def make_pile(self, name=None): 
+        if name: 
+            pile = Pile(name, self)
+        else: 
+            raise AttributeError("Pile needs a name!")
+        return pile 
+    
 class Pile: 
-    def __init__(self, name=None): 
-        self.url = 
+    def __init__(self, name=None, parent=None): 
 
         if name: 
-            self.name == name 
+            self.name = name 
+        else: 
+            raise AttributeError("Pile requires a name!")
+        
+        if parent: 
+            self.parent = parent 
+        else: 
+            raise AttributeError("No parent found for pile!")
+        
+        self.url = "https://deckofcardsapi.com/api/deck/" + f"{self.parent.id}/pile/{self.name}/"
+        print(self.url)
+    
+    def add(self, cards): 
+        url = self.url + "/add/"
+        params = {"cards": cards}
+        response = requests.get(url, params=params)
+        if response.status_code == 200: 
+            data = response.json() 
+            return 1 
+        else: 
+            return None 
+    
+    def shuffle(self):
+        url = self.url + "/shuffle/"
+        response = requests.get(url)
+        if response.status_code == 200: 
+            data = response.json() 
+            return 1 
+        else: 
+            return None 
+    
+    def show(self): 
+        url = self.url + "/list/"
+        response = requests.get(url) 
+        if response.status_code == 200: 
+            data = response.json() 
+            cards = data["piles"][self.name]["cards"]
+            print(cards)
+            return cards
+            
+        else: 
+            return None 
 
 
+# multiplayer example 
+theDeck = Deck() 
+player1 = theDeck.make_pile("player1")
+player2 = theDeck.make_pile("player2") 
+player3 = theDeck.make_pile("player3") 
+player4 = theDeck.make_pile("player4") 
 
-myDeck = Deck() 
-card = myDeck.draw()
-print(card)
 
-myDeck.reshuffle()
+# draw 3 cards for each player 
+cards = theDeck.draw(12)
+for i in range(len(cards)): 
+    card = cards[i]["code"]
+    if i % 4 == 0: 
+        player1.add(card)
+    elif i % 4 == 1: 
+        player2.add(card)
+    elif i % 4 == 2: 
+        player3.add(card)
+    elif i % 4 == 3: 
+        player4.add(card)
+
+player1.show() 
+player2.show()
+player3.show()
+player4.show()
 
 
