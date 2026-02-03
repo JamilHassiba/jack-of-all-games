@@ -49,7 +49,7 @@ def register():
         except sqlite3.IntegrityError:
             return "User already exists", 400
         
-        return redirect("/login")
+        return "", 200
     
     return render_template("register.html")
 
