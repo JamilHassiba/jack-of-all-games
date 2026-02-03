@@ -12,7 +12,8 @@
 ### 2. Do some code
 ### 3. Git push to your branch - with good commit messages
 ### 4. Merge to the MVP branch 
-### 5. Don't merge to main every time - this is done at milestones.
+### 5. Delete the branch you made after its merged with "git push origin --delete branchname"
+### 6. Don't try to merge to main - this should be done at major milestones (e.g. week2mvp or v1, v2, etc.)
 
 
 
