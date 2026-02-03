@@ -1,0 +1,19 @@
+<!DOCTYPE html> 
+<html>
+    <head> 
+
+
+
+    </head>
+    <body>
+        {% block content %}
+
+        {% if session.username %}
+            You are logged in as {{session.username}}
+        {% else %}
+            You are not logged in
+        {% endif %}
+        
+        {% endblock %}
+    </body>
+</html
