@@ -6,6 +6,13 @@
 
 ## Due 11/02/26 (show and tell)
 
+# Adding to This Repository
+
+### 1. Create a branch using "git checkout -b branchname"
+### 2. Do some code
+### 3. Git push to your branch - with good commit messages
+### 4. Merge to the MVP branch 
+### 5. Don't merge to main every time - this is done at milestones.
 
 
 
