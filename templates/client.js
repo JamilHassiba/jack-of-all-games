@@ -56,7 +56,17 @@ function GetCardImageSrc(rank, suit, faceUp) {
 }
 
 /* CreateCardObject()
+@param xIn      : int
+@param yIn      : int
+@param rankIn   : RANK(s)
+@param suitIn   : SUIT(s)
+@param faceUpIn : boolean
 
+Creates the DOM elements used for rendering the card, and adds them to the html
+Sets the DOM's position on the screen
+Returns a card object:
+	fields
+		x, y, rank, suit, faceUp, e (element)
 */
 function CreateCardObject(xIn, yIn, rankIn, suitIn, faceUpIn) {
 	// create the div element
