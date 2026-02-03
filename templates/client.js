@@ -47,15 +47,18 @@ function SetDivPosition(div, x, y) {
 @param suit  : SUIT
 @returns src : a url for that cards image
 */
-function GetCardImageSrc(rank, suit) {
-	console.log('https://deckofcardsapi.com/static/img/' + rank + suit + '.png')
-	return 'https://deckofcardsapi.com/static/img/' + rank + suit + '.png';
+function GetCardImageSrc(rank, suit, faceUp) {
+	if (faceUp == true) {
+		return 'https://deckofcardsapi.com/static/img/' + rank + suit + '.png';
+	} else {
+		return 'https://deckofcardsapi.com/static/img/back.png';
+	}
 }
 
 /* CreateCardObject()
 
 */
-function CreateCardObject(xIn, yIn, rankIn, suitIn) {
+function CreateCardObject(xIn, yIn, rankIn, suitIn, faceUpIn) {
 	// create the div element
 	const e = document.createElement('div');
 	e.className = 'OBJ_card'
@@ -66,7 +69,7 @@ function CreateCardObject(xIn, yIn, rankIn, suitIn) {
 	i.style['object-fit'] = 'cover';
 	i.style.width = 100+'%';
 	i.style.height = 100+'%';
-	i.src = GetCardImageSrc(rankIn, suitIn);
+	i.src = GetCardImageSrc(rankIn, suitIn, faceUpIn);
 	e.appendChild(i);
 
 	BOARD.appendChild(e);
@@ -77,6 +80,7 @@ function CreateCardObject(xIn, yIn, rankIn, suitIn) {
 		y: yIn,
 		rank: rankIn,
 		suit: suitIn,
+		faceUp: faceUpIn,
 		e: e,
 	}
 
@@ -84,5 +88,6 @@ function CreateCardObject(xIn, yIn, rankIn, suitIn) {
 }
 
 function main() {
-	CreateCardObject(BOARD_WIDTH/2, BOARD_HEIGHT/2, RANKS['5'], SUITS['HEARTS'])
+	CreateCardObject(BOARD_WIDTH/2, BOARD_HEIGHT/2, RANKS['5'], SUITS['HEARTS'], true)
+	CreateCardObject(BOARD_WIDTH/2 + 300, 300, RANKS['A'], SUITS['SPADES'], false)
 }
