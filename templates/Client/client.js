@@ -15,7 +15,7 @@ fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
 
 // functions
 function main(Deck) {
-    fetch('https://deckofcardsapi.com/api/deck/' + Deck.deck_id + '/draw/?count=35')
+    fetch('https://deckofcardsapi.com/api/deck/' + Deck.deck_id + '/draw/?count=20')
         .then(r => r.json())
         .then(data => {
 
@@ -28,12 +28,12 @@ function main(Deck) {
 }
 
 function HandleCard(card, index) {
-    if ( index >= 0 && index <= 29 ) {
-        let faceUp = index == 29;
+    if ( index >= 0 && index <= 14 ) {
+        let faceUp = index == 14;
         // create a card onto the deck pile
         DragDiv(CreateCard(BOARD, card, BOARD_WIDTH/2, BOARD_HEIGHT/2 - index, faceUp));
     } else {
         // create a card into the 'hand'
-        DragDiv(CreateCard(BOARD, card, BOARD_WIDTH/5 + (index-30) * 150, BOARD_HEIGHT/5*4, true));
+        DragDiv(CreateCard(BOARD, card, BOARD_WIDTH/5 + (index-15) * 150, BOARD_HEIGHT/5*4, true));
     }
 }
