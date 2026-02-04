@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Play</title>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <h1>Jack Of All Games</h1>
+        <img>
+    </div>
+
+    <nav> 
+        <div>
+            <button>Play</button>
+            <button>Scoreboard</button>
+        </div>
+
+        <div>
+            <button>Join Room</button>
+            <button>Host Room</button>
+        </div>
+    </nav>
+</header>
+
+<section>
+    <header>
+        <h2>Create Room | #RoomID</h2>
+    </header>
+
+    <form method="POST">
+        <div>
+            <p>Game</p>
+
+            <div>
+                <label>
+                    <input type="radio" name="game_choice" value="poker">
+                    <span>Poker</span>
+                </label>
+
+                <label>
+                    <input type="radio" name="game_choice" value="war">
+                    <span>War</span>
+                </label>
+
+                <label>
+                    <input type="radio" name="game_choice" value="blackjack">
+                    <span>Blackjack</span>
+                </label>
+
+                <label>
+                    <input type="radio" name="game_choice" value="crazy8">
+                    <span>Crazy Eights</span>
+                </label>
+            </div>
+        </div>
+
+        <div>
+            <p>Configure</p>
+
+            <div>
+                <span>Player Count</span>
+                <input type="range" name="player_count" min="2" max="8" value="4">
+                <span>4</span>
+            </div>
+
+            <div>
+                <span>Locked</span>
+                <input type="checkbox" name="is_locked">
+        
+                <div>
+                    <span>Password</span>
+                    <input type="text" name="room_password" placeholder="Password">
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <p>Players</p>
+
+            <div>
+                <div>
+                    <span>HOST</span>
+                    <span>👤</span>
+                </div>
+
+                <div>
+                    <span>👤</span>
+                    <button type="button" title="Kick Player">×</button>
+                </div>
+
+                <div>
+                    <span>👤</span>
+                    <button type="button" title="Kick Player">×</button>
+                </div>
+
+                <div>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">Start Game</button>
+    </form>
+</section>
+
+</body>
+
+</html>
