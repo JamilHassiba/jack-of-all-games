@@ -5,7 +5,7 @@ from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.secret_key = "jack_of_all_games_secret_key"
-socket = SocketIO(app)
+socket = SocketIO(app, cors_allowed_origins="*", ping_interval=2, ping_timeout=5)
 # need a secret key for the session retained data
 
 def db():
@@ -100,6 +100,10 @@ def logout():
 def test_integration():
     values = ["blablabla", "blablabla"] 
     return render_template("test_integration.html", values = values)
+
+@app.route("/websocket_test")
+def websocket_test(): 
+    return render_template("sockettest.html")
 
 @socket.on("connect")
 def connect(): 
