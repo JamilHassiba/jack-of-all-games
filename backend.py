@@ -94,5 +94,10 @@ def logout():
     session.clear()
     return redirect("/login")
 
+@app.route("/test_integration")
+def test_integration():
+    values = ["blablabla", "blablabla"] 
+    return render_template("test_integration.html", values = values)
+
 if __name__ == '__main__': 
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")

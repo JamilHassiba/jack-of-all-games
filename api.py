@@ -40,7 +40,7 @@ class Deck:
             deck_id = data["deck_id"]
             return deck_id
         else: 
-            print("Error!!")
+            print("Error!! Source: creation of new deck")
             return None 
 
 
@@ -74,7 +74,7 @@ class Deck:
             print(data)
             return 1 
         else: 
-            print("Error!!")
+            print("Error!! Source: Reshuffling a deck")
             return None 
     
     def make_pile(self, name=None): 
@@ -92,7 +92,7 @@ class Deck:
             data = response.json() 
             return 1 
         else: 
-            print("Error!!")
+            print("Error!! Source: Returning cards to the deck")
             return None 
 
     
@@ -109,8 +109,7 @@ class Pile:
         else: 
             raise AttributeError("No parent found for pile!")
         
-        self.url = "https://deckofcardsapi.com/api/deck/" + f"{self.parent.id}/pile/{self.name}/"
-        print(self.url)
+        self.url = "https://deckofcardsapi.com/api/deck/" + f"{self.parent.id}/pile/{self.name}"
     
     def add(self, cards): 
         url = self.url + "/add/"
@@ -120,7 +119,7 @@ class Pile:
             data = response.json() 
             return 1 
         else: 
-            print("Error!!")
+            print("Error!! Source: Adding cards to a pile")
             return None 
     
     def shuffle(self):
@@ -130,20 +129,21 @@ class Pile:
             data = response.json() 
             return 1 
         else:
-            print("Error!!") 
+            print("Error!! Source: shuffling a pile") 
             return None 
     
     def show(self): 
         url = self.url + "/list/"
+        print(url)
         response = requests.get(url) 
         if response.status_code == 200: 
             data = response.json() 
             cards = data["piles"][self.name]["cards"]
-            print(cards)
             return cards
             
         else: 
-            print("Error!!")
+            print("Error!! Source: Showing a pile")
+            print(response.status_code)
             return None 
     
     def return_to_deck(self, cards=None): 
@@ -154,38 +154,7 @@ class Pile:
             data = response.json() 
             return 1 
         else: 
-            print("Error!!")
+            print("Error!! Source: returning cards from a pile to the parent deck")
             return None 
 
-
-# multiplayer example 
-theDeck = Deck() 
-player1 = theDeck.make_pile("player1")
-player2 = theDeck.make_pile("player2") 
-player3 = theDeck.make_pile("player3") 
-player4 = theDeck.make_pile("player4") 
-
-
-# draw 3 cards for each player 
-cards = theDeck.draw(12)
-for i in range(len(cards)): 
-    card = cards[i]["code"]
-    if i % 4 == 0: 
-        player1.add(card)
-    elif i % 4 == 1: 
-        player2.add(card)
-    elif i % 4 == 2: 
-        player3.add(card)
-    elif i % 4 == 3: 
-        player4.add(card)
-
-player1.show() 
-player2.show()
-player3.show()
-player4.show()
-
-player1.return_to_deck()
-player2.return_to_deck()
-player3.return_to_deck()
-player4.return_to_deck()
 
