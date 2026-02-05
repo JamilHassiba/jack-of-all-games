@@ -16,22 +16,22 @@
         <img>
     </div>
 
-    <nav> 
+    <nav id="main-nav"> 
         <div>
-            <button>Play</button>
-            <button>Scoreboard</button>
+            <button data-view="play">Play</button>
+            <button data-view="scoreboard">Scoreboard</button>
         </div>
 
         <div>
-            <button>Join Room</button>
-            <button>Host Room</button>
+            <button data-view="join">Join Room</button>
+            <button data-view="host">Host Room</button>
         </div>
     </nav>
 </header>
 
 <section>
     <header>
-        <h2>Create Room | #RoomID</h2>
+        <h2>Create Room | <span id="room-id">#RoomID</span></h2>
     </header>
 
     <form method="POST">
@@ -66,17 +66,17 @@
 
             <div>
                 <span>Player Count</span>
-                <input type="range" name="player_count" min="2" max="8" value="4">
-                <span>4</span>
+                <input type="range" id="player-slider" name="player_count" min="2" max="8" value="4">
+                <span id="player-count-display">4</span>
             </div>
 
             <div>
                 <span>Locked</span>
-                <input type="checkbox" name="is_locked">
+                <input type="checkbox" id="lock-toggle" name="is_locked">
         
-                <div>
+                <div id="password-div">
                     <span>Password</span>
-                    <input type="text" name="room_password" placeholder="Password">
+                    <input type="password" name="room_password" placeholder="Password">
                 </div>
             </div>
         </div>
@@ -84,24 +84,20 @@
         <div>
             <p>Players</p>
 
-            <div>
-                <div>
+            <div id="players-list">
+                <div class="player-slot">
                     <span>HOST</span>
                     <span>👤</span>
                 </div>
 
-                <div>
+                <div class="player-slot">
                     <span>👤</span>
-                    <button type="button" title="Kick Player">×</button>
+                    <button type="button" class="kick-btn" title="Kick Player">×</button>
                 </div>
 
-                <div>
+                <div class="player-slot">
                     <span>👤</span>
-                    <button type="button" title="Kick Player">×</button>
-                </div>
-
-                <div>
-                    <span></span>
+                    <button type="button" class="kick-btn" title="Kick Player">×</button>
                 </div>
             </div>
         </div>
@@ -109,6 +105,71 @@
         <button type="submit">Start Game</button>
     </form>
 </section>
+
+<script>
+
+    /* --- Slider Logic --- */
+
+    const slider = document.getElementById('player-slider');
+    const countDisplay = document.getElementById('player-count-display');
+    const playersList = document.getElementById('players-list');
+
+    function sliderEventFunct() {
+        // Update displayed player count
+        const playerCount = slider.value;
+        countDisplay.textContent = playerCount;
+
+        const currentSlots = playersList.children.length;
+        const difference = playerCount - currentSlots;
+
+        // Add slots if slider moved up
+        if (difference > 0) {
+            for (let i = 0; i < difference; i++) {
+                const newSlot = document.createElement('div');
+                newSlot.className = 'player-slot';
+                newSlot.innerHTML = '<span>O</span>';
+                playersList.appendChild(newSlot);
+            }
+        } 
+        // Remove slots if slider moved down
+        else if (difference < 0) {
+            for (let i = 0; i < Math.abs(difference); i++) {
+                playersList.removeChild(playersList.lastElementChild);
+            }
+        }
+    }
+
+    slider.addEventListener('input', sliderEventFunct);
+    sliderEventFunct()
+
+
+    /* --- Password Lock Logic --- */
+
+    const lockToggle = document.getElementById('lock-toggle');
+    const passwordDiv = document.getElementById('password-div');
+    passwordDiv.style.display = 'none';
+
+    lockToggle.addEventListener('change', function() {
+        if (lockToggle.checked) {
+            passwordDiv.style.display = 'block';
+        } 
+        else {
+            passwordDiv.style.display = 'none';
+        }
+    });
+
+
+    /* --- Kick Buttons Logic --- */
+
+    playersList.addEventListener('click', function(event) {
+        const clickedKick = event.target.closest('.kick-btn');
+
+        if (clickedKick) {
+            const playerSlot = clickedKick.closest('.player-slot');
+            playerSlot.innerHTML = '<span>O</span>';
+        }
+    });
+</script>
 
 </body>
 
