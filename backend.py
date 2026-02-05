@@ -8,6 +8,8 @@ app.secret_key = "jack_of_all_games_secret_key"
 socket = SocketIO(app, cors_allowed_origins="*", ping_interval=2, ping_timeout=5)
 # need a secret key for the session retained data
 
+test_var = ""
+
 def db():
     # best way to operate on db with sqlite
     conn = sqlite3.connect("../users.db")
@@ -98,7 +100,8 @@ def logout():
 
 @app.route("/test_integration")
 def test_integration():
-    values = ["blablabla", "blablabla"] 
+    values = test_var
+    print(values)
     return render_template("test_integration.html", values = values)
 
 @app.route("/websocket_test")
@@ -107,6 +110,9 @@ def websocket_test():
 
 @socket.on("connect")
 def connect(): 
+    global test_var 
+    test_var = request.sid
+    print(test_var)
     print("User connected")
 
 @socket.on("disconnect")
