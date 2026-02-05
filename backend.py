@@ -1,9 +1,11 @@
 from flask import Flask, request, render_template, redirect, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.secret_key = "jack_of_all_games_secret_key"
+socket = SocketIO(app)
 # need a secret key for the session retained data
 
 def db():
@@ -99,5 +101,13 @@ def test_integration():
     values = ["blablabla", "blablabla"] 
     return render_template("test_integration.html", values = values)
 
+@socket.on("connect")
+def connect(): 
+    print("User connected")
+
+@socket.on("disconnect")
+def disconnect(): 
+    print("User disconnected")
+
 if __name__ == '__main__': 
-    app.run(debug=True, host="0.0.0.0")
+    socket.run(app=app, debug=True, host="0.0.0.0")
