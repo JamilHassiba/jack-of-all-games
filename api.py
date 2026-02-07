@@ -77,14 +77,8 @@ class Deck:
             print("Error!! Source: Reshuffling a deck")
             return None 
     
-    def make_pile(self, name=None): 
-        if name: 
-            pile = Pile(name, self)
-        else: 
-            raise AttributeError("Pile needs a name!")
-        return pile 
-    
     def return_cards(self, cards=None): 
+        # cards needs to be an array of card codes, not json object. parse with cards[i]['code'] 
         url = self.url + f"{self.id}/return/"
         params = {"cards":cards}
         response = requests.get(url, params=params)
@@ -94,67 +88,88 @@ class Deck:
         else: 
             print("Error!! Source: Returning cards to the deck")
             return None 
-
     
+    def make_pile(self): 
+        return Pile(self)
+
 class Pile: 
-    def __init__(self, name=None, parent=None): 
+    def __init__(self, deck: Deck): 
+        self.deck = deck 
+        self.userid = None 
+        self.json_hand = []              # an array of card json objects.
 
-        if name: 
-            self.name = name 
-        else: 
-            raise AttributeError("Pile requires a name!")
-        
-        if parent: 
-            self.parent = parent 
-        else: 
-            raise AttributeError("No parent found for pile!")
-        
-        self.url = "https://deckofcardsapi.com/api/deck/" + f"{self.parent.id}/pile/{self.name}"
+    def add(self, card_json): 
+        # explicitly add a specified card to the json_hand. 
+        # Warning, does not validate whether the card has been drawn from the deck
+        # Use draw from deck instead for safety. Only use this to move cards between piles 
+        self.json_hand.append(card_json)
     
-    def add(self, cards): 
-        url = self.url + "/add/"
-        params = {"cards": cards}
-        response = requests.get(url, params=params)
-        if response.status_code == 200: 
-            data = response.json() 
-            return 1 
-        else: 
-            print("Error!! Source: Adding cards to a pile")
-            return None 
+    def draw(self, count=1): 
+        cards = self.deck.draw(count) 
+        self.json_hand += cards 
     
-    def shuffle(self):
-        url = self.url + "/shuffle/"
-        response = requests.get(url)
-        if response.status_code == 200: 
-            data = response.json() 
-            return 1 
-        else:
-            print("Error!! Source: shuffling a pile") 
-            return None 
+    def pop_random(self): 
+        index = random.randint(0, len(self.json_hand)-1)
+        card = self.json_hand[index]
+        self.json_hand.pop(index)
+        return card
+    
+    def pop_specific(self, code): 
+        valid_codes = [i["code"] for i in self.json_hand]
+        if code in valid_codes: 
+            index = valid_codes.index(code)
+            card = self.json_hand[index]
+            self.json_hand.pop(index)
+            return card 
+        else: 
+            print("Invalid card code")
+            return None  
+    
+    def shuffle(self): 
+        random.shuffle(self.json_hand)
     
     def show(self): 
-        url = self.url + "/list/"
-        print(url)
-        response = requests.get(url) 
-        if response.status_code == 200: 
-            data = response.json() 
-            cards = data["piles"][self.name]["cards"]
-            return cards
-            
-        else: 
-            print("Error!! Source: Showing a pile")
-            print(response.status_code)
-            return None 
+        # print the json_hand to the terminal, not used in the actual webapp 
+        hand = [i["code"] for i in self.json_hand]
+        print(hand)
+        return self.json_hand
     
-    def return_to_deck(self, cards=None): 
-        url = self.url + "/return/"
-        params = {"cards": cards}
-        response = requests.get(url, params)
-        if response.status_code == 200: 
-            data = response.json() 
-            return 1 
-        else: 
-            print("Error!! Source: returning cards from a pile to the parent deck")
-            return None 
+    def return_cards(self, card_codes):
+        cards = [i["code"] for i in self.json_hand]
+        codes = [] 
+        for code in card_codes: 
+            if code in cards: 
+                index = cards.index(code)
+                self.json_hand.pop(index)
+                codes.append(code)
+        self.deck.return_cards(codes)
 
+# test code 
+
+# GameDeck = Deck(decks=5)
+# Player1 = GameDeck.make_pile()
+# Player2 = GameDeck.make_pile() 
+# Player3 = GameDeck.make_pile() 
+
+# count = 10
+# Player1.draw(count=count)
+# Player2.draw(count=count)
+# Player3.draw(count=count)
+
+# print("Before removal")
+# Player1.show()
+# card = Player1.json_hand[0]["code"]
+# print(f"Test removing the card {card}")
+# Player1.return_cards([card])
+# Player1.show()
+
+# print("Testing shuffle")
+# Player1.shuffle() 
+# Player1.show()
+                
+# print("Testing drawing random card from pile")
+# card = Player1.pop_random()
+# print(card["code"])
+# Player1.show()
+    
 
