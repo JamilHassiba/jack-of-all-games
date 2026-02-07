@@ -1,4 +1,5 @@
 from api import Deck, Pile
+from time import sleep
 
 class Game: 
     def __init__(self, num_decks, num_players, shuffle=True, jokers=False): 
@@ -14,7 +15,7 @@ class Game:
         self.last_player = None 
         self.last_action = "" 
         self.player_index = -1
-
+        self.active_player = None 
 
 
     def update(self):
@@ -24,7 +25,8 @@ class Game:
             self.player_index += 1 
             if self.player_index >= len(self.players): 
                 self.player_index = 0 
-            self.players[self.player_index].lock = False 
+            self.active_player = self.players[self.player_index]
+            self.active_player.lock = False 
             self.lock = True 
             print("testing global locks")
             print(f"unlocked player{self.player_index}")
@@ -39,40 +41,50 @@ class Player:
         if not self.lock:
             self.pile.draw(count)
 
-    def discard(self, code, discard: Pile): 
+    def discard(self, code, discard: Pile, random=False): 
         if not self.lock: 
-            card = self.pile.pop_specific(code) 
-            discard.add(card)
-            self.game.last_player = self 
-            self.game.last_action = f"discard {code}"
+            if random:
+                card = self.pile.pop_random()
+            else:
+                card = self.pile.pop_specific(code) 
+                discard.add(card)
             self.lock = True 
-            self.game.lock = False 
-            print("player has discarded")
-            print("unlocked the game")
-            print("game continues")
-            self.game.update()
+            return card
     
     def show(self):
-        self.pile.show() 
+        return self.pile.show() 
     
 # for each game the update needs to include additional code to enforce the rules. 
 # basic workflow currently: 
 # - unlock the game 
 # - game unlocks a player 
 # - game locks itself to wait for a turn-terminating action (if you want a custom one, write a new function)
-#     - right now theoretically a player can draw infinite times in the simGame, so we need to change this 
 # - the player performs some action until their turn terminates 
 # - upon turn termination they unlock the game and call it to resume 
 # - the game decides who should go next. 
 
 
-simGame = Game(num_decks=10, num_players=5) 
-discard = Pile(simGame.deck)
-simGame.update() 
-simGame.players[0].draw() 
-print("player0 has drawn")
-simGame.players[0].discard(simGame.players[0].pile.json_hand[0]["code"], discard)
-        
+# in an actual game you wouldn't use a for loop. 
+# in actual game use flask /route for to send backend requests
+# each request needs to tell backend which player it is and what they want to do
+# backend checks if player is locked, and if NOT locked, check what action it is
+# apply the action. if it is turn-terminating, end the turn and move the game one step forward while applying game rules 
+def simGame():
+    simGame = Game(num_decks=10, num_players=5)
+    # unlock the first player 
+    simGame.players[0].lock = False 
+    discard = simGame.deck.make_pile()
+    # model a game where players draw two cards and discard a random one 
+    while True:  
+        simGame.update()
+        player = simGame.active_player
+        player.draw(2)
+        card = player.discard("", discard, True)
+        print(f"player{simGame.player_index}: current hand is {player.show()} and previously discarded {card['code']}")
+        simGame.lock = False                # unlock the game 
+        sleep(1)
+
+simGame()     
 
 
         

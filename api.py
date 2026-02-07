@@ -131,8 +131,7 @@ class Pile:
     def show(self): 
         # print the json_hand to the terminal, not used in the actual webapp 
         hand = [i["code"] for i in self.json_hand]
-        print(hand)
-        return self.json_hand
+        return hand
     
     def return_cards(self, card_codes):
         cards = [i["code"] for i in self.json_hand]
