@@ -21,6 +21,7 @@ class Deck:
             self.id = id 
         else: 
             self.id = self.new(shuffle, decks, jokers)
+        self.remaining = decks * (52 + 2 * jokers)
     
     def new(self, shuffle, decks, jokers):
         params = {
@@ -45,6 +46,8 @@ class Deck:
 
 
     def draw(self, count=1): 
+        if self.remaining < count: 
+            return None
         params = {
             "count":count
         }
@@ -53,6 +56,7 @@ class Deck:
             url = self.url + f"{self.id}/draw/" 
             response = requests.get(url, params=params)
             if response.status_code == 200: 
+                self.remaining -= count 
                 data = response.json() 
                 for i in data['cards']: 
                     cards.append(i)
@@ -106,7 +110,9 @@ class Pile:
     
     def draw(self, count=1): 
         cards = self.deck.draw(count) 
-        self.json_hand += cards 
+        if cards != None: 
+            self.json_hand += cards 
+        return cards
     
     def pop_random(self): 
         index = random.randint(0, len(self.json_hand)-1)
