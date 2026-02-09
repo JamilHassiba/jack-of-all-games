@@ -7,7 +7,6 @@ app = Flask(__name__)
 app.secret_key = "jack_of_all_games_secret_key"
 socket = SocketIO(app, cors_allowed_origins="*", ping_interval=2, ping_timeout=1)
 # need a secret key for the session retained data
-sid = ""
 def db():
     # best way to operate on db with sqlite
     conn = sqlite3.connect("../users.db")
@@ -26,7 +25,6 @@ with db() as conn:
 
 @app.route('/')
 def home_page():
-    global sid
     server_ip = request.host_url.rstrip("/")
     return render_template("index.html")
 
@@ -98,30 +96,22 @@ def logout():
     session.clear()
     return redirect("/login")
 
-@app.route("/test_integration")
-def test_integration():
-    # this allows two devices to show the same sid. it doesnt show true sid
-    values = sid
-    print(values)
-    return render_template("test_integration.html", values = values)
-
 @app.route("/websocket_test")
 def websocket_test(): 
     return render_template("sockettest.html")
 
 @socket.on("connect")
 def connect(): 
-    global sid 
-    sid = request.sid
     print("User connected")
 
 @socket.on("disconnect")
 def disconnect(): 
     print("User disconnected")
 
-@socket.on("test_message")
+@socket.on("get_sid")
 def test_message(args): 
-    print(args['sid'])
+    session["sid"] = args["sid"]
+    
 
 if __name__ == '__main__': 
     socket.run(app=app, debug=True, host="0.0.0.0")
