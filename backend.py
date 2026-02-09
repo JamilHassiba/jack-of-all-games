@@ -2,7 +2,9 @@ from flask import Flask, request, render_template, redirect, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from flask_socketio import SocketIO
+from user import User 
 
+users = [] 
 app = Flask(__name__)
 app.secret_key = "jack_of_all_games_secret_key"
 socket = SocketIO(app, cors_allowed_origins="*", ping_interval=2, ping_timeout=1)
@@ -100,17 +102,22 @@ def logout():
 def websocket_test(): 
     return render_template("sockettest.html")
 
-@socket.on("connect")
-def connect(): 
-    print("User connected")
+@socket.on("new_user")
+def new_user(args): 
+    print("user connected")
+    session["sid"] = args["sid"]
+    temp_user = User(args["sid"])
+    users.append(temp_user)
+    print(f"added new user with sid {args['sid']}, new users array: {users}")
 
 @socket.on("disconnect")
-def disconnect(): 
-    print("User disconnected")
+def user_disconnect(): 
+    global users 
+    print("user disconnected")
+    sid = session["sid"]
+    users = [user for user in users if user.sid != sid]
+    print(f"removed user with sid {sid}. new user array: {users}")
 
-@socket.on("get_sid")
-def test_message(args): 
-    session["sid"] = args["sid"]
     
 
 if __name__ == '__main__': 

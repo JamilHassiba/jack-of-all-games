@@ -10,8 +10,8 @@
 
 		socket.on("connect", () => {
 			console.log("connected to server!");
-            console.log("session id is " + socket.id)
-            socket.emit("get_sid", {sid: socket.id})
+            		console.log("session id is " + socket.id)
+            		socket.emit("new_user", {sid: socket.id})
 		});
 
 		socket.on("disconnect", () => {
