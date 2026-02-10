@@ -79,12 +79,10 @@ export class Deck {
 		}
 
 		this.cards = [];
-		this.destroy();
 		return [my_cards, their_cards]
 	}
 
 	destroy() {
 		this.cards.forEach(function(card) {card.destroy()});
-		delete this;
 	}
 }
