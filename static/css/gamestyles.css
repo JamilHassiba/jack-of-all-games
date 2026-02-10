@@ -13,7 +13,7 @@ body {
 	align-items: center;
 }
 
-#DIV_gameContainer h1 {
+#DIV_gameContainer #Title {
 	text-align: center;
 	font-family: 'Courier New', monospace;
 	color: #FAFAFA;
