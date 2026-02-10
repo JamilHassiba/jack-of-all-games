@@ -37,7 +37,7 @@ export class Card {
 	    this.value = card_json.value;
 	    this.suit = card_json.suit;
    		this.face_up = face_up;
-    	this.div = Card.CreatCardDiv(root, this.image, this.face_up);
+    	this.div = Card.CreateDiv(root, this.image, this.face_up);
 
     	// init
     	this.setImage()
