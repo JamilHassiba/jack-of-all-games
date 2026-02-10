@@ -84,23 +84,15 @@ def login():
     
     return render_template("login.html")
 
-@app.route("/client")
-def client():
-    # if user not logged in go to login page
-    if "user_id" not in session:
-        return redirect("/login")
-    
-    return render_template("client.html")
+@app.route("/war")
+def war():
+    return render_template("war.html")
 
 @app.route("/logout")
 def logout():
     # clear session data on logout
     session.clear()
     return redirect("/login")
-
-@app.route("/websocket_test")
-def websocket_test(): 
-    return render_template("sockettest.html")
 
 @socket.on("new_user")
 def new_user(args): 
