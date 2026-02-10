@@ -20,6 +20,17 @@ export function CreateCard(root, card_object, x, y, faceUp) {
 	return e
 }
 
+export function CreateCardClickbox(root, x, y) {
+	// create the div element
+	const e = document.createElement('div');
+	e.className = 'OBJ_cardclickbox';
+	e.zIndex = 9999
+
+	root.appendChild(e);
+	SetDivPosition(e, x, y)
+	return e
+}
+
 export function MoveCard(e, x, y) {
 	SetDivPosition(e,x,y);
 }

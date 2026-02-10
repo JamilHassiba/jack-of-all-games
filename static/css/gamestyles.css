@@ -50,9 +50,18 @@ body {
   transform-origin: center center;
 }
 
-.OBJ_card:hover {
-  transform: scale(1.2);
+.OBJ_cardclickbox {
+  width: 110px;
+  height: 154px;
+
+  position: absolute;
+  transition: transform 0.2s ease;
+  transform-origin: center center;
 }
+
+/*.OBJ_card:hover {
+  transform: scale(1.2);
+}*/
 
 /* CARD STYLES END*/
 
