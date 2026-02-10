@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<html>
+    <body>
+        hello world
+    </body>
+    <script src = "https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script>
+		const socket = io()
+
+		socket.on("connect", () => {
+			console.log("connected to server!");
+            		console.log("session id is " + socket.id)
+            		socket.emit("new_user", {sid: socket.id})
+		});
+
+		socket.on("disconnect", () => {
+			console.log("disconnected from server!");
+		});
+
+	</script>
+</html>

@@ -1,11 +1,14 @@
 from flask import Flask, request, render_template, redirect, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
+from flask_socketio import SocketIO
+from user import User 
 
+users = [] 
 app = Flask(__name__)
 app.secret_key = "jack_of_all_games_secret_key"
+socket = SocketIO(app, cors_allowed_origins="*", ping_interval=2, ping_timeout=1)
 # need a secret key for the session retained data
-
 def db():
     # best way to operate on db with sqlite
     conn = sqlite3.connect("../users.db")
@@ -24,7 +27,8 @@ with db() as conn:
 
 @app.route('/')
 def home_page():
-    return redirect("/login")
+    server_ip = request.host_url.rstrip("/")
+    return render_template("index.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -94,5 +98,27 @@ def logout():
     session.clear()
     return redirect("/login")
 
+@app.route("/websocket_test")
+def websocket_test(): 
+    return render_template("sockettest.html")
+
+@socket.on("new_user")
+def new_user(args): 
+    print("user connected")
+    session["sid"] = args["sid"]
+    temp_user = User(args["sid"])
+    users.append(temp_user)
+    print(f"added new user with sid {args['sid']}, new users array: {users}")
+
+@socket.on("disconnect")
+def user_disconnect(): 
+    global users 
+    print("user disconnected")
+    sid = session["sid"]
+    users = [user for user in users if user.sid != sid]
+    print(f"removed user with sid {sid}. new user array: {users}")
+
+    
+
 if __name__ == '__main__': 
-    app.run(debug=True)
+    socket.run(app=app, debug=True, host="0.0.0.0")
