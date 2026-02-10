@@ -1,10 +1,16 @@
 let topZIndex = 1
 
+export function PutDivOnTop(div) {
+	div.style.zIndex = topZIndex;
+	topZIndex += 1;
+}
+
 export function SetDivPosition(div, x, y) {
 	let width = div.offsetWidth;
 	let height = div.offsetHeight;
 	div.style.left = x-(width/2)+'px';
 	div.style.top = y-(height/2)+'px';
+	PutDivOnTop(div)
 }
 
 export function DragDiv(div) {
@@ -22,10 +28,9 @@ export function DragDiv(div) {
 		// get the mouse cursor position at startup
 		x = e.clientX;
 		y = e.clientY;
-		
-		div.style.zIndex = topZIndex;
-		topZIndex += 1;
-		
+
+		PutDivOnTop(div)
+
 		document.onmouseup = DragEnd;
 		document.onmousemove = Drag;
 	}
