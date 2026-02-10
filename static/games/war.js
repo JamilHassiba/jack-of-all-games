@@ -76,11 +76,18 @@ function main(card_jsons) {
 		}
 
 		let clickbox = Card.CreateCardClickbox(BOARD, p1.drawDeck.x, p1.drawDeck.y)
-		clickbox.addEventListener("click", PlayMyCard)
+		clickbox.addEventListener("click", function() {PlayMyCard(p1.drawDeck, p1.fightDeck)})
 	}, 1000)
-
 }
 
-function PlayMyCard() {
-	
+function PlayMyCard(drawDeck, fightDeck) {
+	if (haveplayedcard && false) {return;}
+
+	let card = drawDeck.getTopCard();
+	if (card != null) {
+		haveplayedcard = true;
+		card.flip();
+		console.log("TANSFER")
+		fightDeck.pushCard(card);
+	}
 }

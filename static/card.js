@@ -17,7 +17,7 @@ export class Card {
 	static CreateCardClickbox(root, x, y) {
 		const e = document.createElement('div');
 		e.className = 'OBJ_cardclickbox';
-		e.zIndex = 9999
+		e.style.zIndex = 9999
 
 		root.appendChild(e);
 		
@@ -60,8 +60,14 @@ export class Card {
 		this.putCardOnTop(this.div)
 	}
 
+	flip() {
+		this.div.src = "";
+		this.face_up = !this.face_up;
+		this.setImage();
+	}
+
 	putCardOnTop() {
-		this.div.zIndex = Card.#topZIndex;
+		this.div.style.zIndex = Card.#topZIndex;
 		Card.#topZIndex++;
 	}	
 

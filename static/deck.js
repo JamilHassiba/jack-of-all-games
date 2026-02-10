@@ -70,8 +70,8 @@ export class Deck {
 		let my_cards = [];
 		let their_cards = [];
 
-		for (let i = 0; i < this.cards.length; i++) {
-			let card = this.cards[this.cards.length - 1 - i]
+		for (let i = this.cards.length-1; i >= 0; i--) {
+			let card = this.cards[i]
 
 			if (i%2 == 0) {my_cards.push(card)}
 			else {their_cards.push(card)}

@@ -45,6 +45,11 @@ body {
   width: 100px;
   height: 140px;
   
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE */
+
   position: absolute;
   transition: transform 0.2s ease;
   transform-origin: center center;
@@ -53,6 +58,11 @@ body {
 .OBJ_cardclickbox {
   width: 110px;
   height: 154px;
+
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE */
 
   position: absolute;
   transition: transform 0.2s ease;
