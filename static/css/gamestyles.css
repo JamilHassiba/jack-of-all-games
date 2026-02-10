@@ -1,11 +1,29 @@
 #DIV_gameContainer {
+	width: 100vw;
+	height: 100vh;
 
-}
+	display: flex;
+	justify-content: center;
 
-#DIV_gameBoard {
-
+	align-items: center;
 }
 
 body {
 	background: radial-gradient(#323232, #161616);
+}
+
+#DIV_gameBoard {
+	width: 1000px;
+	height: 600px;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: auto;
+
+	background: radial-gradient(#0a7d32, #064d1f);
+	
+	border-radius: 12px;
+	overflow: hidden;
+	border: solid #053b18 10px;
 }
