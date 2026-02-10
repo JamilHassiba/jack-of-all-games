@@ -20,6 +20,10 @@ export function CreateCard(root, card_object, x, y, faceUp) {
 	return e
 }
 
+export function MoveCard(e, x, y) {
+	SetDivPosition(e,x,y);
+}
+
 export function CreateDeckVisual(root, x, y) {
 	const deck = [];
 	for (let i = 0; i <= 51; i++) {

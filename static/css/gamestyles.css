@@ -44,7 +44,7 @@ body {
 .OBJ_card {
   width: 100px;
   height: 140px;
-
+  
   position: absolute;
   transition: transform 0.2s ease;
   transform-origin: center center;
