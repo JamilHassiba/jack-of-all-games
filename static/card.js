@@ -1,38 +1,64 @@
-import {SetDivPosition} from './utils.js'
 
-export function GetCardImageSrc(card, faceUp) {
-	if (faceUp == true) {
-		return card.image;
-	} else {
-		return 'https://deckofcardsapi.com/static/img/back.png';
+/*
+        {
+            "code": "6H", 
+            "image": "https://deckofcardsapi.com/static/img/6H.png", 
+            "images": {
+                          "svg": "https://deckofcardsapi.com/static/img/6H.svg", 
+                          "png": "https://deckofcardsapi.com/static/img/6H.png"
+                      }, 
+            "value": "6", 
+            "suit": "HEARTS"
+        },
+*/
+export class Card {
+	static #topZIdex = 0;
+
+	static CreateCardClickbox(root, x, y) {
+		const e = document.createElement('div');
+		e.className = 'OBJ_cardclickbox';
+		e.zIndex = 9999
+
+		root.appendChild(e);
+		SetDivPosition(e, x, y)
+		return e
 	}
-}
 
-export function CreateCard(root, card_object, x, y, faceUp) {
-	// create the div element
-	const e = document.createElement('img');
-	e.className = 'OBJ_card'
-	e.src = GetCardImageSrc(card_object, faceUp)
+	static #CreateDiv(root, image, face_up) {
+		const e = document.createElement('img');
+		e.className = 'OBJ_card'
+		root.appendChild(e);
+		return e		
+	}
 
-	root.appendChild(e);
-	SetDivPosition(e, x, y);
+	constructor(root, card_json, face_up) {
+		this.code = card_json.code;
+	    this.image = card_json.image;
+	    this.value = card_json.value;
+	    this.suit = card_json.suit;
+   		this.face_up = face_up;
+    	this.div = Card.CreatCardDiv(root, this.image, this.face_up);
 
-	return e
-}
+    	// init
+    	this.setImage()
+	}
 
-export function CreateCardClickbox(root, x, y) {
-	// create the div element
-	const e = document.createElement('div');
-	e.className = 'OBJ_cardclickbox';
-	e.zIndex = 9999
+	setImage() {
+		this.div.src = (this.face_up) ? this.image : 'https://deckofcardsapi.com/static/img/back.png';
+	}
 
-	root.appendChild(e);
-	SetDivPosition(e, x, y)
-	return e
-}
+	setPosition() {
+		let width = this.div.offsetWidth;
+		let height = this.div.offsetHeight;
+		this.div.style.left = x-(width/2)+'px';
+		this.div.style.top = y-(height/2)+'px';
+		putCardOnTop(div)
+	}
 
-export function MoveCard(e, x, y) {
-	SetDivPosition(e,x,y);
+	putCardOnTop() {
+		this.div.zIndex = Card.topZIndex;
+		Card.topZIndex++;
+	}	
 }
 
 export function CreateDeckVisual(root, x, y) {
