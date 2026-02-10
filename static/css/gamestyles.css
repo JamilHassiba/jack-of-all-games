@@ -8,15 +8,22 @@ body {
 	height: 100vh;
 
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
-
 	align-items: center;
+}
+
+#DIV_gameContainer h1 {
+	text-align: center;
+	font-family: 'Courier New', monospace;
+	color: #FAFAFA;
 }
 
 #DIV_gameBoard {
 	width: 1000px;
 	height: 600px;
 
+	flex: 1;
 	display: flex;
 	justify-content: center;
 	align-items: center;

@@ -6,6 +6,9 @@ game html files use {% extends 'gamebase.html' %} to 'inherit' from this file
 gamebase automatically sets up:
  * a link to the game style sheet
  * gameboard div
+ * a title (room code + game name)
+
+provides a block called custom_content, which each game file overrides to add custom elements (hands, decks, etc)
 
 -->
 
@@ -19,9 +22,17 @@ gamebase automatically sets up:
 </head>
 <body>
 
+
+
 <div id='DIV_gameContainer'>
-	
+
+	<h1>GAME NAME | ROOM CODE</h1>
+		
 	<div id='DIV_gameBoard'>
+
+		{% block custom_content %}
+
+		{% endblock %}
 
 	</div>
 
