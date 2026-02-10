@@ -1,0 +1,30 @@
+<!-- 
+gamebase.html is the 'base class' for all html files for games (war.html, blackjack.html, etc)
+
+game html files use {% extends 'gamebase.html' %} to 'inherit' from this file
+
+gamebase automatically sets up:
+ * a link to the game style sheet
+ * gameboard div
+
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>GameBase</title>
+</head>
+<body>
+
+<div id='DIV_gameContainer'>
+	
+	<div id='DIV_gameBoard'>
+
+	</div>
+
+</div>
+
+</body>
+</html>
