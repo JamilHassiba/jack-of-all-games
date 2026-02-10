@@ -12,7 +12,7 @@
         },
 */
 export class Card {
-	static #topZIdex = 0;
+	static #topZIndex = 0;
 
 	static CreateCardClickbox(root, x, y) {
 		const e = document.createElement('div');
@@ -20,7 +20,12 @@ export class Card {
 		e.zIndex = 9999
 
 		root.appendChild(e);
-		SetDivPosition(e, x, y)
+		
+		let width = e.offsetWidth;
+		let height = e.offsetHeight;
+		e.style.left = x-(width/2)+'px';
+		e.style.top = y-(height/2)+'px';
+
 		return e
 	}
 
@@ -37,7 +42,7 @@ export class Card {
 	    this.value = card_json.value;
 	    this.suit = card_json.suit;
    		this.face_up = face_up;
-    	this.div = Card.CreateDiv(root, this.image, this.face_up);
+    	this.div = Card.#CreateDiv(root, this.image, this.face_up);
 
     	// init
     	this.setImage()
@@ -47,24 +52,20 @@ export class Card {
 		this.div.src = (this.face_up) ? this.image : 'https://deckofcardsapi.com/static/img/back.png';
 	}
 
-	setPosition() {
+	setPosition(x, y) {
 		let width = this.div.offsetWidth;
 		let height = this.div.offsetHeight;
 		this.div.style.left = x-(width/2)+'px';
 		this.div.style.top = y-(height/2)+'px';
-		putCardOnTop(div)
+		this.putCardOnTop(this.div)
 	}
 
 	putCardOnTop() {
-		this.div.zIndex = Card.topZIndex;
-		Card.topZIndex++;
+		this.div.zIndex = Card.#topZIndex;
+		Card.#topZIndex++;
 	}	
-}
 
-export function CreateDeckVisual(root, x, y) {
-	const deck = [];
-	for (let i = 0; i <= 51; i++) {
-  		deck.push(CreateCard(root, {}, x+i/4, y+i/2, false));
-	} 
-	return deck;
+	destroy() {
+		this.div.remove();
+	}
 }
