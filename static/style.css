@@ -92,9 +92,17 @@ body {
     margin: 0 5px;
 }
 
+.nav-btn:hover {
+    background-color: #d1d5db;
+}
+
 .nav-btn.active {
     background-color: #4f86ed;
     color: white;
+}
+
+.nav-btn.active:hover {
+    background-color: #3b70d6;
 }
 
 .card {
@@ -113,7 +121,7 @@ body {
 
 .card-title {
     margin-top: 0;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     color: #35393f;
 }
 
@@ -125,7 +133,7 @@ body {
 
 .form-section {
     background-color: #e8eaee;
-    border-radius: 8px;
+    border-radius: 12px;
     margin: 15px auto;
     padding: 10px;
 }
@@ -171,7 +179,9 @@ body {
     color: white;
 }
 
-/* --- CONFIGURE SECTION --- */
+.game-option input[type="radio"]:checked:hover + .game-button-ish {
+    background-color: #3b70d6;
+}
 
 .configure-row {
     display: flex;
@@ -191,4 +201,105 @@ body {
     align-items: center;
     gap: 10px;
     color: #1f2937;
+}
+
+.configure-slider {
+    cursor: pointer;
+}
+
+.configure-locking-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #72767b;
+}
+
+.password-box {
+    padding: 4px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 105px;
+    outline: none;
+}
+
+.password-box:focus {
+    border-color: #4f86ed;
+}
+
+.lock-checkbox {
+    margin-right: 0;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+#players-list {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.player-slot {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #7e8083ca;
+    border-radius: 50%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-size: 25px;
+}
+
+.player-slot.empty {
+    border: 2px dashed #7e8083ca;
+}
+
+.host-label {
+    position: absolute;
+    top: -20px;
+    font-size: 13px;
+    color: #545a67;
+}
+
+.kick-btn {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 18px;
+    height: 18px;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 50%;
+    border-color: transparent;
+    cursor: pointer;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.kick-btn:hover {
+    background-color: #dc2626;
+}
+
+.start-button {
+    background-color: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 30px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    margin: auto;
+}
+
+.start-button:hover {
+    background-color: #1fb054; 
 }
