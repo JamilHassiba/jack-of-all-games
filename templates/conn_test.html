@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+    <body>
+        <button id="test">Test Frontend!!</button>
+        <p id="output">Output text should be shown here</p>
+    
+        <script>
+            const button = document.getElementById("test"); 
+            const output = document.getElementById("output");
+
+            button.addEventListener('click', async() => {
+                const response = await fetch("/send_data");
+                const data = await response.json(); 
+                output.innerText =  `Message: ${data.username}`;
+            })
+
+        </script>
+
+    </body>
+
+
+</html>

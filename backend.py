@@ -1,13 +1,23 @@
-from flask import Flask, request, render_template, redirect, session
+from flask import Flask, request, render_template, redirect, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from flask_socketio import SocketIO
 from user import User 
+from flask_session import Session 
+import random
 
-users = [] 
+users = {}
 app = Flask(__name__)
 app.secret_key = "jack_of_all_games_secret_key"
-socket = SocketIO(app, cors_allowed_origins="*", ping_interval=2, ping_timeout=1)
+app.config['SECRET_KEY'] = 'jack_of_all_games_secret_key'  
+app.config['SESSION_TYPE'] = 'filesystem'                  # sessions stored server side 
+app.config['SESSION_PERMANENT'] = True                     # persistent sessions even after browser closes 
+app.config['PERMANENT_SESSION_LIFETIME'] = 3600            # keep session on server for x seconds  
+Session(app)
+
+
+
+
 # need a secret key for the session retained data
 def db():
     # best way to operate on db with sqlite
@@ -94,23 +104,40 @@ def logout():
     session.clear()
     return redirect("/login")
 
-@socket.on("new_user")
-def new_user(args): 
-    print("user connected")
-    session["sid"] = args["sid"]
-    temp_user = User(args["sid"])
-    users.append(temp_user)
-    print(f"added new user with sid {args['sid']}, new users array: {users}")
+@app.route("/create_room")           # to be finished, method for creating a room 
+def create_room():                   # frontend sends a POST request and we make a room and auto join 
+    pass 
 
-@socket.on("disconnect")
-def user_disconnect(): 
-    global users 
-    print("user disconnected")
-    sid = session["sid"]
-    users = [user for user in users if user.sid != sid]
-    print(f"removed user with sid {sid}. new user array: {users}")
+@app.route("/join_room")             # frontend sends a room id for the user to join 
+def join_room(): 
+    pass 
+
+@app.route("/draw_card")             # apply game logic and draw a card to the user's pile 
+def draw_card(): 
+    pass 
+
+@app.route("/play_card")             # remove a card from the player pile and add to discard pile 
+def play_card(): 
+    pass 
+
+
+# temporary routes, delete them once the code is fully production ready
+
+@app.route("/test_conn")
+def ryan(): 
+    return render_template("conn_test.html")
+
+@app.route("/send_data")
+def send_data(): 
+    username = session.get("username")
+    print(username)
+    if username: 
+        return jsonify({'username': session["username"]})
+    else: 
+        return jsonify({'username': "UNKNOWN USER"})
+
 
     
 
 if __name__ == '__main__': 
-    socket.run(app=app, debug=True, host="0.0.0.0")
+    app.run(host="0.0.0.0")
