@@ -94,13 +94,9 @@ def login():
     
     return render_template("login.html")
 
-@app.route("/client")
-def client():
-    # if user not logged in go to login page
-    if "user_id" not in session:
-        return redirect("/login")
-    
-    return render_template("client.html")
+@app.route("/war")
+def war():
+    return render_template("war.html")
 
 @app.route("/logout")
 def logout():
