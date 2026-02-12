@@ -108,6 +108,25 @@ def logout():
     session.clear()
     return redirect("/login")
 
+@app.route("/create_room")           # to be finished, method for creating a room 
+def create_room():                   # frontend sends a POST request and we make a room and auto join 
+    pass 
+
+@app.route("/join_room")             # frontend sends a room id for the user to join 
+def join_room(): 
+    pass 
+
+@app.route("/draw_card")             # apply game logic and draw a card to the user's pile 
+def draw_card(): 
+    pass 
+
+@app.route("/play_card")             # remove a card from the player pile and add to discard pile 
+def play_card(): 
+    pass 
+
+
+# temporary routes, delete them once the code is fully production ready
+
 @app.route("/test_conn")
 def ryan(): 
     return render_template("conn_test.html")
@@ -120,6 +139,7 @@ def send_data():
         return jsonify({'username': session["username"]})
     else: 
         return jsonify({'username': "UNKNOWN USER"})
+
 
     
 
