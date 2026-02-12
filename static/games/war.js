@@ -1,6 +1,6 @@
 import {Card} from '../card.js';
 import {Deck} from '../deck.js'
-import { io } from "https://cdn.socket.io/4.6.1/socket.io.esm.min.js";
+//import { io } from "https://cdn.socket.io/4.6.1/socket.io.esm.min.js";
 
 console.log("war.js running...");
 
@@ -28,7 +28,7 @@ const DECK_POSITIONS = {
 let haveplayedcard = false;
 
 // Create socket object;
-var socket = io();
+//var socket = io();
 
 // Set the title
 Title.innerHTML = "WAR | 0123";
@@ -87,7 +87,16 @@ function PlayMyCard(drawDeck, fightDeck) {
 	if (card != null) {
 		haveplayedcard = true;
 		card.flip();
-		console.log("TANSFER")
 		fightDeck.pushCard(card);
+
+		// send data to server
+		const formData = new FormData();
+		formData.append("card", "5H");
+		console.log(formData);
+
+		fetch("/draw_card", {
+			method: "POST",
+			body: formData,
+		})
 	}
 }

@@ -1,8 +1,6 @@
 from flask import Flask, request, render_template, redirect, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
-from flask_socketio import SocketIO
-from user import User 
 from flask_session import Session 
 import random
 
@@ -112,9 +110,12 @@ def create_room():                   # frontend sends a POST request and we make
 def join_room(): 
     pass 
 
-@app.route("/draw_card")             # apply game logic and draw a card to the user's pile 
-def draw_card(): 
-    pass 
+@app.route("/draw_card", methods=["POST", "GET"])             # apply game logic and draw a card to the user's pile 
+def draw_card():
+    print("RECEIVED DATA")
+    print(request)
+    print(request.form["card"])
+    return ""
 
 @app.route("/play_card")             # remove a card from the player pile and add to discard pile 
 def play_card(): 
