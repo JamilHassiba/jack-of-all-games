@@ -3,8 +3,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from flask_session import Session 
 import random
+from game import Room 
 
-users = {}
+rooms = {}
 app = Flask(__name__)
 app.secret_key = "jack_of_all_games_secret_key"
 app.config['SECRET_KEY'] = 'jack_of_all_games_secret_key'  
@@ -102,20 +103,42 @@ def logout():
     session.clear()
     return redirect("/login")
 
-@app.route("/create_room")           # to be finished, method for creating a room 
+@app.route("/create_room", method=["POST", "GET"])           # to be finished, method for creating a room 
 def create_room():                   # frontend sends a POST request and we make a room and auto join 
-    pass 
+    # assumed frontend data format: 
+    # form data with attributes: game_type, num_players 
+    # frontend people, pls follow register.html example of sending form data 
+    try: 
+        data = request.form 
+        game_type = data["game_type"]
+        num_players = ["num_players"]
+        room = Room(game_type, num_players)
+        session["room"] = room.id 
+        rooms[room.id] = room                # store rooms in a dict for quick access 
+        return 200 
+    except:
+        return "error, something went wrong. source: creating a room" 
+
+
 
 @app.route("/join_room")             # frontend sends a room id for the user to join 
 def join_room(): 
-    pass 
+    # assumed frontend data format: 
+    # form data with attributes: room_id 
+    try: 
+        data = request.form 
+        room_id = data["room_id"]
+        if room_id in rooms.keys(): 
+            session["room"] = room.id 
+        else: 
+            return "Room ID does not exist"
+    except: 
+        return "error, something went wrong. source: joining room"
+     
 
 @app.route("/draw_card", methods=["POST", "GET"])             # apply game logic and draw a card to the user's pile 
 def draw_card():
-    print("RECEIVED DATA")
-    print(request)
-    print(request.form["card"])
-    return ""
+    pass 
 
 @app.route("/play_card")             # remove a card from the player pile and add to discard pile 
 def play_card(): 

@@ -184,6 +184,3 @@ class War(Game):
 #     simGame.game_finish()
 
 # WarGame()
-
-myRoom = Room("war")
-print(myRoom.id)
