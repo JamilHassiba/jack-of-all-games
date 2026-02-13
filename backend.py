@@ -103,7 +103,7 @@ def logout():
     session.clear()
     return redirect("/login")
 
-@app.route("/create_room", method=["POST", "GET"])           # to be finished, method for creating a room 
+@app.route("/create_room", methods=["POST", "GET"])           # to be finished, method for creating a room 
 def create_room():                   # frontend sends a POST request and we make a room and auto join 
     # assumed frontend data format: 
     # form data with attributes: game_type, num_players 
