@@ -1,5 +1,6 @@
 from api import Deck, Pile
 from time import sleep
+import random
 chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-+_="
 
 class Game: 
@@ -74,6 +75,22 @@ class Player:
     def show(self):
         return self.pile.show() 
 
+class Room: 
+    def __init__(self, game_type, num_players, players=None, id=None): 
+        self.game_type = game_type 
+        self.players = players 
+        if id == None: 
+            length = random.randint(6, 10)
+            self.id = "".join([chars[random.randint(0, len(chars)-1)] for i in range(length)])
+        else: 
+            self.id = id
+
+        if game_type == "war": 
+            self.game = War(4, num_players)
+        elif game_type == "poker": 
+            pass 
+            # this is an example of how we would extend 
+
 class War(Game): 
     def game_turn(self): 
         values = {f'{i}':i for i in range(11)}
@@ -134,35 +151,39 @@ class War(Game):
 # each request needs to tell backend which player it is and what they want to do
 # backend checks if player is locked, and if NOT locked, check what action it is
 # apply the action. if it is turn-terminating, end the turn and move the game one step forward while applying game rules 
-def simGame():
-    simGame = Game(num_decks=1, num_players=2)
-    discard = simGame.deck.make_pile()
-    # model a game where players draw two cards and discard a random one 
-    while True:  
-        simGame.update()
-        player = simGame.active_player
-        val = player.draw(2)
-        if val == "End of Deck": 
-            break 
-        card = player.discard("", discard, True)
-        print(f"player{simGame.player_index}: current hand is {player.show()} and previously discarded {card['code']}")
-        simGame.lock = False                # unlock the game 
-        sleep(0.5)
-    simGame.game_finish()
 
-def WarGame(): 
-    simGame = War(num_decks=3, num_players=4)   
-    discard = simGame.deck.make_pile()
-    while True: 
-        simGame.update()
-        player = simGame.active_player
-        val = player.draw(3)
-        if val == "End of Deck": 
-            break 
-        card = player.discard("", discard, True)
-        print(f"player{simGame.player_index}: Discarded {card['code']}")
-        simGame.lock = False 
-        sleep(0.001)
-    simGame.game_finish()
+# def simGame():
+#     simGame = Game(num_decks=1, num_players=2)
+#     discard = simGame.deck.make_pile()
+#     # model a game where players draw two cards and discard a random one 
+#     while True:  
+#         simGame.update()
+#         player = simGame.active_player
+#         val = player.draw(2)
+#         if val == "End of Deck": 
+#             break 
+#         card = player.discard("", discard, True)
+#         print(f"player{simGame.player_index}: current hand is {player.show()} and previously discarded {card['code']}")
+#         simGame.lock = False                # unlock the game 
+#         sleep(0.5)
+#     simGame.game_finish()
 
-WarGame()
+# def WarGame(): 
+#     simGame = War(num_decks=3, num_players=4)   
+#     discard = simGame.deck.make_pile()
+#     while True: 
+#         simGame.update()
+#         player = simGame.active_player
+#         val = player.draw(3)
+#         if val == "End of Deck": 
+#             break 
+#         card = player.discard("", discard, True)
+#         print(f"player{simGame.player_index}: Discarded {card['code']}")
+#         simGame.lock = False 
+#         sleep(0.001)
+#     simGame.game_finish()
+
+# WarGame()
+
+myRoom = Room("war")
+print(myRoom.id)
