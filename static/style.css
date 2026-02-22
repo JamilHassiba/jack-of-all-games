@@ -113,12 +113,6 @@ body {
     border: 1px solid #e9e9eb;
 }
 
-.card-title-container {
-    display: flex;
-    align-items: baseline;
-    gap: 5px;
-}
-
 .card-title {
     margin-top: 0;
     margin-bottom: 10px;
@@ -131,6 +125,12 @@ body {
     font-weight: 10;
 }
 
+.create-card-header {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+
 .form-section {
     background-color: #e8eaee;
     border-radius: 12px;
@@ -141,6 +141,7 @@ body {
 .form-section-title {
     font-size: 16px;
     padding-top: 5px;
+    padding-bottom: 10px;
     color: #353c46;
     margin: 0 2px;
 }
@@ -188,7 +189,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin: 7px 0;
-    padding: 0 5px;
+    padding: 0 3px;
 }
 
 .configure-label {
@@ -258,7 +259,7 @@ body {
     border: 2px dashed #7e8083ca;
 }
 
-.host-label {
+.create-label {
     position: absolute;
     top: -20px;
     font-size: 13px;
@@ -287,7 +288,7 @@ body {
     background-color: #dc2626;
 }
 
-.start-button {
+.submit-button {
     background-color: #22c55e;
     color: white;
     border: none;
@@ -300,6 +301,74 @@ body {
     margin: auto;
 }
 
-.start-button:hover {
+.submit-button:hover {
     background-color: #1fb054; 
+}
+
+.join-card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.join-search {
+    padding: 10px;
+    border: 1px solid #dddfe4;
+    border-radius: 8px;
+    background-color: #eff0f0;
+    font-size: 14px;
+    outline: none;
+}
+
+.join-search:focus {
+    border-color: #4f86ed;
+    background-color: #ffffff;
+}
+
+.room-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    border: 1px solid #dddfe4;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.room-item:hover {
+    background-color: #f8f8f8;
+    box-shadow: 1px 1px #a8b4c4;
+}
+
+.room-info {
+    flex: 1;
+    gap: 5px;
+}
+
+.room-icons {
+    display: flex;
+    gap: 6px;
+    margin-right: 20px;
+}
+
+.player-slot.mini {
+    width: 35px;
+    height: 35px;
+    font-size: 22px;
+    background-color: #f3f4f6;
+}
+
+.join-button {
+    padding: 8px 24px;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #374151;
+    font-size: 14px;
+}
+
+.join-button:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
 }

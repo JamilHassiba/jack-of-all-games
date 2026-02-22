@@ -35,13 +35,13 @@
 
         <div class="nav-group">
             <button class="nav-btn active" data-view="join">Join Room</button>
-            <button class="nav-btn" data-view="host">Host Room</button>
+            <button class="nav-btn" data-view="create">Create Room</button>
         </div>
     </nav>
 </header>
 
-<section class="card" id="host-room-card">
-    <header class="card-title-container">
+<section class="card" id="create-room-card">
+    <header class="create-card-header">
         <h3 class="card-title">Create Room</h3>
         <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
     </header>
@@ -101,7 +101,7 @@
 
             <div id="players-list">
                 <div class="player-slot">
-                    <span class="host-label">HOST</span>
+                    <span class="create-label">HOST</span>
                     <span class="player-icon">👤</span>
                 </div>
 
@@ -117,48 +117,57 @@
             </div>
         </div>
 
-        <button class="start-button" type="submit">Start Game</button>
+        <button class="submit-button" type="submit">Create Room</button>
     </form>
 
 </section>
 
 <section class="card" id="join-room-card">
-    <header>
-        <h2>Rooms</h2>
-        <input type="search" id="room-search" placeholder="Search">
+    <header class="join-card-header">
+        <h3 class="card-title">Rooms</h3>
+        <input class="join-search" type="search" id="room-search" placeholder="Search">
     </header>
 
-    <div>
+    <div class="room-list">
         <div class="room-item">
-            <span class="room-text">Crazy Eights | <span>#RoomID</span></span>
-            <div>
-                <span>👤</span>
-                <span>👤</span>
-                <span>O</span>
-                <span>O</span>
+            <div class="room-info">
+                <span class="room-type">Crazy Eights</span>
+                <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
             </div>
-            <button type="button">Join</button>
+            <div class="room-icons">
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot empty mini"></span>
+                <span class="player-slot empty mini"></span>
+            </div>
+            <button class="join-button" type="button">Join</button>
         </div>
         
         <div class="room-item">
-            <span class="room-text">War | <span>#RoomID</span></span>
-            <div>
-                <span>👤</span>
-                <span>O</span>
-                <span>O</span>
+            <div class="room-info">
+                <span class="room-type">War</span>
+                <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
             </div>
-            <button type="button">Join</button>
+            <div class="room-icons">
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot empty mini"></span>
+                <span class="player-slot empty mini"></span>
+            </div>
+            <button class="join-button" type="button">Join</button>
         </div>
 
         <div class="room-item">
-            <span class="room-text">Poker | <span>#RoomID</span></span>
-            <div>
-                <span>👤</span>
-                <span>👤</span>
-                <span>👤</span>
-                <span>O</span>
+            <div class="room-info">
+                <span class="room-type">Poker</span>
+                <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
             </div>
-            <button type="button">Join</button>
+            <div class="room-icons">
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot empty mini"></span>
+            </div>
+            <button class="join-button" type="button">Join</button>
         </div>
     </div>
 </section>
@@ -240,7 +249,7 @@
 
         // Loop over room items
         roomItems.forEach(function(room) {
-            const roomText = room.querySelector('.room-text').textContent.toLowerCase();
+            const roomText = room.querySelector('.room-info').textContent.toLowerCase();
 
             if (roomText.includes(searchValue)) {
                 room.style.display = '';
@@ -255,29 +264,29 @@
     /* --- Navigation Buttons Logic --- */
 
     const joinButton = document.querySelector('button[data-view="join"]');
-    const hostButton = document.querySelector('button[data-view="host"]');
+    const createButton = document.querySelector('button[data-view="create"]');
 
     const joinCard = document.getElementById('join-room-card');
-    const hostCard = document.getElementById('host-room-card');
+    const createCard = document.getElementById('create-room-card');
 
     function switchToJoin() {
-        hostCard.style.display = 'none';
+        createCard.style.display = 'none';
         joinCard.style.display = '';
 
         joinButton.classList.add('active');
-        hostButton.classList.remove('active');
+        createButton.classList.remove('active');
     }
 
-    function switchToHost() {
+    function switchToCreate() {
         joinCard.style.display = 'none';
-        hostCard.style.display = '';
+        createCard.style.display = '';
 
         joinButton.classList.remove('active');
-        hostButton.classList.add('active');
+        createButton.classList.add('active');
     }
 
     joinButton.addEventListener('click', switchToJoin);
-    hostButton.addEventListener('click', switchToHost);
+    createButton.addEventListener('click', switchToCreate);
 
     // Default to 'Join Room' when page loads
     switchToJoin(); 
