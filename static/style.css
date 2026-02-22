@@ -1,0 +1,374 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f3f4f7;
+    max-width: 650px;
+    margin: auto;
+    padding: 20px;
+    position: relative;
+}
+
+.user-profile-container {
+    position: absolute; 
+    top: 30px;
+    left: 20px;
+    width: fit-content; 
+}
+
+.user-profile {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 10px;
+}
+
+.user-profile:hover {
+    background-color: #e5e7eb;
+}
+
+.username {
+    font-size: 16px;
+    color: #1f2937;
+}
+
+.user-dropdown-div {
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    margin-top: 3px;
+    background-color: white;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid #d9dadd;
+    min-width: 140px;
+}
+
+.sign-out-btn {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: #dc2626;
+    padding: 5px 8px;
+    margin: 0 1px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.sign-out-btn:hover {
+    background-color: #fee2e2;
+}
+
+
+.brand {
+    font-size: 20px;
+    text-align: center;
+    padding-top: 70px;
+}
+
+.user-profile {
+    text-align: left;
+}
+
+.nav-menu {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.nav-group {
+    margin-bottom: 15px;
+}
+
+.nav-btn {
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    
+    background-color: #e5e7eb;
+    color: #374151;
+    
+    margin: 0 5px;
+}
+
+.nav-btn:hover {
+    background-color: #d1d5db;
+}
+
+.nav-btn.active {
+    background-color: #4f86ed;
+    color: white;
+}
+
+.nav-btn.active:hover {
+    background-color: #3b70d6;
+}
+
+.card {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #e9e9eb;
+}
+
+.card-title {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #35393f;
+}
+
+.card-room-id {
+    color: #7c8390;
+    font-size: 2;
+    font-weight: 10;
+}
+
+.create-card-header {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+
+.form-section {
+    background-color: #e8eaee;
+    border-radius: 12px;
+    margin: 15px auto;
+    padding: 10px;
+}
+
+.form-section-title {
+    font-size: 16px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    color: #353c46;
+    margin: 0 2px;
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.game-option {
+    cursor: pointer;
+    width: 100%;
+}
+
+.game-option input[type="radio"] {
+    display: none;
+}
+
+.game-button-ish {
+    display: block;
+    padding: 12px;
+    text-align: center;
+    background-color: white;
+    border-radius: 12px;
+    color: #374151;
+}
+
+.game-option:hover .game-button-ish {
+    background-color: #f9fafb;
+}
+
+.game-option input[type="radio"]:checked + .game-button-ish {
+    background-color: #4f86ed;
+    color: white;
+}
+
+.game-option input[type="radio"]:checked:hover + .game-button-ish {
+    background-color: #3b70d6;
+}
+
+.configure-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 7px 0;
+    padding: 0 3px;
+}
+
+.configure-label {
+    font-size: 14px;
+    color: #4a5362;
+}
+
+.configure-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1f2937;
+}
+
+.configure-slider {
+    cursor: pointer;
+}
+
+.configure-locking-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #72767b;
+}
+
+.password-box {
+    padding: 4px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 105px;
+    outline: none;
+}
+
+.password-box:focus {
+    border-color: #4f86ed;
+}
+
+.lock-checkbox {
+    margin-right: 0;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+#players-list {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.player-slot {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #7e8083ca;
+    border-radius: 50%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-size: 25px;
+}
+
+.player-slot.empty {
+    border: 2px dashed #7e8083ca;
+}
+
+.create-label {
+    position: absolute;
+    top: -20px;
+    font-size: 13px;
+    color: #545a67;
+}
+
+.kick-btn {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 18px;
+    height: 18px;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 50%;
+    border-color: transparent;
+    cursor: pointer;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.kick-btn:hover {
+    background-color: #dc2626;
+}
+
+.submit-button {
+    background-color: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 30px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    margin: auto;
+}
+
+.submit-button:hover {
+    background-color: #1fb054; 
+}
+
+.join-card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.join-search {
+    padding: 10px;
+    border: 1px solid #dddfe4;
+    border-radius: 8px;
+    background-color: #eff0f0;
+    font-size: 14px;
+    outline: none;
+}
+
+.join-search:focus {
+    border-color: #4f86ed;
+    background-color: #ffffff;
+}
+
+.room-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    border: 1px solid #dddfe4;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.room-item:hover {
+    background-color: #f8f8f8;
+    box-shadow: 1px 1px #a8b4c4;
+}
+
+.room-info {
+    flex: 1;
+    gap: 5px;
+}
+
+.room-icons {
+    display: flex;
+    gap: 6px;
+    margin-right: 20px;
+}
+
+.player-slot.mini {
+    width: 35px;
+    height: 35px;
+    font-size: 22px;
+    background-color: #f3f4f6;
+}
+
+.join-button {
+    padding: 8px 24px;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #374151;
+    font-size: 14px;
+}
+
+.join-button:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}

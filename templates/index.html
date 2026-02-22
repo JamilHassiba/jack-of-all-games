@@ -1,7 +1,328 @@
 <!DOCTYPE html>
+<html lang="en">
 
-<html>
-    <body>
-        hello world
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <title>Play</title>
+</head>
+
+<body>
+
+<header>
+
+    <div class="user-profile-container">
+        <div class="user-profile" id="user-profile-button">
+            <span>👤</span>
+            <span class="username">Player1</span>
+        </div>
+        <div class="user-dropdown-div" id="user-dropdown">
+            <button class="sign-out-btn" type="button" id="sign-out-button">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="brand">
+        <h1>Jack Of All Games</h1>
+        <img>
+    </div>
+
+    <nav class="nav-menu" id="main-nav"> 
+        <div class="nav-group">
+            <button class="nav-btn active" data-view="play">Play</button>
+            <button class="nav-btn" data-view="scoreboard">Scoreboard</button>
+        </div>
+
+        <div class="nav-group">
+            <button class="nav-btn active" data-view="join">Join Room</button>
+            <button class="nav-btn" data-view="create">Create Room</button>
+        </div>
+    </nav>
+</header>
+
+<section class="card" id="create-room-card">
+    <header class="create-card-header">
+        <h3 class="card-title">Create Room</h3>
+        <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
+    </header>
+
+    <form method="POST">
+        <div class="form-section">
+            <p class="form-section-title">Game</p>
+
+            <div class="game-grid">
+                <label class="game-option">
+                    <input type="radio" name="game_choice" value="poker" checked>
+                    <span class="game-button-ish">Poker</span>
+                </label>
+
+                <label class="game-option">
+                    <input type="radio" name="game_choice" value="war">
+                    <span class="game-button-ish">War</span>
+                </label>
+
+                <label class="game-option">
+                    <input type="radio" name="game_choice" value="blackjack">
+                    <span class="game-button-ish">Blackjack</span>
+                </label>
+
+                <label class="game-option">
+                    <input type="radio" name="game_choice" value="crazy8">
+                    <span class="game-button-ish">Crazy Eights</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <p class="form-section-title">Configure</p>
+
+            <div class="configure-row">
+                <span class="configure-label">Player Count</span>
+
+                <div class="configure-slider-container">
+                    <input class="configure-slider" type="range" id="player-slider" name="player_count" min="2" max="8" value="4">
+                    <span id="player-count-display">4</span>
+                </div>
+            </div>
+
+            <div class="configure-row">
+                <span class="configure-label">Locked</span>
+
+                <div class="configure-locking-container">
+                    <input class="password-box" id="password-input" type="password" name="room_password" placeholder="Password">
+
+                    <input class="lock-checkbox" type="checkbox" id="lock-toggle" name="is_locked">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <p class="form-section-title">Players</p>
+
+            <div id="players-list">
+                <div class="player-slot">
+                    <span class="create-label">HOST</span>
+                    <span class="player-icon">👤</span>
+                </div>
+
+                <div class="player-slot">
+                    <span class="player-icon">👤</span>
+                    <button class="kick-btn" type="button" title="Kick Player">×</button>
+                </div>
+
+                <div class="player-slot">
+                    <span>👤</span>
+                    <button class="kick-btn" type="button" title="Kick Player">×</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="submit-button" type="submit">Create Room</button>
+    </form>
+
+</section>
+
+<section class="card" id="join-room-card">
+    <header class="join-card-header">
+        <h3 class="card-title">Rooms</h3>
+        <input class="join-search" type="search" id="room-search" placeholder="Search">
+    </header>
+
+    <div class="room-list">
+        <div class="room-item">
+            <div class="room-info">
+                <span class="room-type">Crazy Eights</span>
+                <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
+            </div>
+            <div class="room-icons">
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot empty mini"></span>
+                <span class="player-slot empty mini"></span>
+            </div>
+            <button class="join-button" type="button">Join</button>
+        </div>
+        
+        <div class="room-item">
+            <div class="room-info">
+                <span class="room-type">War</span>
+                <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
+            </div>
+            <div class="room-icons">
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot empty mini"></span>
+                <span class="player-slot empty mini"></span>
+            </div>
+            <button class="join-button" type="button">Join</button>
+        </div>
+
+        <div class="room-item">
+            <div class="room-info">
+                <span class="room-type">Poker</span>
+                <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
+            </div>
+            <div class="room-icons">
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot mini">👤</span>
+                <span class="player-slot empty mini"></span>
+            </div>
+            <button class="join-button" type="button">Join</button>
+        </div>
+    </div>
+</section>
+
+<script>
+
+    /* --- Slider Logic --- */
+
+    const slider = document.getElementById('player-slider');
+    const countDisplay = document.getElementById('player-count-display');
+    const playersList = document.getElementById('players-list');
+
+    function sliderEventFunct() {
+        // Update displayed player count
+        const playerCount = slider.value;
+        countDisplay.textContent = playerCount;
+
+        const currentSlots = playersList.children.length;
+        const difference = playerCount - currentSlots;
+
+        // Add slots if slider moved up
+        if (difference > 0) {
+            for (let i = 0; i < difference; i++) {
+                const newSlot = document.createElement('div');
+                newSlot.className = 'player-slot empty';
+                playersList.appendChild(newSlot);
+            }
+        } 
+        // Remove slots if slider moved down
+        else if (difference < 0) {
+            for (let i = 0; i < Math.abs(difference); i++) {
+                playersList.removeChild(playersList.lastElementChild);
+            }
+        }
+    }
+
+    slider.addEventListener('input', sliderEventFunct);
+    sliderEventFunct()
+
+
+    /* --- Password Lock Logic --- */
+
+    const lockToggle = document.getElementById('lock-toggle');
+    const passwordBox = document.getElementById('password-input');
+    passwordBox.style.display = 'none';
+
+    lockToggle.addEventListener('change', function() {
+        if (lockToggle.checked) {
+            passwordBox.style.display = 'block';
+            passwordBox.focus()
+        } 
+        else {
+            passwordBox.style.display = 'none';
+        }
+    });
+
+
+    /* --- Kick Buttons Logic --- */
+
+    playersList.addEventListener('click', function(event) {
+        const clickedKick = event.target.closest('.kick-btn');
+
+        if (clickedKick) {
+            const playerSlot = clickedKick.closest('.player-slot');
+            playerSlot.className = 'player-slot empty';
+            playerSlot.innerHTML = '<div></div>';
+        }
+    });
+
+
+    /* --- Join Room Search Logic --- */
+
+    const searchBar = document.getElementById('room-search');
+    const roomItems = document.querySelectorAll('.room-item');
+
+    searchBar.addEventListener('input', function(event) {
+
+        const searchValue = event.target.value.toLowerCase();
+
+        // Loop over room items
+        roomItems.forEach(function(room) {
+            const roomText = room.querySelector('.room-info').textContent.toLowerCase();
+
+            if (roomText.includes(searchValue)) {
+                room.style.display = '';
+            } 
+            else {
+                room.style.display = 'none';
+            }
+        });
+    });
+
+
+    /* --- Navigation Buttons Logic --- */
+
+    const joinButton = document.querySelector('button[data-view="join"]');
+    const createButton = document.querySelector('button[data-view="create"]');
+
+    const joinCard = document.getElementById('join-room-card');
+    const createCard = document.getElementById('create-room-card');
+
+    function switchToJoin() {
+        createCard.style.display = 'none';
+        joinCard.style.display = '';
+
+        joinButton.classList.add('active');
+        createButton.classList.remove('active');
+    }
+
+    function switchToCreate() {
+        joinCard.style.display = 'none';
+        createCard.style.display = '';
+
+        joinButton.classList.remove('active');
+        createButton.classList.add('active');
+    }
+
+    joinButton.addEventListener('click', switchToJoin);
+    createButton.addEventListener('click', switchToCreate);
+
+    // Default to 'Join Room' when page loads
+    switchToJoin(); 
+
+
+    /* --- User Menu Logic --- */
+
+    const userButton = document.getElementById('user-profile-button');
+    const userDropdown = document.getElementById('user-dropdown');
+    const signOutButton = document.getElementById('sign-out-button');
+
+    userButton.addEventListener('click', function(event) {
+        event.stopPropagation() // To prevent the registration of multiple clicks
+        if (userDropdown.style.display === 'block') {
+            userDropdown.style.display = 'none';
+        } 
+        else {
+            userDropdown.style.display = 'block';
+        }
+    });
+
+    // Hide dropdown if user clicks anywhere else
+    document.addEventListener('click', function() {
+        userDropdown.style.display = 'none';
+    });
+
+    if (signOutButton) {
+        signOutButton.addEventListener('click', function() {
+            window.location.replace("login.html");
+        });
+    }
+
+    // Hide dropdown when page loads
+    userDropdown.style.display = 'none';
+</script>
+
+</body>
+
 </html>
