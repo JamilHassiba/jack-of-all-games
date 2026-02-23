@@ -45,7 +45,7 @@
         </nav>
     </header>
 
-    <div id="play-card-group"> <!-- @Author Cam Clarke -->
+    <div id="play-card-group"> <!-- @Author Cam Clarke - enclosed create/join room cards in DIV -->
 
         <section class="card" id="create-room-card">
             <header class="create-card-header">
@@ -182,19 +182,28 @@
         </section>
     </div>
 
+    <!-- @Author Cam Clarke -->
+    <!-- Cards for the scoreboard tab -->
     <div id="scoreboard-card-group">
         <section class="card" id="wins-card">
             <header class="wins-card-header">
                 <h3 class="card-title">Scoreboard - Wins</h3>
             </header>
+            <div id="wins-table" class="scoreboard-table">
+
+            </div>
         </section>
 
         <section class="card" id="games-card">
             <header class="games-card-header">
                 <h3 class="card-title">Scoreboard - Games</h3>
             </header>
+            <div id="games-table" class="scoreboard-table">
+
+            </div>
         </section>
     </div>
+    <!-- End of @Author Cam Clarke -->
 </body>
 
 <script>
@@ -316,7 +325,10 @@
     // Default to 'Join Room' when page loads
     switchToJoin();
 
+
+    //
     // @Author Cam Clarke
+    // 
     const winsButton = document.querySelector('button[data-view="wins"]');
     const gamesButton = document.querySelector('button[data-view="games"]')
 
@@ -327,6 +339,8 @@
         gamesCard.style.display = 'none';
         winsCard.style.display = '';
 
+        populateWinsTable();
+
         winsButton.classList.add('active');
         gamesButton.classList.remove('active');
     }
@@ -334,6 +348,8 @@
     function switchToGames() {
         gamesCard.style.display = '';
         winsCard.style.display = 'none';
+
+        populateGamesTable();
 
         winsButton.classList.remove('active');
         gamesButton.classList.add('active');
@@ -382,7 +398,9 @@
     // Default to 'Play' when page loads
     switchToPlay();
 
+    //
     // End of @Author Cam Clarke
+    //
 
 
     /* --- User Menu Logic --- */
@@ -414,6 +432,103 @@
 
     // Hide dropdown when page loads
     userDropdown.style.display = 'none';
+
+    //
+    // @Author Cam Clarke
+    //
+
+    function populateWinsTable() {
+        const winsTable = document.getElementById("wins-table")
+
+        // Temporary until integrate with back end
+        let playerName = "player"
+        let score = 20
+        let playerCount = 10
+
+        let _html = ``
+        for (i = 0; i < playerCount; i++) {
+            let number = i + 1
+
+            // Number spacing is so that all numbers take same 
+            // width on screen for allignment purposes
+            if (number < 10) {
+                numberSpacing = "--"
+            } else if (number < 100) {
+                numberSpacing = "-"
+            } else {
+                numberSpacing = ""
+            }
+            let trophy = "&#127942" // trophy emoji
+            let trophyClass = i < 3 ? "" : "scoreboard-trophy-hidden"
+            let numberClass = i < 3 ? "scoreboard-number-top-3" : ""
+
+            let template = `
+            <div class="scoreboard-row">
+                <div class="scoreboard-lhs">
+                    <span class="${numberClass} scoreboard-number">${number}</span>
+                    <span class="scoreboard-number-spacing">${numberSpacing}</span>
+                    <span class="${trophyClass} scoreboard-trophy">${trophy}</span>
+                    <span class="scoreboard-picture"></span>
+                    <span class="scoreboard-name">${playerName}</span>
+                </div>
+                <div class="scoreboard-rhs">
+                    <span class="scoreboard-score">${score}</span>
+                </div>
+            </div>
+            `
+            _html += template
+        }
+        winsTable.innerHTML = _html
+    }
+
+    function populateGamesTable() {
+        const gamesTable = document.getElementById("games-table")
+        // Temporary until integrate with back end
+        let playerName = "player"
+        let score = 20
+        let playerCount = 10
+
+        let _html = ``
+        for (i = 0; i < playerCount; i++) {
+            let number = i + 1
+
+            // Number spacing is so that all numbers take same 
+            // width on screen for allignment purposes
+            if (number < 10) {
+                numberSpacing = "--"
+            } else if (number < 100) {
+                numberSpacing = "-"
+            } else {
+                numberSpacing = ""
+            }
+            let trophy = "&#127942" // trophy emoji
+            let trophyClass = i < 3 ? "" : "scoreboard-trophy-hidden"
+            let numberClass = i < 3 ? "scoreboard-number-top-3" : ""
+            
+            // TODO - Implement profile picture. I was thinking default bitmap?
+            let template = `
+            <div class="scoreboard-row">
+                <div class="scoreboard-lhs">
+                    <span class="${numberClass} scoreboard-number">${number}</span>
+                    <span class="scoreboard-number-spacing">${numberSpacing}</span>
+                    <span class="${trophyClass} scoreboard-trophy">${trophy}</span>
+                    <span class="scoreboard-picture"></span>
+                    <span class="scoreboard-name">${playerName}</span>
+                </div>
+                <div class="scoreboard-rhs">
+                    <span class="scoreboard-score">${score}</span>
+                </div>
+            </div>
+            `
+            _html += template
+        }
+        gamesTable.innerHTML = _html
+    }
+
+    //
+    // End of @Author Cam Clarke
+    //
+
 </script>
 
 </body>
