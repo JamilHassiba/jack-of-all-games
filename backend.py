@@ -138,7 +138,16 @@ def join_room():
 
 @app.route("/draw_card", methods=["POST", "GET"])             # apply game logic and draw a card to the user's pile 
 def draw_card():
-    pass 
+    # assumed frontend data format: 
+    # form data with attributes: none 
+    if "room" in session.keys(): 
+        room_id = session["room"]
+        if room_id in rooms.keys(): 
+            pass 
+        else: 
+            return "Room does not exist"
+    else: 
+        return "User has not joined a room!"
 
 @app.route("/play_card")             # remove a card from the player pile and add to discard pile 
 def play_card(): 
