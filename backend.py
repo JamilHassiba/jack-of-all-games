@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from flask_session import Session 
 import random
-from game import Room 
+from game import Room, Game, War  
 
 rooms = {}
 app = Flask(__name__)
@@ -124,12 +124,20 @@ def create_room():                   # frontend sends a POST request and we make
 @app.route("/join_room")             # frontend sends a room id for the user to join 
 def join_room(): 
     # assumed frontend data format: 
-    # form data with attributes: room_id 
+    # form data with attributes: room_id
     try: 
         data = request.form 
         room_id = data["room_id"]
         if room_id in rooms.keys(): 
+            room = rooms["room_id"]                                # fetch the room obj 
+            game = room.game                                       # fetch the game obj 
             session["room"] = room.id 
+            if game.player_pointer < len(game.players):            # store the player obj in session dict 
+                session["player_obj"] = game[game.player_pointer]
+                session["draw_count"] = 0                          # keep track of how many cards they have drawn in a turn 
+                game.player_pointer += 1 
+            else: 
+                return "Too many players!"
         else: 
             return "Room ID does not exist"
     except: 
@@ -143,7 +151,10 @@ def draw_card():
     if "room" in session.keys(): 
         room_id = session["room"]
         if room_id in rooms.keys(): 
-            pass 
+            room = rooms[room_id]
+            game = room.game 
+            player = session["player_obj"]
+            player.draw() 
         else: 
             return "Room does not exist"
     else: 
@@ -151,7 +162,16 @@ def draw_card():
 
 @app.route("/play_card")             # remove a card from the player pile and add to discard pile 
 def play_card(): 
-    pass 
+    # assumed frontend data format: 
+    # form data with attributes: card_code 
+    if "room" in session.keys(): 
+        room_id = session["room"]
+        if room_id in rooms.keys(): 
+            room = rooms[room_id]
+            game = room.game 
+            player = session["player_obj"]
+    else: 
+        return "User has not joined a room!" 
 
 
 # temporary routes, delete them once the code is fully production ready

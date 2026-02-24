@@ -18,6 +18,8 @@ class Game:
         self.last_action = "" 
         self.player_index = -1
         self.active_player = None 
+        self.max_draws = 1                             # modify this to change behaviour of games 
+        self.max_discards = 1 
 
 
     def update(self):
@@ -30,6 +32,8 @@ class Game:
                 self.game_turn()
             self.active_player = self.players[self.player_index]
             self.active_player.lock = False 
+            self.active_player.draw_lock = False 
+            self.active_player.discard_lock = False 
             self.lock = True 
             print("testing global locks")
             print(f"unlocked player{self.player_index}")
@@ -52,25 +56,48 @@ class Player:
         self.pile = Pile(game.deck)
         self.lock = True 
         self.score = 0
-        self.discarded = []             # for logging only. not an actual pile 
+        self.discarded = []             # for logging only. not an actual pile
+        self.draw_count = 0  
+        self.discard_count = 0 
+        self.draw_lock = False 
+        self.discard_lock = False 
     
     def draw(self, count=1):
-        if not self.lock:
-            val = self.pile.draw(count)
-            if val == None: 
-                return "End of Deck"
+        if not self.lock and not self.draw_lock:
+            if self.draw_count < self.game.max_draws: 
+                val = self.pile.draw(count)
+                if val == None: 
+                    return "End of Deck"
+                else: 
+                    self.draw_count += 1 
+                    if self.draw_count >= self.game.max_draws: 
+                        self.draw_count = 0 
+                        self.draw_lock = True 
+            else: 
+                self.draw_count = 0 
+                self.draw_lock = True 
+            
 
     def discard(self, code, discard: Pile, random=False): 
-        if not self.lock: 
-            if random:
-                card = self.pile.pop_random()
-                self.discarded.append(card)
-            else:
-                card = self.pile.pop_specific(code) 
-                discard.add(card)
-                self.discarded.append(card)
-            self.lock = True 
-            return card
+        if not self.lock and not self.discard_lock: 
+            if self.discard_count < self.game.max_discards:       # if u can discard, discard 
+                if random:
+                    card = self.pile.pop_random()                      # add the count 
+                else:
+                    card = self.pile.pop_specific(code)           
+                if card != None: 
+                    self.discard_count += 1 
+                    discard.add(card)
+                    self.discarded.append(card)
+                if self.discard_count >= self.game.max_discards: 
+                    self.discard_count = 0 
+                    self.discard_lock = True 
+                return card
+            else: 
+                self.discard_count = 0 
+                self.discard_lock = True 
+                return []
+        return []
     
     def show(self):
         return self.pile.show() 
@@ -79,6 +106,7 @@ class Room:
     def __init__(self, game_type, num_players, players=None, id=None): 
         self.game_type = game_type 
         self.players = players 
+        self.player_pointer = 0 
         if id == None: 
             length = random.randint(6, 10)
             self.id = "".join([chars[random.randint(0, len(chars)-1)] for i in range(length)])
@@ -92,6 +120,11 @@ class Room:
             # this is an example of how we would extend 
 
 class War(Game): 
+    def __init__(self, num_decks, num_players, shuffle=True, jokers=False): 
+        super().__init__(num-decks, num_players, shuffle, jokers)
+        self.max_draws = 1 
+        self.max_discards = 1 
+
     def game_turn(self): 
         values = {f'{i}':i for i in range(11)}
         values["J"] = 11 
@@ -164,9 +197,12 @@ class War(Game):
 #             break 
 #         card = player.discard("", discard, True)
 #         print(f"player{simGame.player_index}: current hand is {player.show()} and previously discarded {card['code']}")
+#         player.lock = True 
 #         simGame.lock = False                # unlock the game 
 #         sleep(0.5)
 #     simGame.game_finish()
+
+# simGame()
 
 # def WarGame(): 
 #     simGame = War(num_decks=3, num_players=4)   
