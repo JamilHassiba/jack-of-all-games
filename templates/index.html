@@ -335,7 +335,8 @@
         rooms = await getRoomsFromServer()
         if (Object.keys(rooms).length == 0) {
             let _html = `
-            <p style="justify-self: center; align-self:center">No room available to join right now - Create One!</p>
+            <div style="height:10pc;"></div>
+            <p style="justify-self: center;">No room available to join right now - Create One!</p>
             `
             room_list.innerHTML = _html
             return
