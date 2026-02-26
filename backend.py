@@ -16,7 +16,6 @@ Session(app)
 
 
 
-
 # need a secret key for the session retained data
 def db():
     # best way to operate on db with sqlite
@@ -115,7 +114,6 @@ def create_room():                   # frontend sends a POST request and we make
             return "Cannot create room - game type not supported"
         num_players = int(data["num_players"])
         room = Room(game_type, num_players)
-        session["room"] = room.id 
         rooms[room.id] = room                # store rooms in a dict for quick access 
         return f"successfully created room with id {room.id}"
     except:
@@ -127,22 +125,31 @@ def create_room():                   # frontend sends a POST request and we make
 def join_room(): 
     # assumed frontend data format: 
     # form data with attributes: room_id
-    try: 
-        data = request.form 
-        room_id = data["room_id"]
-        if room_id in rooms.keys(): 
-            room = rooms["room_id"]                                # fetch the room obj 
-            game = room.game                                       # fetch the game obj 
-            session["room"] = room.id 
-            if game.player_pointer < len(game.players):            # store the player obj in session dict 
-                session["player_obj"] = game[game.player_pointer]
-                game.player_pointer += 1 
+    #try: 
+    data = request.form 
+    room_id = data["room_id"]
+    if room_id in rooms.keys(): 
+        if not session.get("room"):  
+            if not session.get("player_obj"): 
+                room = rooms[room_id]                                # fetch the room obj 
+                game = room.game                                       # fetch the game obj 
+                if game.player_index < len(game.players):            # store the player obj in session dict 
+                    session["room"] = room.id 
+                    session["player_obj"] = game.players[game.player_index]
+                    room.player_count += 1 
+
+                    game.player_index += 1 
+                    return f"success - joined room with id {room.id}, player num {game.player_index}"
+                else: 
+                    return "The room is full"
             else: 
-                return "Too many players!"
-        else: 
-            return "Room ID does not exist"
-    except: 
-        return "error, something went wrong. source: joining room"
+                return "You are already in a room"
+        else:
+            return "You are already in a room"
+    else: 
+        return "Room ID does not exist"
+    #except: 
+        #return "error, something went wrong. source: joining room"
 
 @app.route("/search_rooms", methods=["POST", "GET"])
 def search_rooms(): 
@@ -151,7 +158,7 @@ def search_rooms():
         room.id: {
             "type": room.game_type, 
             "max_players": room.num_players, 
-            "current_players": len(room.players),
+            "current_players": room.player_count,
         }
 
         for room in [rooms[_key] for _key in rooms.keys()]
@@ -170,6 +177,7 @@ def draw_card():
             game = room.game 
             player = session["player_obj"]
             player.draw() 
+            return "tried to draw - success depends on player state"
         else: 
             return "Room does not exist"
     else: 
@@ -197,6 +205,7 @@ def frontend_room():
 
 @app.route("/test_conn")
 def ryan(): 
+    session.clear()
     return render_template("conn_test.html")
 
 @app.route("/send_data")
