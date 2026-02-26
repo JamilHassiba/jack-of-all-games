@@ -69,7 +69,7 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if "user_id" in session:
-        return redirect("/client")
+        return redirect("/")
     
     if request.method == "POST": 
         username = request.form["username"]
