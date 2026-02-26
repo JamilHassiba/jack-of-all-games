@@ -103,9 +103,10 @@ class Player:
         return self.pile.show() 
 
 class Room: 
-    def __init__(self, game_type, num_players, players=None, id=None): 
+    def __init__(self, game_type, num_players, players=[], id=None): 
         self.game_type = game_type 
         self.players = players 
+        self.num_players = num_players
         self.player_pointer = 0 
         if id == None: 
             length = random.randint(6, 10)

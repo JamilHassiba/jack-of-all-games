@@ -3,15 +3,20 @@
 <html>
     <body>
         <button id="test">Test Frontend!!</button>
-	<button id="test2">Test join room!!!!</button>
+	<button id="test2">Test create room!!!!</button>
+	<button id="test3">Test search room!!!!</button>
         <p id="output">Output text should be shown here</p>
 	<p id="output2">Response for creating a room should be shown here!!!</p> 
+	<p id="output3">Response for browsing a room should be shown here!!!</p> 
     
         <script>
             const button = document.getElementById("test"); 
 	    const button2 = document.getElementById("test2"); 
+	    const button3 = document.getElementById("test3"); 
             const output = document.getElementById("output");
 	    const output2 = document.getElementById("output2");
+	    const output3 = document.getElementById("output3"); 
+	    
 
             button.addEventListener('click', async() => {
                 const response = await fetch("/send_data");
@@ -29,6 +34,15 @@
 		});  
 		const data = await response.text();
 		output2.innerText = `Message: ${data}`;
+	    })
+
+	    button3.addEventListener('click', async() => {
+		const response = await fetch("search_rooms");
+		let data = await response.json(); 
+		data = JSON.stringify(data, null, 2); 
+		output3.innerText = `Message: ${data}`;
+	
+	
 	    })
 
         </script>
