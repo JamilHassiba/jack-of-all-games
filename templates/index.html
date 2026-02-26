@@ -355,7 +355,7 @@
     // @Author Thomas McPhee
     //
 
-    function createRoom() {
+    async function createRoom() {
         // Selected game (radio)
         const gameChoice = document.querySelector('input[name="game_choice"]:checked').value;
 
@@ -375,14 +375,22 @@
             password: isLocked ? password : null
         };
 
-        console.log(formData);
-
         // CURRENTLY HARD_CODED FOR WAR
-        SendData("/create_room", {
+        let response = await SendData("/create_room", {
             "game_type": "war",
             "num_players": 2,
         })
 
+        if (response) {
+            response = await SendData("/join_room", {
+                "room_id" : response.room_id
+            })
+
+            console.log(response)
+            if (response.startsWith("success")) {
+                window.location.href = "/room"
+            }
+        }
     }
 
     //
