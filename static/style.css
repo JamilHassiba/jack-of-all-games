@@ -374,7 +374,7 @@ body {
 }
 
 /* @Author Cam Clarke */
-.scoreboard-table {
+.scrollable-div {
     height: 25pc;
     overflow-y: scroll;
     scrollbar-width: thin;
@@ -382,7 +382,7 @@ body {
     scrollbar-color: transparent transparent;
 }
 
-.scoreboard-table:hover {
+.scrollable-div:hover {
     scrollbar-color: black transparent;
 }
 

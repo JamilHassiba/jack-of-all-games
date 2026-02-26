@@ -104,27 +104,6 @@
                 </div>
             </div>
 
-            <div class="form-section">
-                <p class="form-section-title">Players</p>
-
-                <div id="players-list">
-                    <div class="player-slot">
-                        <span class="create-label">HOST</span>
-                        <span class="player-icon">👤</span>
-                    </div>
-
-                    <div class="player-slot">
-                        <span class="player-icon">👤</span>
-                        <button class="kick-btn" type="button" title="Kick Player">×</button>
-                    </div>
-
-                    <div class="player-slot">
-                        <span>👤</span>
-                        <button class="kick-btn" type="button" title="Kick Player">×</button>
-                    </div>
-                </div>
-            </div>
-
             <button class="submit-button" onclick="createRoom()" type="submit">Create Room</button>
 
         </section>
@@ -135,7 +114,7 @@
                 <input class="join-search" type="search" id="room-search" placeholder="Search">
             </header>
 
-            <div class="room-list" id="room-list">
+            <div class="room-list scrollable-div" id="room-list">
                 <div class="room-item">
                     <div class="room-info">
                         <span class="room-type">Loading</span>
@@ -188,7 +167,7 @@
             <header class="wins-card-header">
                 <h3 class="card-title">Scoreboard - Wins</h3>
             </header>
-            <div id="wins-table" class="scoreboard-table">
+            <div id="wins-table" class="scrollable-div">
 
             </div>
         </section>
@@ -232,30 +211,11 @@
 
     const slider = document.getElementById('player-slider');
     const countDisplay = document.getElementById('player-count-display');
-    const playersList = document.getElementById('players-list');
 
     function sliderEventFunct() {
         // Update displayed player count
         const playerCount = slider.value;
         countDisplay.textContent = playerCount;
-
-        const currentSlots = playersList.children.length;
-        const difference = playerCount - currentSlots;
-
-        // Add slots if slider moved up
-        if (difference > 0) {
-            for (let i = 0; i < difference; i++) {
-                const newSlot = document.createElement('div');
-                newSlot.className = 'player-slot empty';
-                playersList.appendChild(newSlot);
-            }
-        }
-        // Remove slots if slider moved down
-        else if (difference < 0) {
-            for (let i = 0; i < Math.abs(difference); i++) {
-                playersList.removeChild(playersList.lastElementChild);
-            }
-        }
     }
 
     slider.addEventListener('input', sliderEventFunct);
@@ -275,19 +235,6 @@
         }
         else {
             passwordBox.style.display = 'none';
-        }
-    });
-
-
-    /* --- Kick Buttons Logic --- */
-
-    playersList.addEventListener('click', function (event) {
-        const clickedKick = event.target.closest('.kick-btn');
-
-        if (clickedKick) {
-            const playerSlot = clickedKick.closest('.player-slot');
-            playerSlot.className = 'player-slot empty';
-            playerSlot.innerHTML = '<div></div>';
         }
     });
 
@@ -333,7 +280,14 @@
 
     async function populateRoomList() {
         rooms = await getRoomsFromServer()
-        console.log(rooms)
+        if (Object.keys(rooms).length == 0) {
+            let _html = `
+            <div style="height:10pc;"></div>
+            <p style="justify-self: center;">No room available to join right now - Create One!</p>
+            `
+            room_list.innerHTML = _html
+            return
+        }
 
         let _html = ""
 
@@ -350,6 +304,17 @@
     }
 
     async function getRoomsFromServer() {
+        // create some rooms for test data
+        // for (let i = 0; i < 10; i++) {
+        //     const postdata = new FormData();
+        //     postdata.append("game_type", "war");
+        //     postdata.append("num_players", "5");
+        //     const response = await fetch("/create_room", {
+        //         method: "POST",
+        //         body: postdata,
+        //     });
+        // }
+
         const response = await fetch("/search_rooms");
         let data = await response.json();
         // let newdata = JSON.stringify(data, null, 2);
