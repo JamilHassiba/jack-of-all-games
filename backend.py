@@ -36,7 +36,13 @@ with db() as conn:
 @app.route('/')
 def home_page():
     server_ip = request.host_url.rstrip("/")
-    return render_template("index.html")
+
+    player = session.get("player_obj")
+    if not player:
+        return render_template("index.html")
+    else:
+        ## todo: "if game type is war, render war, else etc"
+        return render_template("war.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -98,12 +104,10 @@ def war():
 
 @app.route("/room")
 def room():
-    print("HANDLE ROOM!!!!!")
     player = session.get("player_obj")
     if not player:
-        return redirect("/") # goto login page if the user hasn't joined a room
+        return redirect("/") # goto home page if the user hasn't joined a room
     else:
-
         ## todo: "if game type is war, render war, else etc"
         return render_template("war.html")
 
