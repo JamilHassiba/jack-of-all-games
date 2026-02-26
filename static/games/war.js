@@ -92,11 +92,6 @@ async function PlayMyCard(drawDeck, fightDeck) {
 
 		// send data to server
 
-		let response = await SendData("/test_give_data", {})
-		console.log(response)
-		console.log(response["name"])
-		console.log(typeof(response))
-
 		let response2 = await SendData("/draw_card", {})
 		console.log(response2)
 
