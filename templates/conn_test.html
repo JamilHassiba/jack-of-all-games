@@ -6,20 +6,24 @@
 		<button id="test2">Test create room!!!!</button>
 		<button id="test3">Test search room!!!!</button>
 		<button id="test4">Test join room!!!!</button> 
+		<button id="test5">Test draw card!!!!</button>
         <p id="output">Output text should be shown here</p>
 		<p id="output2">Response for creating a room should be shown here!!!</p> 
 		<p id="output3">Response for browsing a room should be shown here!!!</p> 
 		<p id="output4">Response for joining a room should be shown here!!!</p>
+		<p id="output5">Response for drawing a card should be shown here!!!</p>
     
         <script>
             const button = document.getElementById("test"); 
 	    	const button2 = document.getElementById("test2"); 
 	    	const button3 = document.getElementById("test3"); 
-	    	const button4 = document.getElementById("test4"); 
+	    	const button4 = document.getElementById("test4");
+			const button5 = document.getElementById("test5"); 
             const output = document.getElementById("output");
 	    	const output2 = document.getElementById("output2");
 	    	const output3 = document.getElementById("output3"); 
 	    	const output4 = document.getElementById("output4"); 
+			const output5 = document.getElementById("output5");
 	    	let testroomid = ""; 
 	    
 
@@ -30,37 +34,42 @@
             })
 
 			button2.addEventListener('click', async() => {
-			const postdata = new FormData();
-			postdata.append("game_type", "war");
-			postdata.append("num_players", "5");
-			const response = await fetch("/create_room", {
-				method: "POST", 
-				body: postdata, 
-			});  
-			const data = await response.text();
-			output2.innerText = `Message: ${data}`;
+				const postdata = new FormData();
+				postdata.append("game_type", "war");
+				postdata.append("num_players", "5");
+				const response = await fetch("/create_room", {
+					method: "POST", 
+					body: postdata, 
+				});  
+				const data = await response.text();
+				output2.innerText = `Message: ${data}`;
 			})
 
 			button3.addEventListener('click', async() => {
-			const response = await fetch("/search_rooms");
-			let data = await response.json(); 
-			let newdata = JSON.stringify(data, null, 2); 
-			output3.innerText = `Message: ${newdata}`;
-			const keys = Object.keys(data); 
-			testroomid = keys[0];
-			console.log(testroomid); 
-		
+				const response = await fetch("/search_rooms");
+				let data = await response.json(); 
+				let newdata = JSON.stringify(data, null, 2); 
+				output3.innerText = `Message: ${newdata}`;
+				const keys = Object.keys(data); 
+				testroomid = keys[0];
+				console.log(testroomid); 
 			})
 			
 			button4.addEventListener('click', async() => {
-			const postdata = new FormData(); 
-			postdata.append("room_id", testroomid); 
-			const response = await fetch("/join_room", {
-				method: "POST", 
-				body: postdata, 
-			});
-			const data = await response.text(); 
-			output4.innerText = `Message: ${data}`;
+				const postdata = new FormData(); 
+				postdata.append("room_id", testroomid); 
+				const response = await fetch("/join_room", {
+					method: "POST", 
+					body: postdata, 
+				});
+				const data = await response.text(); 
+				output4.innerText = `Message: ${data}`;
+			})
+
+			button5.addEventListener('click', async() =>{
+				const response = await fetch("/draw_card");
+				const data = await response.text();
+				output5.innerText = `Message: ${data}`;
 			})
 
         </script>

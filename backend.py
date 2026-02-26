@@ -92,10 +92,6 @@ def login():
     
     return render_template("login.html")
 
-@app.route("/war")
-def war():
-    return render_template("war.html")
-
 @app.route("/logout")
 def logout():
     # clear session data on logout
@@ -119,37 +115,33 @@ def create_room():                   # frontend sends a POST request and we make
     except:
         return "error, something went wrong. source: creating a room" 
 
-
-
 @app.route("/join_room", methods=["POST", "GET"])             # frontend sends a room id for the user to join 
 def join_room(): 
     # assumed frontend data format: 
     # form data with attributes: room_id
-    #try: 
-    data = request.form 
-    room_id = data["room_id"]
-    if room_id in rooms.keys(): 
-        if not session.get("room"):  
-            if not session.get("player_obj"): 
-                room = rooms[room_id]                                # fetch the room obj 
-                game = room.game                                       # fetch the game obj 
-                if game.player_index < len(game.players):            # store the player obj in session dict 
-                    session["room"] = room.id 
-                    session["player_obj"] = game.players[game.player_index]
-                    room.player_count += 1 
-
-                    game.player_index += 1 
-                    return f"success - joined room with id {room.id}, player num {game.player_index}"
+    try: 
+        data = request.form 
+        room_id = data["room_id"]
+        if room_id in rooms.keys(): 
+            if not session.get("room"):  
+                if not session.get("player_obj"): 
+                    room = rooms[room_id]                                # fetch the room obj 
+                    game = room.game                                       # fetch the game obj 
+                    if room.player_count < room.num_players:            # store the player obj in session dict 
+                        session["room"] = room.id 
+                        session["player_obj"] = game.players[game.player_index]
+                        room.player_count += 1 
+                        return f"success - joined room with id {room.id}, player num {game.player_index}"
+                    else: 
+                        return "The room is full"
                 else: 
-                    return "The room is full"
-            else: 
+                    return "You are already in a room"
+            else:
                 return "You are already in a room"
-        else:
-            return "You are already in a room"
-    else: 
-        return "Room ID does not exist"
-    #except: 
-        #return "error, something went wrong. source: joining room"
+        else: 
+            return "Room ID does not exist"
+    except: 
+        return "error, something went wrong. source: joining room"
 
 @app.route("/search_rooms", methods=["POST", "GET"])
 def search_rooms(): 
@@ -176,8 +168,11 @@ def draw_card():
             room = rooms[room_id]
             game = room.game 
             player = session["player_obj"]
-            player.draw() 
-            return "tried to draw - success depends on player state"
+            result = player.draw() 
+            if result[0] == "successfully drawn card":
+                return f"successfully drawn card(s): {result[1]}"
+            else: 
+                return result
         else: 
             return "Room does not exist"
     else: 
@@ -187,18 +182,48 @@ def draw_card():
 def play_card(): 
     # assumed frontend data format: 
     # form data with attributes: card_code 
+    data = request.form
+    if "card_code" in data.keys():  
+        card = data["card_code"]    
+        if "room" in session.keys(): 
+            room_id = session["room"]
+            if room_id in rooms.keys(): 
+                room = rooms[room_id]
+                game = room.game 
+                player = session["player_obj"]
+                status = player.discard(card)
+                if status == []: 
+                    return "Either player is locked or exceeded max discard count"
+                else: 
+                    return f"Discarded the card {status}"
+        else: 
+            return "User has not joined a room!"
+    else: 
+        return "Not provided with card code - cannot discard"
+
+@app.route("/room")
+def frontend_room(): 
     if "room" in session.keys(): 
         room_id = session["room"]
         if room_id in rooms.keys(): 
             room = rooms[room_id]
-            game = room.game 
-            player = session["player_obj"]
-    else: 
-        return "User has not joined a room!"
+            if room.game_type == "war": 
+                return render_template("war.html")
+            elif room.game_type == "poker": 
+                pass                                      # extension example 
 
-@app.route("/room")
-def frontend_room(): 
-    pass  
+@app.route("/update")
+def game_update():
+    if "room" in session.keys(): 
+        room_id = session["room"]
+        if room_id in rooms.keys(): 
+            room = rooms[room_id]                         # may require additional validation if game needs to force a sequence of choices from the player before it can be updated
+            status = room.game.update()
+            return status 
+        else: 
+            return "room does not exist"
+    else: 
+        return "you haven't joined a room"
 
 
 # temporary routes, delete them once the code is fully production ready
@@ -217,6 +242,10 @@ def send_data():
     else: 
         return jsonify({'username': "UNKNOWN USER"})
 
+
+@app.route("/war")
+def war():
+    return render_template("war.html")
 
     
 

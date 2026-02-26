@@ -1,7 +1,7 @@
 from api import Deck, Pile
 from time import sleep
 import random
-chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-+_="
+chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
 class Game: 
     def __init__(self, num_decks, num_players, shuffle=True, jokers=False): 
@@ -20,6 +20,7 @@ class Game:
         self.active_player = None 
         self.max_draws = 1                             # modify this to change behaviour of games 
         self.max_discards = 1 
+        self.discard_pile = self.deck.make_pile()
 
 
     def update(self):
@@ -37,6 +38,9 @@ class Game:
             self.lock = True 
             print("testing global locks")
             print(f"unlocked player{self.player_index}")
+            return "successfully updated game"
+        else: 
+            return f"the game is locked - cannot update until player {self.player_index} has finished their turn"
     
     def game_turn(self): 
         # use polymorphism to define new game_turn
@@ -54,7 +58,7 @@ class Player:
     def __init__(self, game: Game): 
         self.game = game
         self.pile = Pile(game.deck)
-        self.lock = True 
+        self.lock = True
         self.score = 0
         self.discarded = []             # for logging only. not an actual pile
         self.draw_count = 0  
@@ -73,12 +77,16 @@ class Player:
                     if self.draw_count >= self.game.max_draws: 
                         self.draw_count = 0 
                         self.draw_lock = True 
+                    return "successfully drawn card", val
             else: 
                 self.draw_count = 0 
                 self.draw_lock = True 
+                return "exceeded maximum draw count - draw is locked"
+        else: 
+            return "either the user is locked or draw count exceeded"
             
 
-    def discard(self, code, discard: Pile, random=False): 
+    def discard(self, code, random=False): 
         if not self.lock and not self.discard_lock: 
             if self.discard_count < self.game.max_discards:       # if u can discard, discard 
                 if random:
@@ -87,7 +95,7 @@ class Player:
                     card = self.pile.pop_specific(code)           
                 if card != None: 
                     self.discard_count += 1 
-                    discard.add(card)
+                    self.game.discard_pile.add(card)
                     self.discarded.append(card)
                 if self.discard_count >= self.game.max_discards: 
                     self.discard_count = 0 
@@ -107,9 +115,8 @@ class Room:
         self.game_type = game_type 
         self.player_count = 0 
         self.num_players = num_players
-        self.player_pointer = 0 
         if id == None: 
-            length = random.randint(6, 10)
+            length = random.randint(4, 6)
             self.id = "".join([chars[random.randint(0, len(chars)-1)] for i in range(length)])
         else: 
             self.id = id
@@ -190,7 +197,6 @@ class War(Game):
 
 # def simGame():
 #     simGame = Game(num_decks=1, num_players=2)
-#     discard = simGame.deck.make_pile()
 #     # model a game where players draw two cards and discard a random one 
 #     while True:  
 #         simGame.update()
@@ -198,7 +204,7 @@ class War(Game):
 #         val = player.draw(2)
 #         if val == "End of Deck": 
 #             break 
-#         card = player.discard("", discard, True)
+#         card = player.discard("", True)
 #         print(f"player{simGame.player_index}: current hand is {player.show()} and previously discarded {card['code']}")
 #         player.lock = True 
 #         simGame.lock = False                # unlock the game 
@@ -209,14 +215,13 @@ class War(Game):
 
 # def WarGame(): 
 #     simGame = War(num_decks=3, num_players=4)   
-#     discard = simGame.deck.make_pile()
 #     while True: 
 #         simGame.update()
 #         player = simGame.active_player
 #         val = player.draw(3)
 #         if val == "End of Deck": 
 #             break 
-#         card = player.discard("", discard, True)
+#         card = player.discard("", True)
 #         print(f"player{simGame.player_index}: Discarded {card['code']}")
 #         simGame.lock = False 
 #         sleep(0.001)
