@@ -137,15 +137,15 @@
                 <input class="join-search" type="search" id="room-search" placeholder="Search">
             </header>
 
-            <div class="room-list">
+            <div class="room-list" id="room-list">
                 <div class="room-item">
                     <div class="room-info">
-                        <span class="room-type">Crazy Eights</span>
-                        <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
+                        <span class="room-type">Loading</span>
+                        <span class="card-room-id">| <span id="room-id">Loading</span></span>
                     </div>
                     <div class="room-icons">
-                        <span class="player-slot mini">👤</span>
-                        <span class="player-slot mini">👤</span>
+                        <span class="player-slot empty mini"></span>
+                        <span class="player-slot empty mini"></span>
                         <span class="player-slot empty mini"></span>
                         <span class="player-slot empty mini"></span>
                     </div>
@@ -154,11 +154,12 @@
 
                 <div class="room-item">
                     <div class="room-info">
-                        <span class="room-type">War</span>
-                        <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
+                        <span class="room-type">Loading</span>
+                        <span class="card-room-id">| <span id="room-id">Loading</span></span>
                     </div>
                     <div class="room-icons">
-                        <span class="player-slot mini">👤</span>
+                        <span class="player-slot empty mini"></span>
+                        <span class="player-slot empty mini"></span>
                         <span class="player-slot empty mini"></span>
                         <span class="player-slot empty mini"></span>
                     </div>
@@ -167,13 +168,13 @@
 
                 <div class="room-item">
                     <div class="room-info">
-                        <span class="room-type">Poker</span>
-                        <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
+                        <span class="room-type">Loading</span>
+                        <span class="card-room-id">| <span id="room-id">Loading</span></span>
                     </div>
                     <div class="room-icons">
-                        <span class="player-slot mini">👤</span>
-                        <span class="player-slot mini">👤</span>
-                        <span class="player-slot mini">👤</span>
+                        <span class="player-slot empty mini"></span>
+                        <span class="player-slot empty mini"></span>
+                        <span class="player-slot empty mini"></span>
                         <span class="player-slot empty mini"></span>
                     </div>
                     <button class="join-button" type="button">Join</button>
@@ -272,6 +273,75 @@
     });
 
 
+    //
+    // @Author Cam Clarke
+    // functionality for showing rooms in the "join room" tab
+    const room_list = document.getElementById("room-list")
+
+    function createRoomItem(ROOM_TYPE, ROOM_ID, player_count) {
+        PLAYER_1_SLOT = player_count >= 1 ? "" : "empty"
+        PLAYER_2_SLOT = player_count >= 2 ? "" : "empty"
+        PLAYER_3_SLOT = player_count >= 3 ? "" : "empty"
+        PLAYER_4_SLOT = player_count >= 4 ? "" : "empty"
+
+        PLAYER_1_ICON = player_count >= 1 ? "\u{1F464}" : ""
+        PLAYER_2_ICON = player_count >= 2 ? "\u{1F464}" : ""
+        PLAYER_3_ICON = player_count >= 3 ? "\u{1F464}" : ""
+        PLAYER_4_ICON = player_count >= 4 ? "\u{1F464}" : ""
+
+        let template = `
+        <div class="room-item">
+            <div class="room-info">
+            <span class="room-type">${ROOM_TYPE}</span>
+            <span class="card-room-id">
+                 |
+                <span class="room-id">${ROOM_ID}</span>
+            </span>
+            </div>
+            <div class="room-icons">
+                <span class="player-slot ${PLAYER_1_SLOT} mini">${PLAYER_1_ICON}</span>
+                <span class="player-slot ${PLAYER_2_SLOT} mini">${PLAYER_2_ICON}</span>
+                <span class="player-slot ${PLAYER_3_SLOT} mini">${PLAYER_3_ICON}</span>
+                <span class="player-slot ${PLAYER_4_SLOT} mini">${PLAYER_4_ICON}</span>
+            </div>
+            <button class="join-button" type="button">Join</button>
+        </div>
+        `
+
+        return template
+    }
+
+
+    async function populateRoomList() {
+        rooms = await getRoomsFromServer()
+        console.log(rooms)
+
+        let _html = ""
+
+        for (let key in rooms) {
+            let players = rooms[key]["current_players"]
+            let max_players = rooms[key]["max_players"]
+            let _room_type = rooms[key]["type"]
+            let room_type = _room_type.charAt(0).toUpperCase() + _room_type.slice(1)
+            let room_item = createRoomItem(room_type, key, players)
+            _html += room_item
+        }
+        
+        room_list.innerHTML = _html
+    }
+
+    async function getRoomsFromServer() {
+        const response = await fetch("/search_rooms");
+        let data = await response.json();
+        // let newdata = JSON.stringify(data, null, 2);
+        return data
+    }
+
+
+    // 
+    // End of @Author Cam Clarke
+    //
+
     /* --- Join Room Search Logic --- */
 
     const searchBar = document.getElementById('room-search');
@@ -306,6 +376,8 @@
     function switchToJoin() {
         createCard.style.display = 'none';
         joinCard.style.display = '';
+
+        populateRoomList()
 
         joinButton.classList.add('active');
         createButton.classList.remove('active');
@@ -358,7 +430,7 @@
     winsButton.addEventListener('click', switchToWins);
     gamesButton.addEventListener('click', switchToGames);
 
-    // Default to 'Wins' when game loads
+    // Default to 'Wins' when page loads
     switchToWins()
 
     const playButton = document.querySelector('button[data-view="play"]');
@@ -504,7 +576,7 @@
             let trophy = "&#127942" // trophy emoji
             let trophyClass = i < 3 ? "" : "scoreboard-trophy-hidden"
             let numberClass = i < 3 ? "scoreboard-number-top-3" : ""
-            
+
             // TODO - Implement profile picture. I was thinking default bitmap?
             let template = `
             <div class="scoreboard-row">
