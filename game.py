@@ -1,6 +1,7 @@
 from api import Deck, Pile
 from time import sleep
 import random
+from string import ascii_uppercase # added by thomas - used for room code generation
 chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-+_="
 
 class Game: 
@@ -109,8 +110,13 @@ class Room:
         self.num_players = num_players
         self.player_pointer = 0 
         if id == None: 
-            length = random.randint(6, 10)
-            self.id = "".join([chars[random.randint(0, len(chars)-1)] for i in range(length)])
+            #length = random.randint(6, 10)
+            #self.id = "".join([chars[random.randint(0, len(chars)-1)] for i in range(length)])
+
+            # id generation modified by thomas mcphee
+            length = 4
+            self.id = "".join([ascii_uppercase[random.randint(0, len(ascii_uppercase)-1)] for i in range(length)])
+
         else: 
             self.id = id
 

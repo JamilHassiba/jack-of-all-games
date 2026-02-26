@@ -96,6 +96,16 @@ def login():
 def war():
     return render_template("war.html")
 
+@app.route("/room")
+def room():
+    player = session.get("player_obj")
+    if not player:
+        return redirect("/") # goto login page if the user hasn't joined a room
+    else:
+
+        ## todo: "if game type is war, render war, else etc"
+        return render_template("war.html")
+
 @app.route("/logout")
 def logout():
     # clear session data on logout
