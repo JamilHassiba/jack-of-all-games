@@ -117,11 +117,13 @@ class Room:
             self.game = War(4, num_players)
         elif game_type == "poker": 
             pass 
-            # this is an example of how we would extend 
+            # this is an example of how we would extend
+        else:
+            pass  
 
 class War(Game): 
     def __init__(self, num_decks, num_players, shuffle=True, jokers=False): 
-        super().__init__(num-decks, num_players, shuffle, jokers)
+        super().__init__(num_decks, num_players, shuffle, jokers)
         self.max_draws = 1 
         self.max_discards = 1 
 

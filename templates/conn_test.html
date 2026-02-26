@@ -3,17 +3,33 @@
 <html>
     <body>
         <button id="test">Test Frontend!!</button>
+	<button id="test2">Test join room!!!!</button>
         <p id="output">Output text should be shown here</p>
+	<p id="output2">Response for creating a room should be shown here!!!</p> 
     
         <script>
             const button = document.getElementById("test"); 
+	    const button2 = document.getElementById("test2"); 
             const output = document.getElementById("output");
+	    const output2 = document.getElementById("output2");
 
             button.addEventListener('click', async() => {
                 const response = await fetch("/send_data");
                 const data = await response.json(); 
                 output.innerText =  `Message: ${data.username}`;
             })
+
+	    button2.addEventListener('click', async() => {
+		const postdata = new FormData();
+		postdata.append("game_type", "war");
+		postdata.append("num_players", "5");
+		const response = await fetch("/create_room", {
+			method: "POST", 
+			body: postdata, 
+		});  
+		const data = await response.text();
+		output2.innerText = `Message: ${data}`;
+	    })
 
         </script>
 

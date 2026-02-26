@@ -108,20 +108,22 @@ def create_room():                   # frontend sends a POST request and we make
     # assumed frontend data format: 
     # form data with attributes: game_type, num_players 
     # frontend people, pls follow register.html example of sending form data 
-    try: 
-        data = request.form 
-        game_type = data["game_type"]
-        num_players = ["num_players"]
-        room = Room(game_type, num_players)
-        session["room"] = room.id 
-        rooms[room.id] = room                # store rooms in a dict for quick access 
-        return 200 
-    except:
-        return "error, something went wrong. source: creating a room" 
+    #try: 
+    data = request.form 
+    game_type = data["game_type"]
+    if not game_type in ["war",]: 
+        return "Cannot create room - game type not supported"
+    num_players = int(data["num_players"])
+    room = Room(game_type, num_players)
+    session["room"] = room.id 
+    rooms[room.id] = room                # store rooms in a dict for quick access 
+    return f"successfully created room with id {room.id}"
+    #except:
+        #return "error, something went wrong. source: creating a room" 
 
 
 
-@app.route("/join_room")             # frontend sends a room id for the user to join 
+@app.route("/join_room", methods=["POST", "GET"])             # frontend sends a room id for the user to join 
 def join_room(): 
     # assumed frontend data format: 
     # form data with attributes: room_id
@@ -134,7 +136,6 @@ def join_room():
             session["room"] = room.id 
             if game.player_pointer < len(game.players):            # store the player obj in session dict 
                 session["player_obj"] = game[game.player_pointer]
-                session["draw_count"] = 0                          # keep track of how many cards they have drawn in a turn 
                 game.player_pointer += 1 
             else: 
                 return "Too many players!"
@@ -142,6 +143,19 @@ def join_room():
             return "Room ID does not exist"
     except: 
         return "error, something went wrong. source: joining room"
+
+@app.route("/search_rooms", methods=["POST", "GET"])
+def search_rooms(): 
+    data = {
+        room.id: {
+            "type": room.game_type, 
+            "max_players": room.num_players, 
+            "current_players": len(room.players),
+        }
+
+        for room in rooms 
+    }
+    return jsonify(data)
      
 
 @app.route("/draw_card", methods=["POST", "GET"])             # apply game logic and draw a card to the user's pile 
