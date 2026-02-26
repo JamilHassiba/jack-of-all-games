@@ -341,7 +341,9 @@
         });
 
         const data = await response.text()
-        console.log(room_id, data)
+        if (data.startsWith("success")) {
+            window.location.href = "/room"
+        }
     }
 
 

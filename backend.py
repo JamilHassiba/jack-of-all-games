@@ -98,6 +98,7 @@ def war():
 
 @app.route("/room")
 def room():
+    print("HANDLE ROOM!!!!!")
     player = session.get("player_obj")
     if not player:
         return redirect("/") # goto login page if the user hasn't joined a room
@@ -207,27 +208,7 @@ def play_card():
     else: 
         return "User has not joined a room!"
 
-@app.route("/room")
-def frontend_room(): 
-    pass  
-
-
 # temporary routes, delete them once the code is fully production ready
-
-@app.route("/test_conn")
-def ryan(): 
-    session.clear()
-    return render_template("conn_test.html")
-
-@app.route("/send_data")
-def send_data(): 
-    username = session.get("username")
-    print(username)
-    if username: 
-        return jsonify({'username': session["username"]})
-    else: 
-        return jsonify({'username': "UNKNOWN USER"})
-
 
     
 
