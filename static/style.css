@@ -8,10 +8,10 @@ body {
 }
 
 .user-profile-container {
-    position: absolute; 
+    position: absolute;
     top: 30px;
     left: 20px;
-    width: fit-content; 
+    width: fit-content;
 }
 
 .user-profile {
@@ -31,13 +31,13 @@ body {
 
 .user-dropdown-div {
     position: absolute;
-    top: 100%; 
+    top: 100%;
     left: 0;
     margin-top: 3px;
     background-color: white;
     padding: 8px;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     border: 1px solid #d9dadd;
     min-width: 140px;
 }
@@ -85,10 +85,10 @@ body {
     font-size: 16px;
     padding: 12px 24px;
     border-radius: 12px;
-    
+
     background-color: #e5e7eb;
     color: #374151;
-    
+
     margin: 0 5px;
 }
 
@@ -175,12 +175,12 @@ body {
     background-color: #f9fafb;
 }
 
-.game-option input[type="radio"]:checked + .game-button-ish {
+.game-option input[type="radio"]:checked+.game-button-ish {
     background-color: #4f86ed;
     color: white;
 }
 
-.game-option input[type="radio"]:checked:hover + .game-button-ish {
+.game-option input[type="radio"]:checked:hover+.game-button-ish {
     background-color: #3b70d6;
 }
 
@@ -247,7 +247,7 @@ body {
     height: 40px;
     border: 2px solid #7e8083ca;
     border-radius: 50%;
-    
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -277,7 +277,7 @@ body {
     border-radius: 50%;
     border-color: transparent;
     cursor: pointer;
-    
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -302,7 +302,7 @@ body {
 }
 
 .submit-button:hover {
-    background-color: #1fb054; 
+    background-color: #1fb054;
 }
 
 .join-card-header {
@@ -372,3 +372,52 @@ body {
     background-color: #f3f4f6;
     border-color: #9ca3af;
 }
+
+/* @Author Cam Clarke */
+.scoreboard-table {
+    height: 25pc;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-gutter: stable both-edges; /* reserves space for scrollbar to avoid layout shift */
+    scrollbar-color: transparent transparent;
+}
+
+.scoreboard-table:hover {
+    scrollbar-color: black transparent;
+}
+
+.scoreboard-row {
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
+    font-weight: 1.3em;
+    /* border: #1f2937 1px solid; */
+}
+
+.scoreboard-number {
+    color: #737b8c;
+    font-weight: bold;
+    padding-right: 20px;
+}
+
+.scoreboard-number-top-3 {
+    color: #3c82dd;
+}
+
+.scoreboard-number-spacing {
+    visibility: hidden;
+}
+
+.scoreboard-trophy {
+    padding-right: 20px;
+}
+
+.scoreboard-trophy-hidden {
+    visibility: hidden;
+}
+
+.scoreboard-score {
+    font-weight: bold;
+}
+
+/* end of @Author Cam Clarke */
