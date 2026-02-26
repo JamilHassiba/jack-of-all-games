@@ -108,18 +108,18 @@ def create_room():                   # frontend sends a POST request and we make
     # assumed frontend data format: 
     # form data with attributes: game_type, num_players 
     # frontend people, pls follow register.html example of sending form data 
-    #try: 
-    data = request.form 
-    game_type = data["game_type"]
-    if not game_type in ["war",]: 
-        return "Cannot create room - game type not supported"
-    num_players = int(data["num_players"])
-    room = Room(game_type, num_players)
-    session["room"] = room.id 
-    rooms[room.id] = room                # store rooms in a dict for quick access 
-    return f"successfully created room with id {room.id}"
-    #except:
-        #return "error, something went wrong. source: creating a room" 
+    try: 
+        data = request.form 
+        game_type = data["game_type"]
+        if not game_type in ["war",]: 
+            return "Cannot create room - game type not supported"
+        num_players = int(data["num_players"])
+        room = Room(game_type, num_players)
+        session["room"] = room.id 
+        rooms[room.id] = room                # store rooms in a dict for quick access 
+        return f"successfully created room with id {room.id}"
+    except:
+        return "error, something went wrong. source: creating a room" 
 
 
 
@@ -146,6 +146,7 @@ def join_room():
 
 @app.route("/search_rooms", methods=["POST", "GET"])
 def search_rooms(): 
+    print([room for room in rooms])
     data = {
         room.id: {
             "type": room.game_type, 
@@ -153,11 +154,11 @@ def search_rooms():
             "current_players": len(room.players),
         }
 
-        for room in rooms 
+        for room in [rooms[_key] for _key in rooms.keys()]
     }
     return jsonify(data)
-     
 
+     
 @app.route("/draw_card", methods=["POST", "GET"])             # apply game logic and draw a card to the user's pile 
 def draw_card():
     # assumed frontend data format: 
@@ -185,7 +186,11 @@ def play_card():
             game = room.game 
             player = session["player_obj"]
     else: 
-        return "User has not joined a room!" 
+        return "User has not joined a room!"
+
+@app.route("/room")
+def frontend_room(): 
+    pass  
 
 
 # temporary routes, delete them once the code is fully production ready
