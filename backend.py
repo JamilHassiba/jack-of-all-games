@@ -127,22 +127,23 @@ def create_room():                   # frontend sends a POST request and we make
 def join_room(): 
     # assumed frontend data format: 
     # form data with attributes: room_id
-    try: 
-        data = request.form 
-        room_id = data["room_id"]
-        if room_id in rooms.keys(): 
-            room = rooms["room_id"]                                # fetch the room obj 
-            game = room.game                                       # fetch the game obj 
-            session["room"] = room.id 
-            if game.player_pointer < len(game.players):            # store the player obj in session dict 
-                session["player_obj"] = game[game.player_pointer]
-                game.player_pointer += 1 
-            else: 
-                return "Too many players!"
+    #try: 
+    data = request.form 
+    room_id = data["room_id"]
+    if room_id in rooms.keys(): 
+        room = rooms[room_id]                                # fetch the room obj 
+        game = room.game                                       # fetch the game obj 
+        session["room"] = room.id 
+        if game.player_index < len(game.players):            # store the player obj in session dict 
+            session["player_obj"] = game.players[game.player_index]
+            game.player_index += 1 
+            return "success"
         else: 
-            return "Room ID does not exist"
-    except: 
-        return "error, something went wrong. source: joining room"
+            return "Too many players!"
+    else: 
+        return "Room ID does not exist"
+    #except: 
+        #return "error, something went wrong. source: joining room"
 
 @app.route("/search_rooms", methods=["POST", "GET"])
 def search_rooms(): 
@@ -170,6 +171,7 @@ def draw_card():
             game = room.game 
             player = session["player_obj"]
             player.draw() 
+            return "tried to draw - success depends on player state"
         else: 
             return "Room does not exist"
     else: 
