@@ -53,81 +53,58 @@
                 <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
             </header>
 
-            <form method="POST">
-                <div class="form-section">
-                    <p class="form-section-title">Game</p>
+            <div class="form-section">
+                <p class="form-section-title">Game</p>
 
-                    <div class="game-grid">
-                        <label class="game-option">
-                            <input type="radio" name="game_choice" value="poker" checked>
-                            <span class="game-button-ish">Poker</span>
-                        </label>
+                <div class="game-grid">
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="poker" checked>
+                        <span class="game-button-ish">Poker</span>
+                    </label>
 
-                        <label class="game-option">
-                            <input type="radio" name="game_choice" value="war">
-                            <span class="game-button-ish">War</span>
-                        </label>
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="war">
+                        <span class="game-button-ish">War</span>
+                    </label>
 
-                        <label class="game-option">
-                            <input type="radio" name="game_choice" value="blackjack">
-                            <span class="game-button-ish">Blackjack</span>
-                        </label>
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="blackjack">
+                        <span class="game-button-ish">Blackjack</span>
+                    </label>
 
-                        <label class="game-option">
-                            <input type="radio" name="game_choice" value="crazy8">
-                            <span class="game-button-ish">Crazy Eights</span>
-                        </label>
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="crazy8">
+                        <span class="game-button-ish">Crazy Eights</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <p class="form-section-title">Configure</p>
+
+                <div class="configure-row">
+                    <span class="configure-label">Player Count</span>
+
+                    <div class="configure-slider-container">
+                        <input class="configure-slider" type="range" id="player-slider" name="player_count" min="2"
+                            max="8" value="4">
+                        <span id="player-count-display">4</span>
                     </div>
                 </div>
 
-                <div class="form-section">
-                    <p class="form-section-title">Configure</p>
+                <div class="configure-row">
+                    <span class="configure-label">Locked (Not Implemented)</span>
 
-                    <div class="configure-row">
-                        <span class="configure-label">Player Count</span>
+                    <div class="configure-locking-container">
+                        <input class="password-box" id="password-input" type="password" name="room_password"
+                            placeholder="Password">
 
-                        <div class="configure-slider-container">
-                            <input class="configure-slider" type="range" id="player-slider" name="player_count" min="2"
-                                max="8" value="4">
-                            <span id="player-count-display">4</span>
-                        </div>
-                    </div>
-
-                    <div class="configure-row">
-                        <span class="configure-label">Locked</span>
-
-                        <div class="configure-locking-container">
-                            <input class="password-box" id="password-input" type="password" name="room_password"
-                                placeholder="Password">
-
-                            <input class="lock-checkbox" type="checkbox" id="lock-toggle" name="is_locked">
-                        </div>
+                        <input class="lock-checkbox" type="checkbox" id="lock-toggle" name="is_locked" disabled> <!-- @Cam "disabled because backend currently doesn't support this"-->
                     </div>
                 </div>
+            </div>
 
-                <div class="form-section">
-                    <p class="form-section-title">Players</p>
-
-                    <div id="players-list">
-                        <div class="player-slot">
-                            <span class="create-label">HOST</span>
-                            <span class="player-icon">👤</span>
-                        </div>
-
-                        <div class="player-slot">
-                            <span class="player-icon">👤</span>
-                            <button class="kick-btn" type="button" title="Kick Player">×</button>
-                        </div>
-
-                        <div class="player-slot">
-                            <span>👤</span>
-                            <button class="kick-btn" type="button" title="Kick Player">×</button>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="submit-button" type="submit">Create Room</button>
-            </form>
+            <button class="submit-button" onclick="createRoom()" type="submit">Create Room</button>
 
         </section>
 
@@ -137,15 +114,15 @@
                 <input class="join-search" type="search" id="room-search" placeholder="Search">
             </header>
 
-            <div class="room-list">
+            <div class="room-list scrollable-div" id="room-list">
                 <div class="room-item">
                     <div class="room-info">
-                        <span class="room-type">Crazy Eights</span>
-                        <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
+                        <span class="room-type">Loading</span>
+                        <span class="card-room-id">| <span id="room-id">Loading</span></span>
                     </div>
                     <div class="room-icons">
-                        <span class="player-slot mini">👤</span>
-                        <span class="player-slot mini">👤</span>
+                        <span class="player-slot empty mini"></span>
+                        <span class="player-slot empty mini"></span>
                         <span class="player-slot empty mini"></span>
                         <span class="player-slot empty mini"></span>
                     </div>
@@ -154,11 +131,12 @@
 
                 <div class="room-item">
                     <div class="room-info">
-                        <span class="room-type">War</span>
-                        <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
+                        <span class="room-type">Loading</span>
+                        <span class="card-room-id">| <span id="room-id">Loading</span></span>
                     </div>
                     <div class="room-icons">
-                        <span class="player-slot mini">👤</span>
+                        <span class="player-slot empty mini"></span>
+                        <span class="player-slot empty mini"></span>
                         <span class="player-slot empty mini"></span>
                         <span class="player-slot empty mini"></span>
                     </div>
@@ -167,13 +145,13 @@
 
                 <div class="room-item">
                     <div class="room-info">
-                        <span class="room-type">Poker</span>
-                        <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
+                        <span class="room-type">Loading</span>
+                        <span class="card-room-id">| <span id="room-id">Loading</span></span>
                     </div>
                     <div class="room-icons">
-                        <span class="player-slot mini">👤</span>
-                        <span class="player-slot mini">👤</span>
-                        <span class="player-slot mini">👤</span>
+                        <span class="player-slot empty mini"></span>
+                        <span class="player-slot empty mini"></span>
+                        <span class="player-slot empty mini"></span>
                         <span class="player-slot empty mini"></span>
                     </div>
                     <button class="join-button" type="button">Join</button>
@@ -189,7 +167,7 @@
             <header class="wins-card-header">
                 <h3 class="card-title">Scoreboard - Wins</h3>
             </header>
-            <div id="wins-table" class="scoreboard-table">
+            <div id="wins-table" class="scrollable-div">
 
             </div>
         </section>
@@ -198,7 +176,7 @@
             <header class="games-card-header">
                 <h3 class="card-title">Scoreboard - Games</h3>
             </header>
-            <div id="games-table" class="scoreboard-table">
+            <div id="games-table" class="scrollable-div">
 
             </div>
         </section>
@@ -208,34 +186,36 @@
 
 <script>
 
+    // @Author Thomas McPhee
+    // This is very bad, it is copied from utils.js
+    // Ideally we should be importing frmo utils.js, but given this js is in <script> - we can't do that
+    async function SendData(route, data) {
+        const formData = new FormData();
+
+        for (const [key, value] of Object.entries(data)) {
+            formData.append(key, value);
+        }
+
+        let response = await fetch(route, { method: "POST", body: formData })
+        response = await response.text()
+
+        try {
+            return await JSON.parse(response)
+        } catch (error) {
+
+            return await response
+        }
+    }
+
     /* --- Slider Logic --- */
 
     const slider = document.getElementById('player-slider');
     const countDisplay = document.getElementById('player-count-display');
-    const playersList = document.getElementById('players-list');
 
     function sliderEventFunct() {
         // Update displayed player count
         const playerCount = slider.value;
         countDisplay.textContent = playerCount;
-
-        const currentSlots = playersList.children.length;
-        const difference = playerCount - currentSlots;
-
-        // Add slots if slider moved up
-        if (difference > 0) {
-            for (let i = 0; i < difference; i++) {
-                const newSlot = document.createElement('div');
-                newSlot.className = 'player-slot empty';
-                playersList.appendChild(newSlot);
-            }
-        }
-        // Remove slots if slider moved down
-        else if (difference < 0) {
-            for (let i = 0; i < Math.abs(difference); i++) {
-                playersList.removeChild(playersList.lastElementChild);
-            }
-        }
     }
 
     slider.addEventListener('input', sliderEventFunct);
@@ -259,18 +239,162 @@
     });
 
 
-    /* --- Kick Buttons Logic --- */
+    //
+    // @Author Cam Clarke
+    // functionality for showing rooms in the "join room" tab
+    const room_list = document.getElementById("room-list")
 
-    playersList.addEventListener('click', function (event) {
-        const clickedKick = event.target.closest('.kick-btn');
+    function createRoomItem(ROOM_TYPE, ROOM_ID, player_count) {
+        PLAYER_1_SLOT = player_count >= 1 ? "" : "empty"
+        PLAYER_2_SLOT = player_count >= 2 ? "" : "empty"
+        PLAYER_3_SLOT = player_count >= 3 ? "" : "empty"
+        PLAYER_4_SLOT = player_count >= 4 ? "" : "empty"
 
-        if (clickedKick) {
-            const playerSlot = clickedKick.closest('.player-slot');
-            playerSlot.className = 'player-slot empty';
-            playerSlot.innerHTML = '<div></div>';
+        PLAYER_1_ICON = player_count >= 1 ? "\u{1F464}" : ""
+        PLAYER_2_ICON = player_count >= 2 ? "\u{1F464}" : ""
+        PLAYER_3_ICON = player_count >= 3 ? "\u{1F464}" : ""
+        PLAYER_4_ICON = player_count >= 4 ? "\u{1F464}" : ""
+
+        let template = `
+        <div class="room-item" data-room-id="${ROOM_ID}">
+            <div class="room-info">
+            <span class="room-type">${ROOM_TYPE}</span>
+            <span class="card-room-id">
+                 |
+                <span class="room-id">${ROOM_ID}</span>
+            </span>
+            </div>
+            <div class="room-icons">
+                <span class="player-slot ${PLAYER_1_SLOT} mini">${PLAYER_1_ICON}</span>
+                <span class="player-slot ${PLAYER_2_SLOT} mini">${PLAYER_2_ICON}</span>
+                <span class="player-slot ${PLAYER_3_SLOT} mini">${PLAYER_3_ICON}</span>
+                <span class="player-slot ${PLAYER_4_SLOT} mini">${PLAYER_4_ICON}</span>
+            </div>
+            <button class="join-button" type="button">Join</button>
+        </div>
+        `
+
+        return template
+    }
+
+
+    async function populateRoomList() {
+        rooms = await getRoomsFromServer()
+        if (Object.keys(rooms).length == 0) {
+            let _html = `
+            <div style="height:10pc;"></div>
+            <p style="justify-self: center;">No room available to join right now - Create One!</p>
+            `
+            room_list.innerHTML = _html
+            return
         }
-    });
 
+        let _html = ""
+
+        for (let key in rooms) {
+            let players = rooms[key]["current_players"]
+            let max_players = rooms[key]["max_players"]
+            let _room_type = rooms[key]["type"]
+            let room_type = _room_type.charAt(0).toUpperCase() + _room_type.slice(1)
+            let room_item = createRoomItem(room_type, key, players)
+            _html += room_item
+        }
+
+        room_list.innerHTML = _html
+
+        room_list.addEventListener("click", (event) => {
+            const btn = event.target.closest(".join-button")
+            if (!btn) { return }
+
+            const roomItem = btn.closest(".room-item")
+            const roomID = roomItem.dataset.roomId
+
+            joinRoom(roomID)
+        })
+    }
+
+    async function getRoomsFromServer() {
+        // create some rooms for test data
+        // for (let i = 0; i < 10; i++) {
+        //     const postdata = new FormData();
+        //     postdata.append("game_type", "war");
+        //     postdata.append("num_players", "5");
+        //     const response = await fetch("/create_room", {
+        //         method: "POST",
+        //         body: postdata,
+        //     });
+        // }
+
+        const response = await fetch("/search_rooms");
+        let data = await response.json();
+        // let newdata = JSON.stringify(data, null, 2);
+        return data
+    }
+
+
+    async function joinRoom(room_id) {
+        const postdata = new FormData();
+        postdata.append("room_id", room_id);
+        const response = await fetch("/join_room", {
+            method: "POST",
+            body: postdata,
+        });
+
+        const data = await response.text()
+        if (data.startsWith("success")) {
+            window.location.href = "/room"
+        }
+    }
+
+
+    // 
+    // End of @Author Cam Clarke
+    //
+
+    //
+    // @Author Thomas McPhee
+    //
+
+    async function createRoom() {
+        // Selected game (radio)
+        const gameChoice = document.querySelector('input[name="game_choice"]:checked').value;
+
+        // Player count (range slider)
+        const playerCount = document.getElementById('player-slider').value;
+
+        // Lock checkbox
+        const isLocked = document.getElementById('lock-toggle').checked;
+
+        // Password (only relevant if locked)
+        const password = document.getElementById('password-input').value;
+
+        const formData = {
+            game_type: gameChoice,
+            num_players: Number(playerCount),
+            // isLocked,
+            // password: isLocked ? password : null
+        };
+
+        // CURRENTLY HARD_CODED FOR WAR
+        let response = await SendData("/create_room", formData)
+
+        console.log(formData);
+        
+        if (response) {
+            response = await SendData("/join_room", {
+                "room_id" : response.room_id
+            })
+
+            console.log(response)
+            if (response.startsWith("success")) {
+                window.location.href = "/room"
+            }
+        }
+    }
+
+    //
+    // End of @author Thomas McPhee
+    //
 
     /* --- Join Room Search Logic --- */
 
@@ -306,6 +430,8 @@
     function switchToJoin() {
         createCard.style.display = 'none';
         joinCard.style.display = '';
+
+        populateRoomList()
 
         joinButton.classList.add('active');
         createButton.classList.remove('active');
@@ -358,7 +484,7 @@
     winsButton.addEventListener('click', switchToWins);
     gamesButton.addEventListener('click', switchToGames);
 
-    // Default to 'Wins' when game loads
+    // Default to 'Wins' when page loads
     switchToWins()
 
     const playButton = document.querySelector('button[data-view="play"]');
@@ -426,7 +552,7 @@
 
     if (signOutButton) {
         signOutButton.addEventListener('click', function () {
-            window.location.replace("\\login");
+            window.location.replace("\\logout");
         });
     }
 
@@ -504,7 +630,7 @@
             let trophy = "&#127942" // trophy emoji
             let trophyClass = i < 3 ? "" : "scoreboard-trophy-hidden"
             let numberClass = i < 3 ? "scoreboard-number-top-3" : ""
-            
+
             // TODO - Implement profile picture. I was thinking default bitmap?
             let template = `
             <div class="scoreboard-row">
