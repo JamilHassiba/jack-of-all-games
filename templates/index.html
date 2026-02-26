@@ -193,10 +193,10 @@
         const formData = new FormData();
 
         for (const [key, value] of Object.entries(data)) {
-          formData.append(key, value);
+            formData.append(key, value);
         }
 
-        let response = await fetch(route, {method: "POST", body: formData})
+        let response = await fetch(route, { method: "POST", body: formData })
         response = await response.text()
 
         try {
@@ -256,7 +256,7 @@
         PLAYER_4_ICON = player_count >= 4 ? "\u{1F464}" : ""
 
         let template = `
-        <div class="room-item">
+        <div class="room-item" data-room-id="${ROOM_ID}">
             <div class="room-info">
             <span class="room-type">${ROOM_TYPE}</span>
             <span class="card-room-id">
@@ -301,6 +301,16 @@
         }
 
         room_list.innerHTML = _html
+
+        room_list.addEventListener("click", (event) => {
+            const btn = event.target.closest(".join-button")
+            if (!btn) { return }
+
+            const roomItem = btn.closest(".room-item")
+            const roomID = roomItem.dataset.roomId
+
+            joinRoom(roomID)
+        })
     }
 
     async function getRoomsFromServer() {
@@ -319,6 +329,19 @@
         let data = await response.json();
         // let newdata = JSON.stringify(data, null, 2);
         return data
+    }
+
+
+    async function joinRoom(room_id) {
+        const postdata = new FormData();
+        postdata.append("room_id", room_id);
+        const response = await fetch("/join_room", {
+            method: "POST",
+            body: postdata,
+        });
+
+        const data = await response.text()
+        console.log(room_id, data)
     }
 
 
@@ -354,8 +377,8 @@
 
         // CURRENTLY HARD_CODED FOR WAR
         SendData("/create_room", {
-            "game_type" : "war",
-            "num_players" : 2,
+            "game_type": "war",
+            "num_players": 2,
         })
 
     }

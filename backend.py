@@ -139,6 +139,7 @@ def join_room():
                     room.player_count += 1 
 
                     game.player_index += 1 
+                    print(game.players)
                     return f"success - joined room with id {room.id}, player num {game.player_index}"
                 else: 
                     return "The room is full"
