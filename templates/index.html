@@ -125,7 +125,7 @@
                 </div>
             </div>
 
-            <button class="submit-button" type="submit">Create Room</button>
+            <button class="submit-button" onclick="createRoom()" type="submit">Create Room</button>
 
         </section>
 
@@ -338,6 +338,37 @@
 
     // 
     // End of @Author Cam Clarke
+    //
+
+    //
+    // @Author Thomas McPhee
+    //
+
+    function createRoom() {
+        // Selected game (radio)
+        const gameChoice = document.querySelector('input[name="game_choice"]:checked').value;
+
+        // Player count (range slider)
+        const playerCount = document.getElementById('player-slider').value;
+
+        // Lock checkbox
+        const isLocked = document.getElementById('lock-toggle').checked;
+
+        // Password (only relevant if locked)
+        const password = document.getElementById('password-input').value;
+
+        const formData = {
+            gameChoice,
+            playerCount: Number(playerCount),
+            isLocked,
+            password: isLocked ? password : null
+        };
+
+        console.log(formData);
+    }
+
+    //
+    // End of @author Thomas McPhee
     //
 
     /* --- Join Room Search Logic --- */
