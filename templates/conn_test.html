@@ -27,11 +27,15 @@
 	    	let testroomid = ""; 
 	    
 
-            button.addEventListener('click', async() => {
-                const response = await fetch("/send_data");
-                const data = await response.json(); 
-                output.innerText =  `Message: ${data.username}`;
-            })
+<body>
+	<button id="test">Test Frontend!!</button>
+	<button id="test2">Test create room!!!!</button>
+	<button id="test3">Test search room!!!!</button>
+	<button id="test4">Test join room!!!!</button>
+	<p id="output">Output text should be shown here</p>
+	<p id="output2">Response for creating a room should be shown here!!!</p>
+	<p id="output3">Response for browsing a room should be shown here!!!</p>
+	<p id="output4">Response for joining a room should be shown here!!!</p>
 
 			button2.addEventListener('click', async() => {
 				const postdata = new FormData();
@@ -72,9 +76,9 @@
 				output5.innerText = `Message: ${data}`;
 			})
 
-        </script>
+	</script>
 
-    </body>
+</body>
 
 
 </html>

@@ -16,7 +16,7 @@ class Game:
         self.lock = False 
         self.last_player = None 
         self.last_action = "" 
-        self.player_index = -1
+        self.player_index = 0
         self.active_player = None 
         self.max_draws = 1                             # modify this to change behaviour of games 
         self.max_discards = 1 

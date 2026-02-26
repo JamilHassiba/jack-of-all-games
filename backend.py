@@ -36,7 +36,13 @@ with db() as conn:
 @app.route('/')
 def home_page():
     server_ip = request.host_url.rstrip("/")
-    return render_template("index.html")
+
+    player = session.get("player_obj")
+    if not player:
+        return render_template("index.html")
+    else:
+        ## todo: "if game type is war, render war, else etc"
+        return render_template("war.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -111,7 +117,13 @@ def create_room():                   # frontend sends a POST request and we make
         num_players = int(data["num_players"])
         room = Room(game_type, num_players)
         rooms[room.id] = room                # store rooms in a dict for quick access 
-        return f"successfully created room with id {room.id}"
+        #return f"successfully created room with id {room.id}"
+        # edited Thomas McPhee - returns JSON instead of a string
+        return {
+            "success" : True,
+            "message" : "room successfully created",
+            "room_id" : room.id,
+        } 
     except:
         return "error, something went wrong. source: creating a room" 
 
