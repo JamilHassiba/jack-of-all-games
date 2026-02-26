@@ -135,7 +135,7 @@
                 <input class="join-search" type="search" id="room-search" placeholder="Search">
             </header>
 
-            <div class="room-list" id="room-list">
+            <div class="room-list scrollable-div" id="room-list">
                 <div class="room-item">
                     <div class="room-info">
                         <span class="room-type">Loading</span>
@@ -188,7 +188,7 @@
             <header class="wins-card-header">
                 <h3 class="card-title">Scoreboard - Wins</h3>
             </header>
-            <div id="wins-table" class="scoreboard-table">
+            <div id="wins-table" class="scrollable-div">
 
             </div>
         </section>
@@ -312,7 +312,13 @@
 
     async function populateRoomList() {
         rooms = await getRoomsFromServer()
-        console.log(rooms)
+        if (Object.keys(rooms).length == 0) {
+            let _html = `
+            <p style="justify-self: center; align-self:center">No room available to join right now - Create One!</p>
+            `
+            room_list.innerHTML = _html
+            return
+        }
 
         let _html = ""
 
@@ -329,6 +335,17 @@
     }
 
     async function getRoomsFromServer() {
+        // create some rooms for test data
+        // for (let i = 0; i < 10; i++) {
+        //     const postdata = new FormData();
+        //     postdata.append("game_type", "war");
+        //     postdata.append("num_players", "5");
+        //     const response = await fetch("/create_room", {
+        //         method: "POST",
+        //         body: postdata,
+        //     });
+        // }
+
         const response = await fetch("/search_rooms");
         let data = await response.json();
         // let newdata = JSON.stringify(data, null, 2);
