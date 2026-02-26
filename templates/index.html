@@ -53,81 +53,79 @@
                 <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
             </header>
 
-            <form method="POST">
-                <div class="form-section">
-                    <p class="form-section-title">Game</p>
+            <div class="form-section">
+                <p class="form-section-title">Game</p>
 
-                    <div class="game-grid">
-                        <label class="game-option">
-                            <input type="radio" name="game_choice" value="poker" checked>
-                            <span class="game-button-ish">Poker</span>
-                        </label>
+                <div class="game-grid">
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="poker" checked>
+                        <span class="game-button-ish">Poker</span>
+                    </label>
 
-                        <label class="game-option">
-                            <input type="radio" name="game_choice" value="war">
-                            <span class="game-button-ish">War</span>
-                        </label>
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="war">
+                        <span class="game-button-ish">War</span>
+                    </label>
 
-                        <label class="game-option">
-                            <input type="radio" name="game_choice" value="blackjack">
-                            <span class="game-button-ish">Blackjack</span>
-                        </label>
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="blackjack">
+                        <span class="game-button-ish">Blackjack</span>
+                    </label>
 
-                        <label class="game-option">
-                            <input type="radio" name="game_choice" value="crazy8">
-                            <span class="game-button-ish">Crazy Eights</span>
-                        </label>
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="crazy8">
+                        <span class="game-button-ish">Crazy Eights</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <p class="form-section-title">Configure</p>
+
+                <div class="configure-row">
+                    <span class="configure-label">Player Count</span>
+
+                    <div class="configure-slider-container">
+                        <input class="configure-slider" type="range" id="player-slider" name="player_count" min="2"
+                            max="8" value="4">
+                        <span id="player-count-display">4</span>
                     </div>
                 </div>
 
-                <div class="form-section">
-                    <p class="form-section-title">Configure</p>
+                <div class="configure-row">
+                    <span class="configure-label">Locked</span>
 
-                    <div class="configure-row">
-                        <span class="configure-label">Player Count</span>
+                    <div class="configure-locking-container">
+                        <input class="password-box" id="password-input" type="password" name="room_password"
+                            placeholder="Password">
 
-                        <div class="configure-slider-container">
-                            <input class="configure-slider" type="range" id="player-slider" name="player_count" min="2"
-                                max="8" value="4">
-                            <span id="player-count-display">4</span>
-                        </div>
-                    </div>
-
-                    <div class="configure-row">
-                        <span class="configure-label">Locked</span>
-
-                        <div class="configure-locking-container">
-                            <input class="password-box" id="password-input" type="password" name="room_password"
-                                placeholder="Password">
-
-                            <input class="lock-checkbox" type="checkbox" id="lock-toggle" name="is_locked">
-                        </div>
+                        <input class="lock-checkbox" type="checkbox" id="lock-toggle" name="is_locked">
                     </div>
                 </div>
+            </div>
 
-                <div class="form-section">
-                    <p class="form-section-title">Players</p>
+            <div class="form-section">
+                <p class="form-section-title">Players</p>
 
-                    <div id="players-list">
-                        <div class="player-slot">
-                            <span class="create-label">HOST</span>
-                            <span class="player-icon">👤</span>
-                        </div>
+                <div id="players-list">
+                    <div class="player-slot">
+                        <span class="create-label">HOST</span>
+                        <span class="player-icon">👤</span>
+                    </div>
 
-                        <div class="player-slot">
-                            <span class="player-icon">👤</span>
-                            <button class="kick-btn" type="button" title="Kick Player">×</button>
-                        </div>
+                    <div class="player-slot">
+                        <span class="player-icon">👤</span>
+                        <button class="kick-btn" type="button" title="Kick Player">×</button>
+                    </div>
 
-                        <div class="player-slot">
-                            <span>👤</span>
-                            <button class="kick-btn" type="button" title="Kick Player">×</button>
-                        </div>
+                    <div class="player-slot">
+                        <span>👤</span>
+                        <button class="kick-btn" type="button" title="Kick Player">×</button>
                     </div>
                 </div>
+            </div>
 
-                <button class="submit-button" type="submit">Create Room</button>
-            </form>
+            <button class="submit-button" type="submit">Create Room</button>
 
         </section>
 
@@ -326,7 +324,7 @@
             let room_item = createRoomItem(room_type, key, players)
             _html += room_item
         }
-        
+
         room_list.innerHTML = _html
     }
 
