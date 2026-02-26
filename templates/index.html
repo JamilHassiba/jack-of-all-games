@@ -93,13 +93,13 @@
                 </div>
 
                 <div class="configure-row">
-                    <span class="configure-label">Locked</span>
+                    <span class="configure-label">Locked (Not Implemented)</span>
 
                     <div class="configure-locking-container">
                         <input class="password-box" id="password-input" type="password" name="room_password"
                             placeholder="Password">
 
-                        <input class="lock-checkbox" type="checkbox" id="lock-toggle" name="is_locked">
+                        <input class="lock-checkbox" type="checkbox" id="lock-toggle" name="is_locked" disabled> <!-- @Cam "disabled because backend currently doesn't support this"-->
                     </div>
                 </div>
             </div>
@@ -176,7 +176,7 @@
             <header class="games-card-header">
                 <h3 class="card-title">Scoreboard - Games</h3>
             </header>
-            <div id="games-table" class="scoreboard-table">
+            <div id="games-table" class="scrollable-div">
 
             </div>
         </section>
@@ -369,18 +369,17 @@
         const password = document.getElementById('password-input').value;
 
         const formData = {
-            gameChoice,
-            playerCount: Number(playerCount),
-            isLocked,
-            password: isLocked ? password : null
+            game_type: gameChoice,
+            num_players: Number(playerCount),
+            // isLocked,
+            // password: isLocked ? password : null
         };
 
         // CURRENTLY HARD_CODED FOR WAR
-        let response = await SendData("/create_room", {
-            "game_type": "war",
-            "num_players": 2,
-        })
+        let response = await SendData("/create_room", formData)
 
+        console.log(formData);
+        
         if (response) {
             response = await SendData("/join_room", {
                 "room_id" : response.room_id
