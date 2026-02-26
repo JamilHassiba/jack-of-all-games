@@ -1,5 +1,6 @@
 import {Card} from '../card.js';
-import {Deck} from '../deck.js'
+import {Deck} from '../deck.js';
+import {SendData} from '../utils.js';
 //import { io } from "https://cdn.socket.io/4.6.1/socket.io.esm.min.js";
 
 console.log("war.js running...");
@@ -80,7 +81,7 @@ function main(card_jsons) {
 	}, 1000)
 }
 
-function PlayMyCard(drawDeck, fightDeck) {
+async function PlayMyCard(drawDeck, fightDeck) {
 	if (haveplayedcard && false) {return;}
 
 	let card = drawDeck.getTopCard();
@@ -90,13 +91,22 @@ function PlayMyCard(drawDeck, fightDeck) {
 		fightDeck.pushCard(card);
 
 		// send data to server
-		const formData = new FormData();
-		formData.append("card", "5H");
-		console.log(formData);
 
-		fetch("/draw_card", {
-			method: "POST",
-			body: formData,
-		})
+		let response = await SendData("/test_give_data", {})
+		console.log(response)
+		console.log(response["name"])
+		console.log(typeof(response))
+
+		let response2 = await SendData("/draw_card", {})
+		console.log(response2)
+
+		// const formData = new FormData();
+		// formData.append("card", "5H");
+		// console.log(formData);
+
+		// fetch("/draw_card", {
+		// 	method: "POST",
+		// 	body: formData,
+		// })
 	}
 }
