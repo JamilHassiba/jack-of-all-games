@@ -40,7 +40,7 @@
 			button2.addEventListener('click', async() => {
 				const postdata = new FormData();
 				postdata.append("game_type", "war");
-				postdata.append("num_players", "5");
+				postdata.append("num_players", "2");
 				const response = await fetch("/create_room", {
 					method: "POST", 
 					body: postdata, 
