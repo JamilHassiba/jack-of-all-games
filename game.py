@@ -58,7 +58,7 @@ class Player:
     def __init__(self, game: Game): 
         self.game = game
         self.pile = Pile(game.deck)
-        self.lock = False                # temp unlock for testing
+        self.lock = True
         self.score = 0
         self.discarded = []             # for logging only. not an actual pile
         self.draw_count = 0  
