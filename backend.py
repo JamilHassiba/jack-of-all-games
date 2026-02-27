@@ -35,6 +35,7 @@ with db() as conn:
 
 @app.route('/')
 def home_page():
+    session.clear()                               # temporarily used for conn_test
     server_ip = request.host_url.rstrip("/")
 
     player = session.get("player_obj")
@@ -232,14 +233,19 @@ def game_update():
 
 @app.route("/get_hand")
 def get_hand(): 
-    pass 
+    if "room" in session.keys(): 
+        room_id = session["room"]
+        if room_id in rooms.keys(): 
+            room = rooms[room_id]
+            game = room.game 
+            player = game.players[session["player_index"]]
+            return player.show()
 
 
 # temporary routes, delete them once the code is fully production ready
 
 @app.route("/test_conn")
 def ryan(): 
-    session.clear()
     return render_template("conn_test.html")
 
 @app.route("/send_data")

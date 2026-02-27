@@ -10,7 +10,8 @@
 		<button id="test6">Test play card!!!!</button>
 		Please enter the card code here: 
 		<input type="text" id="card">
-		<button id="test7">Test game update</button>
+		<button id="test7">Test game update!!!!</button>
+		<button id="test8">Test show hand!!!!</button>
         <p id="output">Output text should be shown here</p>
 		<p id="output2">Response for creating a room should be shown here!!!</p> 
 		<p id="output3">Response for browsing a room should be shown here!!!</p> 
@@ -18,6 +19,7 @@
 		<p id="output5">Response for drawing a card should be shown here!!!</p>
 		<p id="output6">Response for playing a card should be shown here!!!</p>
 		<p id="output7">Response for game update should be shown here!!!</p>
+		<p id="output8">Response for showing hand should be shown here!!!</p>
     
         <script>
             const button = document.getElementById("test"); 
@@ -27,6 +29,7 @@
 			const button5 = document.getElementById("test5"); 
 			const button6 = document.getElementById("test6");
 			const button7 = document.getElementById("test7"); 
+			const button8 = document.getElementById("test8"); 
 			const card_field = document.getElementById("card");
             const output = document.getElementById("output");
 	    	const output2 = document.getElementById("output2");
@@ -35,6 +38,7 @@
 			const output5 = document.getElementById("output5");
 			const output6 = document.getElementById("output6");
 			const output7 = document.getElementById("output7"); 
+			const output8 = document.getElementById("output8"); 
 	    	let testroomid = ""; 
 
 			button2.addEventListener('click', async() => {
@@ -92,6 +96,12 @@
 				const response = await fetch("/update");
 				const data = await response.text(); 
 				output7.innerText = `Message: ${data}`;
+			})
+
+			button8.addEventListener('click', async() => {
+				const response = await fetch("/get_hand");
+				const data = await response.text(); 
+				output8.innerText = `Message: ${data}`;
 			})
 	</script>
 
