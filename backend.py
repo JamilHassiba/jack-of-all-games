@@ -129,14 +129,14 @@ def join_room():
         room_id = data["room_id"]
         if room_id in rooms.keys(): 
             if not session.get("room"):  
-                if not session.get("player_obj"): 
+                if not session.get("player_index"): 
                     room = rooms[room_id]                                # fetch the room obj 
                     game = room.game                                       # fetch the game obj 
                     if room.player_count < room.num_players:            # store the player obj in session dict 
                         session["room"] = room.id 
-                        session["player_obj"] = game.players[game.player_index]
+                        session["player_index"] = room.player_count
                         room.player_count += 1 
-                        return f"success - joined room with id {room.id}, player num {game.player_index}"
+                        return f"success - joined room with id {room.id}, player num {session['player_index']}"
                     else: 
                         return "The room is full"
                 else: 
@@ -172,12 +172,12 @@ def draw_card():
         if room_id in rooms.keys(): 
             room = rooms[room_id]
             game = room.game 
-            player = session["player_obj"]
+            player = game.players[session["player_index"]]
             result = player.draw() 
             if result[0] == "successfully drawn card":
                 return f"successfully drawn card(s): {result[1]}"
             else: 
-                return result
+                return result + " locked: " + str(player.lock)
         else: 
             return "Room does not exist"
     else: 
@@ -195,7 +195,7 @@ def play_card():
             if room_id in rooms.keys(): 
                 room = rooms[room_id]
                 game = room.game 
-                player = session["player_obj"]
+                player = game.players[session["player_index"]]
                 status = player.discard(card)
                 if status == []: 
                     return "Either player is locked or exceeded max discard count"
@@ -229,6 +229,10 @@ def game_update():
             return "room does not exist"
     else: 
         return "you haven't joined a room"
+
+@app.route("/get_hand")
+def get_hand(): 
+    pass 
 
 
 # temporary routes, delete them once the code is fully production ready

@@ -16,7 +16,7 @@ class Game:
         self.lock = False 
         self.last_player = None 
         self.last_action = "" 
-        self.player_index = 0
+        self.player_index = -1
         self.active_player = None 
         self.max_draws = 1                             # modify this to change behaviour of games 
         self.max_discards = 1 
@@ -38,7 +38,7 @@ class Game:
             self.lock = True 
             print("testing global locks")
             print(f"unlocked player{self.player_index}")
-            return "successfully updated game"
+            return f"successfully updated game - unlocked player {self.player_index}"
         else: 
             return f"the game is locked - cannot update until player {self.player_index} has finished their turn"
     
@@ -71,18 +71,22 @@ class Player:
             if self.draw_count < self.game.max_draws: 
                 val = self.pile.draw(count)
                 if val == None: 
+                    self.check_end_turn()
                     return "End of Deck"
                 else: 
                     self.draw_count += 1 
                     if self.draw_count >= self.game.max_draws: 
                         self.draw_count = 0 
                         self.draw_lock = True 
+                    self.check_end_turn()
                     return "successfully drawn card", val
             else: 
                 self.draw_count = 0 
                 self.draw_lock = True 
+                self.check_end_turn()
                 return "exceeded maximum draw count - draw is locked"
         else: 
+            self.check_end_turn()
             return "either the user is locked or draw count exceeded"
             
 
@@ -100,12 +104,25 @@ class Player:
                 if self.discard_count >= self.game.max_discards: 
                     self.discard_count = 0 
                     self.discard_lock = True 
+                self.check_end_turn()
                 return card
             else: 
                 self.discard_count = 0 
                 self.discard_lock = True 
+                self.check_end_turn()
                 return []
+        self.check_end_turn()
         return []
+    
+    def check_end_turn(self): 
+        if self.discard_lock and self.draw_lock and not self.lock: 
+            self.lock = True 
+            self.discard_lock = False 
+            self.draw_lock = False 
+            self.discard_count = 0 
+            self.draw_count = 0 
+            self.game.lock = False 
+            self.game.update()
     
     def show(self):
         return self.pile.show() 
