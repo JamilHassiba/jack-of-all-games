@@ -7,11 +7,15 @@
 		<button id="test3">Test search room!!!!</button>
 		<button id="test4">Test join room!!!!</button> 
 		<button id="test5">Test draw card!!!!</button>
+		<button id="test6">Test play card!!!!</button>
+		Please enter the card code here: 
+		<input type="text" id="card">
         <p id="output">Output text should be shown here</p>
 		<p id="output2">Response for creating a room should be shown here!!!</p> 
 		<p id="output3">Response for browsing a room should be shown here!!!</p> 
 		<p id="output4">Response for joining a room should be shown here!!!</p>
 		<p id="output5">Response for drawing a card should be shown here!!!</p>
+		<p id="output6">Response for playing a card should be shown here!!!</p>
     
         <script>
             const button = document.getElementById("test"); 
@@ -19,11 +23,14 @@
 	    	const button3 = document.getElementById("test3"); 
 	    	const button4 = document.getElementById("test4");
 			const button5 = document.getElementById("test5"); 
+			const button6 = document.getElementById("test6");
+			const card_field = document.getElementById("card");
             const output = document.getElementById("output");
 	    	const output2 = document.getElementById("output2");
 	    	const output3 = document.getElementById("output3"); 
 	    	const output4 = document.getElementById("output4"); 
 			const output5 = document.getElementById("output5");
+			const output6 = document.getElementById("output6");
 	    	let testroomid = ""; 
 
 			button2.addEventListener('click', async() => {
@@ -65,6 +72,17 @@
 				output5.innerText = `Message: ${data}`;
 			})
 
+			button6.addEventListener('click', async() => {
+				const postdata = new FormData(); 
+				const card_code = card_field.value;
+				postdata.append("card_code", card_code); 
+				const response = await fetch("/play_card", {
+					method: "POST", 
+					body: postdata, 
+				})
+				const data = await response.text(); 
+				output6.innerText = `Message: ${data}`;
+			})
 	</script>
 
 </body>

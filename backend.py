@@ -41,8 +41,7 @@ def home_page():
     if not player:
         return render_template("index.html")
     else:
-        ## todo: "if game type is war, render war, else etc"
-        return render_template("war.html")
+        redirect("/room")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -184,7 +183,7 @@ def draw_card():
     else: 
         return "User has not joined a room!"
 
-@app.route("/play_card")             # remove a card from the player pile and add to discard pile 
+@app.route("/play_card", methods=["POST", "GET"])             # remove a card from the player pile and add to discard pile 
 def play_card(): 
     # assumed frontend data format: 
     # form data with attributes: card_code 
