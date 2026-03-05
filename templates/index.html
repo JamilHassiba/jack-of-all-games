@@ -24,7 +24,6 @@
 
         <div class="brand">
             <h1>Jack Of All Games</h1>
-            <img>
         </div>
 
         <nav class="nav-menu" id="main-nav">
@@ -87,7 +86,7 @@
 
                     <div class="configure-slider-container">
                         <input class="configure-slider" type="range" id="player-slider" name="player_count" min="2"
-                            max="8" value="4">
+                            max="4" value="4">
                         <span id="player-count-display">4</span>
                     </div>
                 </div>
@@ -122,10 +121,10 @@
                         <span class="card-room-id">| <span id="room-id">Loading</span></span>
                     </div>
                     <div class="room-icons">
-                        <span class="player-slot empty mini"></span>
-                        <span class="player-slot empty mini"></span>
-                        <span class="player-slot empty mini"></span>
-                        <span class="player-slot empty mini"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
                     </div>
                     <button class="join-button" type="button">Join</button>
                 </div>
@@ -136,10 +135,10 @@
                         <span class="card-room-id">| <span id="room-id">Loading</span></span>
                     </div>
                     <div class="room-icons">
-                        <span class="player-slot empty mini"></span>
-                        <span class="player-slot empty mini"></span>
-                        <span class="player-slot empty mini"></span>
-                        <span class="player-slot empty mini"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
                     </div>
                     <button class="join-button" type="button">Join</button>
                 </div>
@@ -150,10 +149,10 @@
                         <span class="card-room-id">| <span id="room-id">Loading</span></span>
                     </div>
                     <div class="room-icons">
-                        <span class="player-slot empty mini"></span>
-                        <span class="player-slot empty mini"></span>
-                        <span class="player-slot empty mini"></span>
-                        <span class="player-slot empty mini"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
                     </div>
                     <button class="join-button" type="button">Join</button>
                 </div>
@@ -245,16 +244,19 @@
     // functionality for showing rooms in the "join room" tab
     const room_list = document.getElementById("room-list")
 
-    function createRoomItem(ROOM_TYPE, ROOM_ID, player_count) {
-        PLAYER_1_SLOT = player_count >= 1 ? "" : "empty"
-        PLAYER_2_SLOT = player_count >= 2 ? "" : "empty"
-        PLAYER_3_SLOT = player_count >= 3 ? "" : "empty"
-        PLAYER_4_SLOT = player_count >= 4 ? "" : "empty"
+    function createRoomItem(ROOM_TYPE, ROOM_ID, max_players, current_players) {
 
-        PLAYER_1_ICON = player_count >= 1 ? "\u{1F464}" : ""
-        PLAYER_2_ICON = player_count >= 2 ? "\u{1F464}" : ""
-        PLAYER_3_ICON = player_count >= 3 ? "\u{1F464}" : ""
-        PLAYER_4_ICON = player_count >= 4 ? "\u{1F464}" : ""
+        let player_slots_html = '';
+        let player_icons = [];
+
+        for (let i = 0; i < max_players; i++) {
+            if (i < current_players) {
+                player_slots_html += '<span class="player-slot">\u{1F464}</span>';
+            }
+            else {
+                player_slots_html += '<span class="player-slot empty"></span>';
+            }
+        }
 
         let template = `
         <div class="room-item" data-room-id="${ROOM_ID}">
@@ -266,10 +268,7 @@
             </span>
             </div>
             <div class="room-icons">
-                <span class="player-slot ${PLAYER_1_SLOT} mini">${PLAYER_1_ICON}</span>
-                <span class="player-slot ${PLAYER_2_SLOT} mini">${PLAYER_2_ICON}</span>
-                <span class="player-slot ${PLAYER_3_SLOT} mini">${PLAYER_3_ICON}</span>
-                <span class="player-slot ${PLAYER_4_SLOT} mini">${PLAYER_4_ICON}</span>
+                ${player_slots_html}
             </div>
             <button class="join-button" type="button">Join</button>
         </div>
@@ -293,11 +292,11 @@
         let _html = ""
 
         for (let key in rooms) {
-            let players = rooms[key]["current_players"]
+            let current_players = rooms[key]["current_players"]
             let max_players = rooms[key]["max_players"]
             let _room_type = rooms[key]["type"]
             let room_type = _room_type.charAt(0).toUpperCase() + _room_type.slice(1)
-            let room_item = createRoomItem(room_type, key, players)
+            let room_item = createRoomItem(room_type, key, max_players, current_players)
             _html += room_item
         }
 

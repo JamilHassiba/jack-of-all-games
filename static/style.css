@@ -243,16 +243,17 @@ body {
 }
 
 .player-slot {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     border: 2px solid #7e8083ca;
     border-radius: 50%;
+    background-color: #f3f4f6;
+    font-size: 22px;
 
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    font-size: 25px;
 }
 
 .player-slot.empty {
@@ -349,13 +350,6 @@ body {
     display: flex;
     gap: 6px;
     margin-right: 20px;
-}
-
-.player-slot.mini {
-    width: 35px;
-    height: 35px;
-    font-size: 22px;
-    background-color: #f3f4f6;
 }
 
 .join-button {
