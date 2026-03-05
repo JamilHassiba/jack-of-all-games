@@ -4,8 +4,11 @@ import sqlite3
 from flask_session import Session 
 import random
 from game import Room, Game, War  
+from flask_socketio import emit, join_room, leave_room, SocketIO
 
 rooms = {}
+socketio_connected = {} 
+socketio_rooms = []                                        # WARNING: NO GARBAGE COLLECTION - POTENTIAL MEMORY LEAK 
 app = Flask(__name__)
 app.secret_key = "jack_of_all_games_secret_key"
 app.config['SECRET_KEY'] = 'jack_of_all_games_secret_key'  
@@ -13,7 +16,7 @@ app.config['SESSION_TYPE'] = 'filesystem'                  # sessions stored ser
 app.config['SESSION_PERMANENT'] = True                     # persistent sessions even after browser closes 
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600            # keep session on server for x seconds  
 Session(app)
-
+socketio = SocketIO(app)
 
 
 # need a secret key for the session retained data
@@ -177,6 +180,9 @@ def draw_card():
             result = player.draw() 
             if result[0] == "successfully drawn card":
                 return f"successfully drawn card(s): {result[1]}"
+            elif result[0] == "End of Deck": 
+                game.game_finish()
+                return f"The game has finished"
             else: 
                 return result + " locked: " + str(player.lock)
         else: 
@@ -241,6 +247,43 @@ def get_hand():
             player = game.players[session["player_index"]]
             return player.show()
 
+@app.route("/get_roomid")
+def get_roomid(): 
+    if "room" in session.keys(): 
+        room_id = session["room"]
+        if room_id in rooms.keys(): 
+            return room_id 
+
+#socketio routes 
+@socketio.on("connect")
+def socket_connect():         # currently assumes the user is already in a room 
+    if "room" in session.keys():
+        room_id = session["room"]
+        if room_id in rooms.keys(): 
+            room = rooms[room_id]
+            sid = request.sid 
+            socketio_connected[sid] = room        # save the room 
+            if room_id not in socketio_rooms:
+                join_room(room_id)
+                socketio_rooms.append(room_id) 
+            else: 
+                join_room(room_id)
+    else: 
+        print("Tried to connect frontend room - user is not in a backend room yet")
+
+@socketio.on("disconnect")
+def socket_disconnect(): 
+    if "room" in session.keys(): 
+        room_id = session["room"]
+        if room_id in rooms.keys(): 
+            room = rooms[room_id]
+            sid = request.sid 
+            socketio_connected.pop(sid)
+            leave_room(room_id)                 # WARNING: NO GARBAGE COLLECTION FOR SOCKETIO_ROOM
+    else: 
+        print("Tried to disconnect frontend room - user is not in a backend room yet")
+
+
 # temporary routes, delete them once the code is fully production ready
 
 @app.route("/test_conn")
@@ -255,6 +298,7 @@ def send_data():
         return jsonify({'username': session["username"]})
     else: 
         return jsonify({'username': "UNKNOWN USER"})
+
 
 
 @app.route("/war")

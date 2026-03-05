@@ -79,21 +79,20 @@ export class Deck {
 		return this.cards.pop();
 	}
 
-	// currently only deals between 2 players, TODO: deal between n players
-	dealCards() {
-		let my_cards = [];
-		let their_cards = [];
+	dealCards(n) {
+
+		let player_cards = [];
+		for (let i = 0; i < n; i++) {
+			player_cards.push([]);
+		}
 
 		for (let i = this.cards.length-1; i >= 0; i--) {
-			let card = this.cards[i]
-
-			if (i%2 == 0) {my_cards.push(card)}
-			else {their_cards.push(card)}
-			
+			let card = this.cards[i];
+			player_cards[i % n].push(card);
 		}
 
 		this.cards = [];
-		return [my_cards, their_cards]
+		return player_cards;
 	}
 
 	destroy() {

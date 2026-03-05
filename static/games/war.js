@@ -63,6 +63,8 @@ main_deck.setPosition(WIDTH/2, HEIGHT/2)
 // 	clickbox.addEventListener("click", function() {PlayMyCard(p1.drawDeck, p1.fightDeck)})
 // }, 1000)
 
+setTimeout(function() {
+	let cards = main_deck.dealCards(2)
 
 
 async function PlayMyCard(drawDeck, fightDeck) {

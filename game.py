@@ -139,7 +139,7 @@ class Room:
             self.id = id
 
         if game_type == "war": 
-            self.game = War(4, num_players)
+            self.game = War(1, num_players)
         elif game_type == "poker": 
             pass 
             # this is an example of how we would extend
