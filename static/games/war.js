@@ -1,6 +1,6 @@
 import {Card} from '../card.js';
 import {Deck} from '../deck.js';
-import {SendData} from '../utils.js';
+import {SendData, GetGameState} from '../utils.js';
 //import { io } from "https://cdn.socket.io/4.6.1/socket.io.esm.min.js";
 
 console.log("war.js running...");
@@ -36,30 +36,33 @@ Title.innerHTML = "WAR | 0123";
 // will be: Title.innerHTML = "WAR | {{ code }}"
 
 
-////// TEMP CODE FOR GENERATING A FAKE DECK //////
-fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
-	.then(r => r.json())
-	.then(deck => {
-		console.log("\tdeck fetched")
-		fetch('https://deckofcardsapi.com/api/deck/' + deck.deck_id + '/draw/?count=52')
-			.then(r => r.json())
-			.then(data => {
-					console.log("\tcards fetched")
+// ////// TEMP CODE FOR GENERATING A FAKE DECK //////
+// fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
+// 	.then(r => r.json())
+// 	.then(deck => {
+// 		console.log("\tdeck fetched")
+// 		fetch('https://deckofcardsapi.com/api/deck/' + deck.deck_id + '/draw/?count=52')
+// 			.then(r => r.json())
+// 			.then(data => {
+// 					console.log("\tcards fetched")
 
-					let card_jsons = []
-					if (data.success) {
-					    data.cards.forEach(function(card_json) {card_jsons.push(card_json)});
-					}
-					main(card_jsons);
+// 					let card_jsons = []
+// 					if (data.success) {
+// 					    data.cards.forEach(function(card_json) {card_jsons.push(card_json)});
+// 					}
+// 					main(card_jsons);
 
-				})
-			.catch(e => console.error("Fetch failed: ", e));
-		})
-  	.catch(e => console.error("Fetch failed:", e));
+// 				})
+// 			.catch(e => console.error("Fetch failed: ", e));
+// 		})
+//   	.catch(e => console.error("Fetch failed:", e));
 
-function main(card_jsons) {
+main();
+function main() {
 	console.log("main is running")
-	let main_deck = Deck.fromJSONs(BOARD, card_jsons);
+	setInterval(() => console.log("test"), 1000);
+
+	let main_deck = Deck.faceDown(BOARD);
 	main_deck.setPosition(WIDTH/2, HEIGHT/2)
 
 	setTimeout(function() {
@@ -81,6 +84,16 @@ function main(card_jsons) {
 	}, 1000)
 }
 
+function UpdateBoard(state) {
+
+    console.log("Active player:", state.active_player);
+
+    state.players.forEach((player, i) => {
+        console.log("Player", i, player.hand);
+    });
+
+}
+
 async function PlayMyCard(drawDeck, fightDeck) {
 	if (haveplayedcard && false) {return;}
 
@@ -95,13 +108,5 @@ async function PlayMyCard(drawDeck, fightDeck) {
 		let response2 = await SendData("/draw_card", {})
 		console.log(response2)
 
-		// const formData = new FormData();
-		// formData.append("card", "5H");
-		// console.log(formData);
-
-		// fetch("/draw_card", {
-		// 	method: "POST",
-		// 	body: formData,
-		// })
 	}
 }

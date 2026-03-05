@@ -1,5 +1,14 @@
 import {Card} from './card.js';
 
+// Generate the null deck
+let null_card = {
+	code: "-1", image: "none", value: -1, suit: -1, face_up: false
+}
+let null_deck = []
+for (let i=0; i<52; i++) {
+	null_deck.push(null_card)
+}
+
 export class Deck {
 	/*
 	        {
@@ -37,6 +46,14 @@ export class Deck {
 	static fromCards(root, cards, x, y) {
 		return new Deck(root, cards, x, y)
 	}
+	// constructor overload: generates a deck of 52 'null' cards (faceDown, so face doesn't matter)
+	static faceDown(root, x, y) {
+		let cards = {
+
+		}
+		return new Deck(root, cards, x, y)
+	}
+
 	// constructor overload: generates an empty deck
 	static empty(root, x, y) {
 		return new Deck(root, [], x, y)
