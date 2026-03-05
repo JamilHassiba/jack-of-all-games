@@ -16,12 +16,3 @@ export async function SendData(route, data) {
 	}
 }
 
-// calls the /game_state route on the server
-// returns the data
-export async function GetGameState() {
-    const res = await fetch("/game_state");
-    const data = await res.json();
-    console.log(data);
-
-    return data
-}

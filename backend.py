@@ -241,46 +241,6 @@ def get_hand():
             player = game.players[session["player_index"]]
             return player.show()
 
-### Added by Thomas McPhee ###
-@app.route("/game_state")
-def game_state():
-    """
-    Return the current game state for the user's room.
-
-    Used by the frontend to sync the UI with the server. The response includes
-    the active player's index and basic data for each player (score, hand,
-    discarded cards).
-
-    Returns JSON containing: {active_player, players[]}.
-    """
-    
-    if "room" not in session:
-        return "User has not joined a room", 400
-
-    room_id = session["room"]
-
-    if room_id not in rooms:
-        return "Room does not exist", 400
-
-    room = rooms[room_id]
-    game = room.game
-
-    data = {
-        "active_player": game.player_index,
-        "players": []
-    }
-
-    for p in game.players:
-        data["players"].append({
-            "score": p.score,
-            "hand": p.show(),              # cards in hand
-            "discarded": p.discarded       # cards played
-        })
-
-    return jsonify(data)
-#############################
-
-
 # temporary routes, delete them once the code is fully production ready
 
 @app.route("/test_conn")

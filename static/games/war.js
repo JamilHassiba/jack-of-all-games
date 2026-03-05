@@ -1,6 +1,6 @@
 import {Card} from '../card.js';
 import {Deck} from '../deck.js';
-import {SendData, GetGameState} from '../utils.js';
+import {SendData} from '../utils.js';
 //import { io } from "https://cdn.socket.io/4.6.1/socket.io.esm.min.js";
 
 console.log("war.js running...");
@@ -60,7 +60,6 @@ Title.innerHTML = "WAR | 0123";
 main();
 function main() {
 	console.log("main is running")
-	setInterval(() => console.log("test"), 1000);
 
 	let main_deck = Deck.faceDown(BOARD);
 	main_deck.setPosition(WIDTH/2, HEIGHT/2)

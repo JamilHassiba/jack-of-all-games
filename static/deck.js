@@ -40,7 +40,7 @@ export class Deck {
 
 	// constructor overload: generates a deck from a list of card jsons
 	static fromJSONs(root, card_jsons, x, y) {
-		return new Deck(root, Deck.#generateCardObjectsFromJSONs(root, card_jsons, x, y))
+		return new Deck(root, Deck.#generateCardObjectsFromJSONs(root, card_jsons), x, y)
 	}
 	// constructor overload: generates a deck from a list of already made card objects
 	static fromCards(root, cards, x, y) {
@@ -48,10 +48,7 @@ export class Deck {
 	}
 	// constructor overload: generates a deck of 52 'null' cards (faceDown, so face doesn't matter)
 	static faceDown(root, x, y) {
-		let cards = {
-
-		}
-		return new Deck(root, cards, x, y)
+		return new Deck(root, Deck.#generateCardObjectsFromJSONs(root, null_deck), x, y)
 	}
 
 	// constructor overload: generates an empty deck
