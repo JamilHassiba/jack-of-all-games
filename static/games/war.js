@@ -39,6 +39,11 @@ socket.on("update", (data) => {
 
 // Set the title
 Title.innerHTML = "WAR | 0123";
+
+let res = await fetch("/get_roomid");
+let roomid = await res.text();
+Title.innerHTML = "WAR | " + roomid
+console.log(roomid);
 // will be: Title.innerHTML = "WAR | {{ code }}"
 
 
@@ -62,9 +67,6 @@ main_deck.setPosition(WIDTH/2, HEIGHT/2)
 // 	let clickbox = Card.CreateCardClickbox(BOARD, p1.drawDeck.x, p1.drawDeck.y)
 // 	clickbox.addEventListener("click", function() {PlayMyCard(p1.drawDeck, p1.fightDeck)})
 // }, 1000)
-
-setTimeout(function() {
-	let cards = main_deck.dealCards(2)
 
 
 async function PlayMyCard(drawDeck, fightDeck) {
