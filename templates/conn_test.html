@@ -20,7 +20,22 @@
 		<p id="output6">Response for playing a card should be shown here!!!</p>
 		<p id="output7">Response for game update should be shown here!!!</p>
 		<p id="output8">Response for showing hand should be shown here!!!</p>
-    
+
+
+		<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+		<script>
+			const socket = io();
+			
+			socket.on("connect", () => {
+				console.log("Connected to server");
+				console.log("Socket ID:", socket.id);
+			});
+			
+			socket.on("disconnect", (reason) => {
+				console.log("Disconnected:", reason);
+			});
+		</script>
+
         <script>
             const button = document.getElementById("test"); 
 	    	const button2 = document.getElementById("test2"); 
