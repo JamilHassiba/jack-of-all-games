@@ -176,9 +176,11 @@ def draw_card():
         if room_id in rooms.keys(): 
             room = rooms[room_id]
             game = room.game 
-            player = game.players[session["player_index"]]
+            player_index = session["player_index"]
+            player = game.players[player_index]
             result = player.draw() 
             if result[0] == "successfully drawn card":
+                socketio.emit("message", {"msg": f"player {player_index} has drawn a card"})
                 return f"successfully drawn card(s): {result[1]}"
             elif result[0] == "End of Deck": 
                 game.game_finish()
@@ -203,7 +205,7 @@ def play_card():
                 room = rooms[room_id]
                 game = room.game 
                 player_index = session["player_index"]
-                player = game.players[session["player_index"]]
+                player = game.players[player_index]
                 status = player.discard(card)
                 if status == []: 
                     return "Either player is locked or exceeded max discard count"
