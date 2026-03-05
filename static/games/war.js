@@ -63,7 +63,7 @@ function main(card_jsons) {
 	main_deck.setPosition(WIDTH/2, HEIGHT/2)
 
 	setTimeout(function() {
-		let cards = main_deck.dealCards()
+		let cards = main_deck.dealCards(2)
 
 		let p1 = {
 			drawDeck: Deck.fromCards(BOARD, cards[0], DECK_POSITIONS.player1.drawDeck.x, DECK_POSITIONS.player1.drawDeck.y),
