@@ -99,7 +99,8 @@
                         <input class="password-box" id="password-input" type="password" name="room_password"
                             placeholder="Password">
 
-                        <input class="lock-checkbox" type="checkbox" id="lock-toggle" name="is_locked" disabled> <!-- @Cam "disabled because backend currently doesn't support this"-->
+                        <input class="lock-checkbox" type="checkbox" id="lock-toggle" name="is_locked" disabled>
+                        <!-- @Cam "disabled because backend currently doesn't support this"-->
                     </div>
                 </div>
             </div>
@@ -379,10 +380,10 @@
         let response = await SendData("/create_room", formData)
 
         console.log(formData);
-        
+
         if (response) {
             response = await SendData("/join_room", {
-                "room_id" : response.room_id
+                "room_id": response.room_id
             })
 
             console.log(response)
@@ -399,15 +400,17 @@
     /* --- Join Room Search Logic --- */
 
     const searchBar = document.getElementById('room-search');
-    const roomItems = document.querySelectorAll('.room-item');
 
     searchBar.addEventListener('input', function (event) {
+        // Have to get room items upon input as the room items change their innerhtml from
+        // 'loading' to 'roomcode' using async function
+        let roomItems = document.querySelectorAll('.room-item');
 
         const searchValue = event.target.value.toLowerCase();
 
         // Loop over room items
         roomItems.forEach(function (room) {
-            const roomText = room.querySelector('.room-info').textContent.toLowerCase();
+            const roomText = room.querySelector('.room-id').textContent.toLowerCase();
 
             if (roomText.includes(searchValue)) {
                 room.style.display = '';
