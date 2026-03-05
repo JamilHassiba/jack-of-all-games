@@ -125,7 +125,7 @@ def create_room():                   # frontend sends a POST request and we make
         return "error, something went wrong. source: creating a room" 
 
 @app.route("/join_room", methods=["POST", "GET"])             # frontend sends a room id for the user to join 
-def join_room(): 
+def backend_join_room(): 
     # assumed frontend data format: 
     # form data with attributes: room_id
     try: 
@@ -256,7 +256,7 @@ def get_roomid():
 
 #socketio routes 
 @socketio.on("connect")
-def socket_connect():         # currently assumes the user is already in a room 
+def socket_connect(*arg):         # currently assumes the user is already in a room 
     if "room" in session.keys():
         room_id = session["room"]
         if room_id in rooms.keys(): 
@@ -268,11 +268,12 @@ def socket_connect():         # currently assumes the user is already in a room
                 socketio_rooms.append(room_id) 
             else: 
                 join_room(room_id)
+            emit("message", {"msg":f"Successfully joined a room - room_id: {room_id}"})
     else: 
         print("Tried to connect frontend room - user is not in a backend room yet")
 
 @socketio.on("disconnect")
-def socket_disconnect(): 
+def socket_disconnect(*arg): 
     if "room" in session.keys(): 
         room_id = session["room"]
         if room_id in rooms.keys(): 
@@ -280,6 +281,7 @@ def socket_disconnect():
             sid = request.sid 
             socketio_connected.pop(sid)
             leave_room(room_id)                 # WARNING: NO GARBAGE COLLECTION FOR SOCKETIO_ROOM
+            emit("message", {"msg":"Successfully left a room"})
     else: 
         print("Tried to disconnect frontend room - user is not in a backend room yet")
 
@@ -289,6 +291,7 @@ def socket_disconnect():
 
 @app.route("/test_conn")
 def ryan(): 
+    session.clear()
     return render_template("conn_test.html")
 
 @app.route("/send_data")

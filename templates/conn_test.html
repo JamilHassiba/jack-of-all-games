@@ -12,6 +12,7 @@
 		<input type="text" id="card">
 		<button id="test7">Test game update!!!!</button>
 		<button id="test8">Test show hand!!!!</button>
+		<button id="test9">Test connect frontend!!!</button>
         <p id="output">Output text should be shown here</p>
 		<p id="output2">Response for creating a room should be shown here!!!</p> 
 		<p id="output3">Response for browsing a room should be shown here!!!</p> 
@@ -20,23 +21,11 @@
 		<p id="output6">Response for playing a card should be shown here!!!</p>
 		<p id="output7">Response for game update should be shown here!!!</p>
 		<p id="output8">Response for showing hand should be shown here!!!</p>
-
+		<p id="output9">Response for connecting to the frontend should be shown here!!!</p>
 
 		<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-		<script>
-			const socket = io();
-			
-			socket.on("connect", () => {
-				console.log("Connected to server");
-				console.log("Socket ID:", socket.id);
-			});
-			
-			socket.on("disconnect", (reason) => {
-				console.log("Disconnected:", reason);
-			});
-		</script>
-
         <script>
+			let socket = null;
             const button = document.getElementById("test"); 
 	    	const button2 = document.getElementById("test2"); 
 	    	const button3 = document.getElementById("test3"); 
@@ -45,6 +34,7 @@
 			const button6 = document.getElementById("test6");
 			const button7 = document.getElementById("test7"); 
 			const button8 = document.getElementById("test8"); 
+			const button9 = document.getElementById("test9");
 			const card_field = document.getElementById("card");
             const output = document.getElementById("output");
 	    	const output2 = document.getElementById("output2");
@@ -54,6 +44,7 @@
 			const output6 = document.getElementById("output6");
 			const output7 = document.getElementById("output7"); 
 			const output8 = document.getElementById("output8"); 
+			const output9 = document.getElementById("output9");
 	    	let testroomid = ""; 
 
 			button2.addEventListener('click', async() => {
@@ -117,6 +108,22 @@
 				const response = await fetch("/get_hand");
 				const data = await response.text(); 
 				output8.innerText = `Message: ${data}`;
+			})
+
+			button9.addEventListener('click', async() =>{
+				if (!socket){
+					socket = io(); 
+					socket.on("connect", ()=>{
+						console.log("Connected to server");
+						console.log("Socket ID: ", socket.id);
+
+					});
+
+					socket.on("message", (data)=>{
+					console.log("Backend says: ", data.msg);
+					output9.innerText = data.msg;
+					})
+				}
 			})
 	</script>
 
