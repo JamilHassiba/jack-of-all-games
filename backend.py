@@ -202,11 +202,13 @@ def play_card():
             if room_id in rooms.keys(): 
                 room = rooms[room_id]
                 game = room.game 
+                player_index = session["player_index"]
                 player = game.players[session["player_index"]]
                 status = player.discard(card)
                 if status == []: 
                     return "Either player is locked or exceeded max discard count"
                 else: 
+                    socketio.emit("message", {"msg": f"{player_index} has played a card"})
                     return f"Discarded the card {status}"
         else: 
             return "User has not joined a room!"
