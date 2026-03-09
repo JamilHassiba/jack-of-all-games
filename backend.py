@@ -286,7 +286,7 @@ def blackjack_player_join():
         "name" : request.sid, ## REPLACE WITH THEIR USERNAME
         "game_score" : "0",
         "hand" : "",
-        "status" : "in lobby",
+        "status" : "",
     }, to=room_id)
 
     # Tell then newly connected player to render all previous players

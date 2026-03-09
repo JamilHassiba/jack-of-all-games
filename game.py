@@ -247,7 +247,7 @@ class BlackjackPlayer():
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
         self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
         self.__hand.append(card_data["code"])
-        self.__game.socketio.emit('write_hand', {"id" : self.__id}, to=self.__game.room.id)
+        self.__game.socketio.emit('write_hand', {"id" : self.__id, "hand" : self.hand}, to=self.__game.room.id)
 
     def __str__(self):
         return f"Player Object | Hand: {self.__hand} | Total: {self.__hand_total}"
@@ -286,7 +286,7 @@ class BlackjackDealer():
         self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
         self.__hand.append(card_data["code"])
         print("firing the event")
-        self.__game.socketio.emit("write_hand", {"id" : "dealer"}, to=self.__game.room.id)
+        self.__game.socketio.emit("write_hand", {"id" : "dealer", "hand" : self.hand}, to=self.__game.room.id)
 
     def __str__(self):
         return f"Dealer Object | Hand: {self.__hand} | Total: {self.__hand_total}"

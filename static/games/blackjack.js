@@ -12,6 +12,8 @@ let title = document.getElementById("title")
 const title_base = title.innerHTML;
 title.innerHTML = title_base.concat(" | waiting for state from server")
 
+let player_labels = {}
+
 // Create socket object;
 var socket = io();
 socket.on('connect', function() {
@@ -23,12 +25,14 @@ socket.on('set_room_label', function(data) {
 });
 
 socket.on('write_hand', function(data) {
+    let hand = data.hand
+
     if (data.id == socket.id) {
-        console.log("this hand belongs to me")
+        player_hand_container.innerHTML = hand
     } else if (data.id == "dealer") {
-        console.log("this hand belongs to dealer")
+        dealer_hand_container.innerHTML = hand
     } else {
-        console.log("this hand belongs to another player")
+        UpdatePlayerLabelHand(data.id, hand)
     }
 
 });
@@ -36,6 +40,7 @@ socket.on('write_hand', function(data) {
 socket.on('create_player_label', function(data) {
     if (data.id == socket.id) return
     CreatePlayerInfo(
+        data.id,
         (data.id).substring(0,4),
         data.game_score,
         data.hand,
@@ -45,9 +50,30 @@ socket.on('create_player_label', function(data) {
 
 
 // UTILITY METHODS
-function CreatePlayerInfo(name, game_score, hand, status) {
+function CreatePlayerInfo(id, name, game_score, hand, status) {
     let e = document.createElement("li")
-    e.innerHTML = `${name} | Score: ${game_score} | ${hand} | ${status}`
     other_players_container.appendChild(e)
+
+    player_labels[id] = {
+        "id" : id,
+        "name" : name,
+        "game_score" : game_score,
+        "hand" : hand,
+        "status" : status,
+        "e" : e
+    }
+
+    SetPlayerLabelText(id)
     return e
+}
+
+function UpdatePlayerLabelHand(id, hand) {
+    let data = player_labels[id]
+    data.hand = hand
+    SetPlayerLabelText(id)
+}
+
+function SetPlayerLabelText(id) {
+    let data = player_labels[id]
+    data.e.innerHTML = `${data.name} | Score: ${data.game_score} | ${data.hand} | ${data.status}`
 }
