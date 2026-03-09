@@ -247,7 +247,39 @@ class BlackjackPlayer():
         return f"Player Object | Hand: {self.__hand} | Total: {self.__hand_total}"
 
 class BlackjackDealer():
-    pass
+    def __init__(self):
+        self.__hand = []
+        self.__hand_total = 0
+        self.__deck = Deck(id=None, shuffle=True, decks=1, jokers=False) 
+
+    def DealToSelf(self):
+        cards_list = self.__deck.draw()
+
+        if not cards_list:
+            self.__deck.reshuffle(remaining_only=False)
+            cards_list = self.__deck.draw()
+
+        card_data = cards_list[0]
+        self.AddCardToHand(card_data)
+
+    # Getters
+    @property
+    def hand(self):
+        return self.__hand
+    @property
+    def hand_total(self):
+        return self.__hand_total
+    @property
+    def deck(self):
+        return self.__deck
+    
+    # Setters
+    def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
+        self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
+        self.__hand.append(card_data["code"])
+
+    def __str__(self):
+        return f"Dealer Object | Hand: {self.__hand} | Total: {self.__hand_total}"
 
 # Doesn't inherit from Game
 class Blackjack():
