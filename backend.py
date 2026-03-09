@@ -218,15 +218,24 @@ def play_card():
         return "Not provided with card code - cannot discard"
 
 @app.route("/room")
-def frontend_room(): 
-    if "room" in session.keys(): 
-        room_id = session["room"]
-        if room_id in rooms.keys(): 
-            room = rooms[room_id]
-            if room.game_type == "war": 
-                return render_template("war.html")
-            elif room.game_type == "poker": 
-                pass                                      # extension example 
+def frontend_room():
+    if "room" not in session: return "You are not in a room"
+    room_id = session["room"]
+
+    if room_id not in rooms: return "Room does not exist"
+    room = rooms[room_id]
+
+    # Handle game types
+    if room.game_type == "war":
+        return render_template("war.html")
+
+    if room.game_type == "blackjack":
+        return render_template("blackjack.html")
+
+    if room.game_type == "poker":
+        pass  # extension example
+
+    return "Unsupported game type"
 
 @app.route("/update")
 def game_update():
