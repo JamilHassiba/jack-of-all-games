@@ -122,7 +122,7 @@ def create_room():                   # frontend sends a POST request and we make
         if not game_type in ["war", "blackjack"]: 
             return "Cannot create room - game type not supported"
         num_players = int(data["num_players"])
-        room = Room(game_type, num_players)
+        room = Room(socketio, game_type, num_players)
         rooms[room.id] = room                # store rooms in a dict for quick access 
         return f"successfully created room with id {room.id}"
     except:
@@ -279,6 +279,8 @@ def blackjack_player_join():
     blackjack_player = game.AddPlayer()
     session["player"] = blackjack_player
 
+    socketio.emit('set_room_label', {'label' : "intermission"}, to=request.sid)
+
 @socketio.on("connect")
 def socket_connect(*arg):
     ## VALIDATE
@@ -300,6 +302,7 @@ def socket_connect(*arg):
     if room_id not in socketio_rooms:
         socketio_rooms.append(room_id)
 
+    
     emit("message", {"msg": f"Successfully joined a room - room_id: {room_id}"})
 
 @socketio.on("disconnect")

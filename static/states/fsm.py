@@ -34,4 +34,6 @@ class fsm():
         new_state = self.GetCurrentState()
         new_state.OnEnter()
 
+        self.root.socketio.emit('set_room_label', {'label' : new_state_name}, to=self.root.room.id)
+
     

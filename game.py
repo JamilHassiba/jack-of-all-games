@@ -179,7 +179,7 @@ class Player:
         return self.pile.show() 
 
 class Room: 
-    def __init__(self, game_type, num_players, id=None): 
+    def __init__(self, socketio, game_type, num_players, id=None): 
         self.game_type = game_type 
         self.player_count = 0 
         self.num_players = num_players
@@ -195,7 +195,7 @@ class Room:
             pass 
             # this is an example of how we would extend
         elif game_type == "blackjack":
-            self.game = Blackjack(num_players, self)
+            self.game = Blackjack(socketio, num_players, self)
         else:
             pass  
 
@@ -263,7 +263,8 @@ class Blackjack():
         return int(card_value)
 
     # CONSTRUCTOR
-    def __init__(self, max_player_count, room_reference):
+    def __init__(self, socketio, max_player_count, room_reference):
+        self.__socketio = socketio
         self.__max_player_count = max_player_count
         self.__players = []
         self.__room = room_reference # parent object
@@ -295,6 +296,12 @@ class Blackjack():
         self.__current_round = BlackjackRound(self.players)
 
     # Getters
+    @property
+    def room(self):
+        return self.__room
+    @property
+    def socketio(self):
+        return self.__socketio
     @property
     def max_player_count(self):
         return self.__max_player_count
