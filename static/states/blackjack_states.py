@@ -5,11 +5,17 @@ class intermission(State):
     def __init__(self, fsm):
         super().__init__(fsm)
 
+        self.elapsed = 0
+
     def OnEnter(self):
         print("IntermissionState entered")
+        self.elapsed = 0
 
     def Update(self, dt):
-        pass
+        self.elapsed += dt
+
+        if self.elapsed >= 3:
+            self.fsm.SetState("round_start")
 
     def OnExit(self):
         print("IntermissionState exited")

@@ -1,8 +1,6 @@
 class fsm():
     def __init__(self, root):
-        print("fsm instantiated")
         self.root = root
-
 
     # states is a dictionary of string to state objects
     def SetStates(self, states):
@@ -10,7 +8,6 @@ class fsm():
         self.__current_state_name: str = ""
 
     def Begin(self, initial_state_name):
-        print("beginning fsm")
         self.__current_state_name = initial_state_name
         state = self.GetCurrentState()
         state.OnEnter()
@@ -26,7 +23,7 @@ class fsm():
     def SetState(self, new_state_name: str):
         if self.__current_state_name == "":
             return
-        if not new_state_name in self.states.keys:
+        if not new_state_name in self.__states.keys():
             return
         
         # Call previous states exit method

@@ -261,7 +261,7 @@ class Blackjack():
 
     # Methods
     def Update(self, dt):
-        pass
+        self.__FSM.Update(dt)
 
     def AddPlayer(self):
         # Create a player object

@@ -1,6 +1,6 @@
 class State():
     def __init__(self, fsm):
-        self.__fsm = fsm
+        self.fsm = fsm
 
     def OnEnter(self):
         pass
