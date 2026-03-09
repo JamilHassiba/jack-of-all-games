@@ -208,30 +208,27 @@ class BlackjackPlayer():
     # Getters
     @property
     def game_score(self):
-        return self.game_score
+        return self.__game_score
     @property
     def hand(self):
-        return self.hand
+        return self.__hand
     @property
     def hand_total(self):
-        return self.hand_total
+        return self.__hand_total
     @property
     def deck(self):
-        return self.deck
+        return self.__deck
     
     # Setters
-    def AddScore(self, value):
-        self.score += value
+    def AddGameScore(self, value):
+        self.__game_score += value
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
-        self.hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
-        self.hand.append(card_data)
+        self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
+        self.__hand.append(card_data)
 
 # Doesn't inherit from Game
 class Blackjack():
-    def __init__(self, max_player_count):
-        self.__max_player_count = max_player_count
-
-
+    # STATIC
     @staticmethod
     def convert_card_value_to_int(card_value: str) -> int: # "3" "7" "ACE" "KING" "QUEEN" "JACK"
         match card_value:
@@ -240,12 +237,18 @@ class Blackjack():
 
         return int(card_value)
 
-
+    # CONSTRUCTOR
+    def __init__(self, max_player_count):
+        self.__max_player_count = max_player_count
+        self.__players = []
 
     # Getters
     @property
     def max_player_count(self):
-        return self.max_player_count
+        return self.__max_player_count
+    @property
+    def players(self):
+        return self.__players
     
     # Setters
 

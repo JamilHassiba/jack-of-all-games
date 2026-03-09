@@ -261,6 +261,19 @@ def get_hand():
 
 
 # socketio routes
+@socketio.on("blackjack_player_join")
+def blackjack_player_join():
+    ## VALIDATE
+    room_id = session.get("room") # User must be in a backend room
+    if not room_id: print("Tried to connect frontend room - user is not in a backend room yet"); return
+
+    # Room must exist
+    room = rooms.get(room_id)
+    if not room: print("Tried to connect frontend room - backend room no longer exists"); return
+
+    game = room.game
+    print("BLACKJACK PLAYER JOINED")
+    print(game)
 
 @socketio.on("connect")
 def socket_connect(*arg):

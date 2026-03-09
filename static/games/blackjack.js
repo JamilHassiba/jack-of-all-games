@@ -9,8 +9,10 @@ let player_hand_container = document.getElementById("player-hand");
 let dealer_hand_container = document.getElementById("dealer-hand");
 
 // Create socket object;
-//var socket = io();
-
+var socket = io();
+socket.on('connect', function() {
+    socket.emit('blackjack_player_join');
+});
 
 // UTILITY METHODS
 
