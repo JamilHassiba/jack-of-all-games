@@ -125,7 +125,7 @@ def create_room():                   # frontend sends a POST request and we make
         return "error, something went wrong. source: creating a room" 
 
 @app.route("/join_room", methods=["POST", "GET"])             # frontend sends a room id for the user to join 
-def join_room(): 
+def backend_join_room(): 
     # assumed frontend data format: 
     # form data with attributes: room_id
     try: 
@@ -176,9 +176,11 @@ def draw_card():
         if room_id in rooms.keys(): 
             room = rooms[room_id]
             game = room.game 
-            player = game.players[session["player_index"]]
+            player_index = session["player_index"]
+            player = game.players[player_index]
             result = player.draw() 
             if result[0] == "successfully drawn card":
+                socketio.emit("message", {"msg": f"player {player_index} has drawn a card"})
                 return f"successfully drawn card(s): {result[1]}"
             elif result[0] == "End of Deck": 
                 game.game_finish()
@@ -202,11 +204,13 @@ def play_card():
             if room_id in rooms.keys(): 
                 room = rooms[room_id]
                 game = room.game 
-                player = game.players[session["player_index"]]
+                player_index = session["player_index"]
+                player = game.players[player_index]
                 status = player.discard(card)
                 if status == []: 
                     return "Either player is locked or exceeded max discard count"
                 else: 
+                    socketio.emit("message", {"msg": f"{player_index} has played a card"}, to=room_id)
                     return f"Discarded the card {status}"
         else: 
             return "User has not joined a room!"
@@ -256,7 +260,7 @@ def get_roomid():
 
 #socketio routes 
 @socketio.on("connect")
-def socket_connect():         # currently assumes the user is already in a room 
+def socket_connect(*arg):         # currently assumes the user is already in a room 
     if "room" in session.keys():
         room_id = session["room"]
         if room_id in rooms.keys(): 
@@ -268,11 +272,12 @@ def socket_connect():         # currently assumes the user is already in a room
                 socketio_rooms.append(room_id) 
             else: 
                 join_room(room_id)
+            emit("message", {"msg":f"Successfully joined a room - room_id: {room_id}"}, to=room_id)
     else: 
         print("Tried to connect frontend room - user is not in a backend room yet")
 
 @socketio.on("disconnect")
-def socket_disconnect(): 
+def socket_disconnect(*arg): 
     if "room" in session.keys(): 
         room_id = session["room"]
         if room_id in rooms.keys(): 
@@ -280,6 +285,7 @@ def socket_disconnect():
             sid = request.sid 
             socketio_connected.pop(sid)
             leave_room(room_id)                 # WARNING: NO GARBAGE COLLECTION FOR SOCKETIO_ROOM
+            emit("message", {"msg":"Successfully left a room"}, to=room_id)
     else: 
         print("Tried to disconnect frontend room - user is not in a backend room yet")
 
@@ -288,6 +294,7 @@ def socket_disconnect():
 
 @app.route("/test_conn")
 def ryan(): 
+    session.clear()
     return render_template("conn_test.html")
 
 @app.route("/send_data")
