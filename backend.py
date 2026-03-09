@@ -210,7 +210,7 @@ def play_card():
                 if status == []: 
                     return "Either player is locked or exceeded max discard count"
                 else: 
-                    socketio.emit("message", {"msg": f"{player_index} has played a card"})
+                    socketio.emit("message", {"msg": f"{player_index} has played a card"}, to=room_id)
                     return f"Discarded the card {status}"
         else: 
             return "User has not joined a room!"
@@ -272,7 +272,7 @@ def socket_connect(*arg):         # currently assumes the user is already in a r
                 socketio_rooms.append(room_id) 
             else: 
                 join_room(room_id)
-            emit("message", {"msg":f"Successfully joined a room - room_id: {room_id}"})
+            emit("message", {"msg":f"Successfully joined a room - room_id: {room_id}"}, to=room_id)
     else: 
         print("Tried to connect frontend room - user is not in a backend room yet")
 
@@ -285,7 +285,7 @@ def socket_disconnect(*arg):
             sid = request.sid 
             socketio_connected.pop(sid)
             leave_room(room_id)                 # WARNING: NO GARBAGE COLLECTION FOR SOCKETIO_ROOM
-            emit("message", {"msg":"Successfully left a room"})
+            emit("message", {"msg":"Successfully left a room"}, to=room_id)
     else: 
         print("Tried to disconnect frontend room - user is not in a backend room yet")
 
