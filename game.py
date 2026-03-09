@@ -1,5 +1,10 @@
 from api import Deck, Pile
 from time import sleep
+
+# Thomas McPhee
+from static.states.fsm import fsm
+import static.states.blackjack_states
+
 import random
 chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
@@ -242,20 +247,23 @@ class Blackjack():
         self.__max_player_count = max_player_count
         self.__players = []
         self.__room = room_reference # parent object
-        self.__current_state = 'intermission'
-        '''
-            available states:
-                intermission
-                round_start
-                players_turn
-                dealer_turn
-                score
-                cleanup
-        '''
+       
+        self.__FSM = fsm(self)
+        print("past")
+
+        # self.__FSM.SetStates({
+        #     "intermission" : blackjack_states.intermission(self.__FSM),
+        #     "round_start" : blackjack_states.round_start(self.__FSM),
+        #     "players_turn" : blackjack_states.players_turn(self.__FSM),
+        #     "dealer_turn" : blackjack_states.dealer_turn(self.__FSM),
+        #     "score" : blackjack_states.score(self.__FSM),
+        #     "cleanup" : blackjack_states.cleanup(self.__FSM),
+        # })
+        # self.__FSM.Begin("intermission")
 
     # Methods
     def Update(self, dt):
-        
+        pass
 
     def AddPlayer(self):
         # Create a player object

@@ -9,6 +9,8 @@ import random
 import threading
 import time
 
+from static.states import fsm, state, blackjack_states
+
 rooms = {}
 socketio_connected = {} 
 socketio_rooms = []                                        # WARNING: NO GARBAGE COLLECTION - POTENTIAL MEMORY LEAK 
@@ -122,7 +124,6 @@ def create_room():                   # frontend sends a POST request and we make
         num_players = int(data["num_players"])
         room = Room(game_type, num_players)
         rooms[room.id] = room                # store rooms in a dict for quick access 
-        print(game_type)
         return f"successfully created room with id {room.id}"
     except:
         return "error, something went wrong. source: creating a room" 
@@ -156,7 +157,7 @@ def backend_join_room():
 
 @app.route("/search_rooms", methods=["POST", "GET"])
 def search_rooms(): 
-    print([room for room in rooms])
+    #print([room for room in rooms])
     data = {
         room.id: {
             "type": room.game_type, 

@@ -1,9 +1,16 @@
 class fsm():
+    def __init__(self, root):
+        print("fsm instantiated")
+        self.root = root
+
+
     # states is a dictionary of string to state objects
-    def __init__(self, root, states, initial_state: str):
-        self.__root = root
-        self.__current_state_name: str = initial_state
+    def SetStates(self, states):
         self.__states = states
+        self.__current_state_name: str = ""
+
+    def Begin(self, initial_state_name):
+        self.SetState(initial_state_name)
 
     def Update(self, dt):
         self.GetCurrentState().Update(dt)
@@ -14,6 +21,8 @@ class fsm():
 
     # Setters
     def SetState(self, new_state_name: str):
+        if self.__current_state_name == "":
+            return
         if not new_state_name in self.states.keys:
             return
         
