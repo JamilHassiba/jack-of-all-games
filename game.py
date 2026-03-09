@@ -261,6 +261,7 @@ class BlackjackDealer():
 
         card_data = cards_list[0]
         self.AddCardToHand(card_data)
+        print(self)
 
     # Getters
     @property
@@ -325,7 +326,7 @@ class Blackjack():
 
     def NewRound(self):
         print("New round created")
-        self.__current_round = BlackjackRound(self.players)
+        self.__current_round = BlackjackRound(self, self.players)
 
     # Getters
     @property
@@ -360,10 +361,17 @@ class Blackjack():
         return output
 
 class BlackjackRound():
-    def __init__(self, players):
+    def __init__(self, game, players):
+        self.__game = game #reference to the parent game
         self.__players_in_round = players.copy()
         self.__players_finished = []
 
+        self.DealInitialCards()
+
+    def DealInitialCards(self):
+        self.__game.dealer.DealToSelf()
+        for player in self.__players_in_round:
+            player.HitMe()
 
 
 ### END ###
