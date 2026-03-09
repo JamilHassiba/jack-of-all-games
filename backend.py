@@ -115,11 +115,12 @@ def create_room():                   # frontend sends a POST request and we make
     try: 
         data = request.form 
         game_type = data["game_type"]
-        if not game_type in ["war",]: 
+        if not game_type in ["war", "blackjack"]: 
             return "Cannot create room - game type not supported"
         num_players = int(data["num_players"])
         room = Room(game_type, num_players)
         rooms[room.id] = room                # store rooms in a dict for quick access 
+        print(game_type)
         return f"successfully created room with id {room.id}"
     except:
         return "error, something went wrong. source: creating a room" 
@@ -289,31 +290,6 @@ def socket_disconnect(*arg):
     else: 
         print("Tried to disconnect frontend room - user is not in a backend room yet")
 
-
-
-# temporary routes, delete them once the code is fully production ready
-
-@app.route("/test_conn")
-def ryan(): 
-    session.clear()
-    return render_template("conn_test.html")
-
-@app.route("/send_data")
-def send_data(): 
-    username = session.get("username")
-    print(username)
-    if username: 
-        return jsonify({'username': session["username"]})
-    else: 
-        return jsonify({'username': "UNKNOWN USER"})
-
-
-
-@app.route("/war")
-def war():
-    return render_template("war.html")
-
-    
 
 if __name__ == '__main__': 
     app.run(host="0.0.0.0")

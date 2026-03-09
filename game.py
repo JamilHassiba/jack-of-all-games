@@ -143,6 +143,8 @@ class Room:
         elif game_type == "poker": 
             pass 
             # this is an example of how we would extend
+        elif game_type == "blackjack":
+            self.game = Blackjack(num_players)
         else:
             pass  
 
@@ -193,6 +195,13 @@ class War(Game):
                 winners_index.append(i)
         print(winners_index)
         return winners 
+
+
+# Doesn't inherit from Game
+class Blackjack():
+    def __init__(self, max_player_count):
+        self.max_player_count = max_player_count
+        self.players = []
 
         
     
