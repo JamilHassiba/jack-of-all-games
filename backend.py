@@ -125,33 +125,32 @@ def create_room():                   # frontend sends a POST request and we make
     except:
         return "error, something went wrong. source: creating a room" 
 
-@app.route("/join_room", methods=["POST", "GET"])             # frontend sends a room id for the user to join 
-def backend_join_room(): 
-    # assumed frontend data format: 
-    # form data with attributes: room_id
-    try: 
-        data = request.form 
+@app.route("/join_room", methods=["POST", "GET"])
+def backend_join_room():
+    try:
+        data = request.form
         room_id = data["room_id"]
-        if room_id in rooms.keys(): 
-            if not session.get("room"):  
-                if not session.get("player_index"): 
-                    room = rooms[room_id]                                # fetch the room obj 
-                    game = room.game                                       # fetch the game obj 
-                    if room.player_count < room.num_players:            # store the player obj in session dict 
-                        session["room"] = room.id 
-                        session["player_index"] = room.player_count
-                        room.player_count += 1 
-                        return f"success - joined room with id {room.id}, player num {session['player_index']}"
-                    else: 
-                        return "The room is full"
-                else: 
-                    return "You are already in a room"
-            else:
-                return "You are already in a room"
-        else: 
-            return "Room ID does not exist"
-    except: 
+
+        # Validate
+        if room_id not in rooms: return "Room ID does not exist"
+        if session.get("room"): return "You are already in a room"
+        if session.get("player_index"): return "You are already in a room"
+            
+        room = rooms[room_id]
+        # Room must have space
+        if room.player_count >= room.num_players:
+            return "The room is full"
+
+        # Main logic
+        session["room"] = room.id
+        session["player_index"] = room.player_count
+        room.player_count += 1
+
+        return f"success - joined room with id {room.id}, player num {session['player_index']}"
+
+    except Exception:
         return "error, something went wrong. source: joining room"
+
 
 @app.route("/search_rooms", methods=["POST", "GET"])
 def search_rooms(): 
