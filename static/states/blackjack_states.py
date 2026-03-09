@@ -1,84 +1,85 @@
-from static.states import state
+from static.states.state import State
 
-def intermission(state):
+
+class intermission(State):
     def __init__(self, fsm):
         super().__init__(fsm)
 
     def OnEnter(self):
-        print("intermission entered")
+        print("IntermissionState entered")
 
     def Update(self, dt):
         pass
 
     def OnExit(self):
-        print("intermission exited")
+        print("IntermissionState exited")
 
 
-def round_start(state):
+class round_start(State):
     def __init__(self, fsm):
         super().__init__(fsm)
 
     def OnEnter(self):
-        print("intermission entered")
+        print("RoundStartState entered")
 
     def Update(self, dt):
         pass
 
     def OnExit(self):
-        print("intermission exited")
+        print("RoundStartState exited")
 
 
-def players_turn(state):
+class players_turn(State):
     def __init__(self, fsm):
         super().__init__(fsm)
 
     def OnEnter(self):
-        print("intermission entered")
+        print("PlayersTurnState entered")
 
     def Update(self, dt):
         pass
 
     def OnExit(self):
-        print("intermission exited")
+        print("PlayersTurnState exited")
 
 
-def dealer_turn(state):
+class dealer_turn(State):
     def __init__(self, fsm):
         super().__init__(fsm)
 
     def OnEnter(self):
-        print("intermission entered")
+        print("DealerTurnState entered")
 
     def Update(self, dt):
         pass
 
     def OnExit(self):
-        print("intermission exited")
+        print("DealerTurnState exited")
 
 
-def score(state):
+class score(State):
     def __init__(self, fsm):
         super().__init__(fsm)
 
     def OnEnter(self):
-        print("intermission entered")
+        print("ScoreState entered")
 
     def Update(self, dt):
         pass
 
     def OnExit(self):
-        print("intermission exited")
+        print("ScoreState exited")
 
 
-def cleanup(state):
+class cleanup(State):
     def __init__(self, fsm):
         super().__init__(fsm)
 
     def OnEnter(self):
-        print("intermission entered")
+        print("CleanupState entered")
 
     def Update(self, dt):
         pass
 
     def OnExit(self):
-        print("intermission exited")
+        print("CleanupState exited")

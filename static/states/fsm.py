@@ -10,8 +10,11 @@ class fsm():
         self.__current_state_name: str = ""
 
     def Begin(self, initial_state_name):
-        self.SetState(initial_state_name)
-
+        print("beginning fsm")
+        self.__current_state_name = initial_state_name
+        state = self.GetCurrentState()
+        state.OnEnter()
+        
     def Update(self, dt):
         self.GetCurrentState().Update(dt)
 
