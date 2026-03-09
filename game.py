@@ -210,6 +210,16 @@ class BlackjackPlayer():
         self.__hand_total = 0
         self.__deck = Deck(id=None, shuffle=True, decks=1, jokers=False) 
 
+    def HitMe(self):
+        cards_list = self.__deck.draw()
+        # if not cards_list:
+        #     self.__deck.reshuffle()
+        #     cards_list = self.__deck.draw()
+        
+        card_data = cards_list[0]
+        self.AddCardToHand(card_data)
+        print(self)
+
     # Getters
     @property
     def game_score(self):
@@ -229,16 +239,24 @@ class BlackjackPlayer():
         self.__game_score += value
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
         self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
-        self.__hand.append(card_data)
+        self.__hand.append(card_data["code"])
+
+    def __str__(self):
+        return f"Player Object | Hand: {self.__hand} | Total: {self.__hand_total}"
+
+class BlackjackDealer():
+    pass
 
 # Doesn't inherit from Game
 class Blackjack():
     # STATIC
     @staticmethod
-    def convert_card_value_to_int(card_value: str) -> int: # "3" "7" "ACE" "KING" "QUEEN" "JACK"
+    def convert_card_value_to_int(card_value: str) -> int:
         match card_value:
-            case "KING", "QUEEN", "JACK": card_value = "10"
-            case "ACE": card_value = "11"
+            case "KING" | "QUEEN" | "JACK":
+                card_value = "10"
+            case "ACE":
+                card_value = "11"
 
         return int(card_value)
 
@@ -247,6 +265,7 @@ class Blackjack():
         self.__max_player_count = max_player_count
         self.__players = []
         self.__room = room_reference # parent object
+        self.__dealer = BlackjackDealer()
        
         self.__FSM = fsm(self)
         self.__FSM.SetStates({
@@ -279,8 +298,9 @@ class Blackjack():
     @property
     def current_state(self):
         return self.__current_state
-    
-
+    @property
+    def dealer(self):
+        return self.__dealer
 
     ## Dunders
     def __str__(self):
