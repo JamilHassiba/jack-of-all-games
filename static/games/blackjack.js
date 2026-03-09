@@ -7,6 +7,7 @@ console.log("blackjack.js is running...")
 // REFERENCES
 let player_hand_container = document.getElementById("player-hand");
 let dealer_hand_container = document.getElementById("dealer-hand");
+let other_players_container = document.getElementById("other-players");
 let title = document.getElementById("title")
 const title_base = title.innerHTML;
 title.innerHTML = title_base.concat(" | waiting for state from server")
@@ -22,7 +23,6 @@ socket.on('set_room_label', function(data) {
 });
 
 socket.on('write_hand', function(data) {
-    console.log("fired...")
     if (data.id == socket.id) {
         console.log("this hand belongs to me")
     } else if (data.id == "dealer") {
@@ -33,6 +33,12 @@ socket.on('write_hand', function(data) {
 
 });
 
+CreatePlayerInfo("bill", "5", "test", "")
 
 // UTILITY METHODS
-
+function CreatePlayerInfo(name, game_score, hand, status) {
+    let e = document.createElement("li")
+    e.innerHTML = `${name} | ${game_score} | ${hand} ${status}`
+    other_players_container.appendChild(e)
+    return e
+}
