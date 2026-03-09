@@ -290,6 +290,10 @@ class Blackjack():
         self.__players.append(player)
         return player
 
+    def NewRound(self):
+        print("New round created")
+        self.__current_round = BlackjackRound(self.players)
+
     # Getters
     @property
     def max_player_count(self):
@@ -315,6 +319,12 @@ class Blackjack():
             output += f"     {player}\n"
         output += "\n==========\n"
         return output
+
+class BlackjackRound():
+    def __init__(self, players):
+        self.__players_in_round = players.copy()
+        self.__players_finished = []
+
 
 
 ### END ###

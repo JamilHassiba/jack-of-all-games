@@ -13,7 +13,7 @@ class intermission(State):
     def Update(self, dt):
         self.elapsed += dt
 
-        if self.elapsed >= 3:
+        if self.elapsed >= 10:
             self.fsm.SetState("round_start")
 
     def OnExit(self):
@@ -26,10 +26,8 @@ class round_start(State):
 
     def OnEnter(self):
         print("RoundStartState entered")
-        for player in self.fsm.root.players:
-            for i in range(1,55):
-                print(i)
-                player.HitMe()
+        self.fsm.root.NewRound()
+        self.fsm.SetState("players_turn")
 
     def Update(self, dt):
         pass
