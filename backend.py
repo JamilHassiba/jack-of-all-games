@@ -4,7 +4,10 @@ from flask_socketio import emit, join_room, leave_room, SocketIO
 from game import Room, Game, War  
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+
 import random
+import threading
+import time
 
 rooms = {}
 socketio_connected = {} 
@@ -275,7 +278,6 @@ def blackjack_player_join():
     blackjack_player = game.AddPlayer()
     session["player"] = blackjack_player
 
-
 @socketio.on("connect")
 def socket_connect(*arg):
     ## VALIDATE
@@ -318,5 +320,23 @@ def socket_disconnect(*arg):
     emit("message", {"msg": "Successfully left a room"})
 
 
+def game_loop():
+    TICK_RATE = 1/30  # 30 times per second
+    while True:
+        try:
+            # Call your per-tick logic here
+            # e.g., update game states, move NPCs, process timers
+            for room_id, room in rooms.items():
+                room.game.Update()  
+        except Exception as e:
+            print("Error in game loop:", e)
+        time.sleep(TICK_RATE)
+
 if __name__ == '__main__': 
+    # Added by Thomas McPhee
+    # Start game loop
+    thread = threading.Thread(target=game_loop, daemon=True)
+    thread.start()
+
+
     app.run(host="0.0.0.0")

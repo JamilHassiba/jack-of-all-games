@@ -255,7 +255,7 @@ class Blackjack():
 
     # Methods
     def Update(self):
-        print("update...")
+        print("blackjack updated...")
 
     def AddPlayer(self):
         # Create a player object
