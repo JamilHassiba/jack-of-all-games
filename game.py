@@ -52,7 +52,53 @@ class Game:
         # this action is applied when the game finishes 
         print("game finished")
 
+class War(Game): 
+    def __init__(self, num_decks, num_players, shuffle=True, jokers=False): 
+        super().__init__(num_decks, num_players, shuffle, jokers)
+        self.max_draws = 1 
+        self.max_discards = 1 
 
+    def game_turn(self): 
+        values = {f'{i}':i for i in range(11)}
+        values["J"] = 11 
+        values["Q"] = 12
+        values["K"] = 13 
+        values["A"] = 14   
+        suitValues = {"C": 1, "D": 2, "H": 3, "S": 4}
+        max_value = -10000 
+        winning_player = None 
+        winning_player_indx = 0 
+        winning_card = None 
+        for player_index in range(len(self.players)): 
+            player = self.players[player_index]
+            card = player.discarded[-1]["code"]
+            value = values[card[0]] 
+            if value > max_value: 
+                max_value = value 
+                winning_player = player 
+                winning_player_indx = player_index
+                winning_card = card 
+            elif value == max_value: 
+                print("triggered tiebreak")
+                if value + suitValues[card[1]] > values[winning_card[0]] + suitValues[winning_card[1]]: 
+                    max_value = value 
+                    winning_player = player 
+                    winning_player_indx = player_index
+                    winning_card = card 
+        winning_player.score += 1 
+        print(f"player{winning_player_indx} won a round. Currrent score: {winning_player.score}")
+    
+    def game_finish(self): 
+        max_score = max([i.score for i in self.players])
+        winners = []
+        winners_index = [] 
+        for i in range(len(self.players)): 
+            print(f"Player{i}, Score: {self.players[i].score}")
+            if self.players[i].score == max_score: 
+                winners.append(self.players[i])
+                winners_index.append(i)
+        print(winners_index)
+        return winners 
 
 class Player: 
     def __init__(self, game: Game): 
@@ -148,65 +194,64 @@ class Room:
         else:
             pass  
 
-class War(Game): 
-    def __init__(self, num_decks, num_players, shuffle=True, jokers=False): 
-        super().__init__(num_decks, num_players, shuffle, jokers)
-        self.max_draws = 1 
-        self.max_discards = 1 
+### ADDED BY Thomas McPhee ###
 
-    def game_turn(self): 
-        values = {f'{i}':i for i in range(11)}
-        values["J"] = 11 
-        values["Q"] = 12
-        values["K"] = 13 
-        values["A"] = 14   
-        suitValues = {"C": 1, "D": 2, "H": 3, "S": 4}
-        max_value = -10000 
-        winning_player = None 
-        winning_player_indx = 0 
-        winning_card = None 
-        for player_index in range(len(self.players)): 
-            player = self.players[player_index]
-            card = player.discarded[-1]["code"]
-            value = values[card[0]] 
-            if value > max_value: 
-                max_value = value 
-                winning_player = player 
-                winning_player_indx = player_index
-                winning_card = card 
-            elif value == max_value: 
-                print("triggered tiebreak")
-                if value + suitValues[card[1]] > values[winning_card[0]] + suitValues[winning_card[1]]: 
-                    max_value = value 
-                    winning_player = player 
-                    winning_player_indx = player_index
-                    winning_card = card 
-        winning_player.score += 1 
-        print(f"player{winning_player_indx} won a round. Currrent score: {winning_player.score}")
+##### BLACKJACK #####
+
+class BlackjackPlayer():
+    def __init__(self):
+        self.game_score = 0
+        self.hand = []
+        self.hand_total = 0
+
+    # Getters
+    @property
+    def game_score(self):
+        return self.game_score
+    @property
+    def hand(self):
+        return self.hand
+    @property
+    def hand_total(self):
+        return self.hand_total
     
-    def game_finish(self): 
-        max_score = max([i.score for i in self.players])
-        winners = []
-        winners_index = [] 
-        for i in range(len(self.players)): 
-            print(f"Player{i}, Score: {self.players[i].score}")
-            if self.players[i].score == max_score: 
-                winners.append(self.players[i])
-                winners_index.append(i)
-        print(winners_index)
-        return winners 
-
+    # Setters
+    def AddScore(self, value):
+        self.score += value
+    def AddCard(self, card_data): # assumes the formatting returned by deckofcardsapi
+        card_value = card_data["value"]
+        if card_value == ""
+        self.hand_total += card_value
+        self.hand.append(card_data)
 
 # Doesn't inherit from Game
 class Blackjack():
     def __init__(self, max_player_count):
-        self.max_player_count = max_player_count
-        self.players = []
-        self.deck = Deck(decks=1, shuffle=True, jokers=False)
+        self.__max_player_count = max_player_count
 
+    @staticmethod
+    def convert_card_value_to_int(card_value: str) -> int: # "3" "7" "ACE" "KING" "QUEEN" "JACK"
+        match card_value:
+            case "KING", "QUEEN", "JACK": card_value = "10"
+            case "ACE": card_value = "11"
+
+        return int(card_value)
+
+
+
+    # Getters
+    @property
+    def max_player_count(self):
+        return self.max_player_count
+    
+    # Setters
+
+
+
+### END ###
 
         
-    
+#region 
 # for each game the update needs to include additional code to enforce the rules. 
 # basic workflow currently: 
 # - unlock the game 
@@ -256,3 +301,4 @@ class Blackjack():
 #     simGame.game_finish()
 
 # WarGame()
+#endregion

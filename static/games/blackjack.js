@@ -4,5 +4,13 @@ import {SendData} from '../utils.js';
 
 console.log("blackjack.js is running...")
 
+// REFERENCES
+let player_hand_container = document.getElementById("player-hand");
+let dealer_hand_container = document.getElementById("dealer-hand");
+
 // Create socket object;
 //var socket = io();
+
+
+// UTILITY METHODS
+

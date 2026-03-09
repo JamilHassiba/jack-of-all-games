@@ -1,10 +1,10 @@
 from flask import Flask, request, render_template, redirect, session, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
-import sqlite3
 from flask_session import Session 
-import random
-from game import Room, Game, War  
 from flask_socketio import emit, join_room, leave_room, SocketIO
+from game import Room, Game, War  
+import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
+import random
 
 rooms = {}
 socketio_connected = {} 
@@ -17,7 +17,6 @@ app.config['SESSION_PERMANENT'] = True                     # persistent sessions
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600            # keep session on server for x seconds  
 Session(app)
 socketio = SocketIO(app)
-
 
 # need a secret key for the session retained data
 def db():
