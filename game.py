@@ -190,7 +190,7 @@ class Room:
             pass 
             # this is an example of how we would extend
         elif game_type == "blackjack":
-            self.game = Blackjack(num_players)
+            self.game = Blackjack(num_players, self)
         else:
             pass  
 
@@ -238,9 +238,18 @@ class Blackjack():
         return int(card_value)
 
     # CONSTRUCTOR
-    def __init__(self, max_player_count):
+    def __init__(self, max_player_count, room_reference):
         self.__max_player_count = max_player_count
         self.__players = []
+        self.__room = room_reference # parent object
+
+
+    def AddPlayer(self):
+        # Create a player object
+        player = BlackjackPlayer()
+        self.__players.append(player)
+        return player
+
 
     # Getters
     @property
@@ -252,6 +261,17 @@ class Blackjack():
     
     # Setters
 
+
+    ## Dunders
+    def __str__(self):
+        output = "\n==========\n"
+        output += "BLACKJACK OBJECT\n"
+        output += f"RoomID: {self.__room.id}\n"
+        output += "Players:\n"
+        for player in self.players:
+            output += f"     {player}\n"
+        output += "\n==========\n"
+        return output
 
 
 ### END ###

@@ -272,8 +272,10 @@ def blackjack_player_join():
     if not room: print("Tried to connect frontend room - backend room no longer exists"); return
 
     game = room.game
-    print("BLACKJACK PLAYER JOINED")
-    print(game)
+    blackjack_player = game.AddPlayer()
+    session["player"] = blackjack_player
+
+    print(f"\nSESSION\n\t{session}")
 
 @socketio.on("connect")
 def socket_connect(*arg):
