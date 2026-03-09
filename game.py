@@ -202,6 +202,8 @@ class Blackjack():
     def __init__(self, max_player_count):
         self.max_player_count = max_player_count
         self.players = []
+        self.deck = Deck(decks=1, shuffle=True, jokers=False)
+
 
         
     
