@@ -242,14 +242,26 @@ class Blackjack():
         self.__max_player_count = max_player_count
         self.__players = []
         self.__room = room_reference # parent object
+        self.__current_state = 'intermission'
+        '''
+            available states:
+                intermission
+                round_start
+                players_turn
+                dealer_turn
+                score
+                cleanup
+        '''
 
+    # Methods
+    def Update(self):
+        print("update...")
 
     def AddPlayer(self):
         # Create a player object
         player = BlackjackPlayer()
         self.__players.append(player)
         return player
-
 
     # Getters
     @property
@@ -258,14 +270,17 @@ class Blackjack():
     @property
     def players(self):
         return self.__players
+    @property
+    def current_state(self):
+        return self.__current_state
     
-    # Setters
 
 
     ## Dunders
     def __str__(self):
         output = "\n==========\n"
         output += "BLACKJACK OBJECT\n"
+        output += f"CurrentState: {self.__current_state}\n"
         output += f"RoomID: {self.__room.id}\n"
         output += "Players:\n"
         for player in self.players:
