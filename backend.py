@@ -267,36 +267,48 @@ def get_roomid():
         if room_id in rooms.keys(): 
             return room_id 
 
-#socketio routes 
+# socketio routes
+
 @socketio.on("connect")
-def socket_connect(*arg):         # currently assumes the user is already in a room 
-    if "room" in session.keys():
-        room_id = session["room"]
-        if room_id in rooms.keys(): 
-            room = rooms[room_id]
-            sid = request.sid 
-            socketio_connected[sid] = room        # save the room 
-            if room_id not in socketio_rooms:
-                join_room(room_id)
-                socketio_rooms.append(room_id) 
-            else: 
-                join_room(room_id)
-            emit("message", {"msg":f"Successfully joined a room - room_id: {room_id}"})
-    else: 
-        print("Tried to connect frontend room - user is not in a backend room yet")
+def socket_connect(*arg):
+    ## VALIDATE
+    room_id = session.get("room") # User must be in a backend room
+    if not room_id: print("Tried to connect frontend room - user is not in a backend room yet"); return
+
+    # Room must exist
+    room = rooms.get(room_id)
+    if not room: print("Tried to connect frontend room - backend room no longer exists"); return
+
+    sid = request.sid
+
+    # Track connection
+    socketio_connected[sid] = room
+
+    # Join socketio room
+    join_room(room_id)
+
+    if room_id not in socketio_rooms:
+        socketio_rooms.append(room_id)
+
+    emit("message", {"msg": f"Successfully joined a room - room_id: {room_id}"})
 
 @socketio.on("disconnect")
-def socket_disconnect(*arg): 
-    if "room" in session.keys(): 
-        room_id = session["room"]
-        if room_id in rooms.keys(): 
-            room = rooms[room_id]
-            sid = request.sid 
-            socketio_connected.pop(sid)
-            leave_room(room_id)                 # WARNING: NO GARBAGE COLLECTION FOR SOCKETIO_ROOM
-            emit("message", {"msg":"Successfully left a room"})
-    else: 
-        print("Tried to disconnect frontend room - user is not in a backend room yet")
+def socket_disconnect(*arg):
+    ## VALDIATE
+    room_id = session.get("room")  # User must be in a backend room
+    if not room_id: print("Tried to disconnect frontend room - user is not in a backend room yet"); return
+
+    # Room must exist
+    room = rooms.get(room_id)
+    if not room: print("Tried to disconnect frontend room - backend room no longer exists"); return
+
+    sid = request.sid
+
+    socketio_connected.pop(sid, None)
+
+    leave_room(room_id)
+
+    emit("message", {"msg": "Successfully left a room"})
 
 
 if __name__ == '__main__': 
