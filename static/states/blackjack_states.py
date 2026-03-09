@@ -27,7 +27,7 @@ class round_start(State):
     def OnEnter(self):
         print("RoundStartState entered")
         for player in self.fsm.root.players:
-            for i in range(1,52):
+            for i in range(1,55):
                 print(i)
                 player.HitMe()
 

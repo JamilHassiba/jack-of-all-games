@@ -212,10 +212,11 @@ class BlackjackPlayer():
 
     def HitMe(self):
         cards_list = self.__deck.draw()
-        # if not cards_list:
-        #     self.__deck.reshuffle()
-        #     cards_list = self.__deck.draw()
-        
+
+        if not cards_list:
+            self.__deck.new(shuffle=True, decks=1, jokers=False)
+            cards_list = self.__deck.draw()
+
         card_data = cards_list[0]
         self.AddCardToHand(card_data)
         print(self)
