@@ -321,15 +321,19 @@ def socket_disconnect(*arg):
 
 
 def game_loop():
-    TICK_RATE = 1/30  # 30 times per second
+    last_time = time.time()
+    TICK_RATE = 1/30  # 30 ticks/sec
     while True:
+        current_time = time.time()
+        dt = current_time - last_time
+        last_time = current_time
+
         try:
-            # Call your per-tick logic here
-            # e.g., update game states, move NPCs, process timers
             for room_id, room in rooms.items():
-                room.game.Update()  
+                room.game.Update(dt)  # pass delta time in seconds
         except Exception as e:
             print("Error in game loop:", e)
+
         time.sleep(TICK_RATE)
 
 if __name__ == '__main__': 
