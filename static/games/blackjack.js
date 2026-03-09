@@ -33,12 +33,21 @@ socket.on('write_hand', function(data) {
 
 });
 
-CreatePlayerInfo("bill", "5", "test", "")
+socket.on('create_player_label', function(data) {
+    if (data.id == socket.id) return
+    CreatePlayerInfo(
+        (data.id).substring(0,4),
+        data.game_score,
+        data.hand,
+        data.status
+    )
+})
+
 
 // UTILITY METHODS
 function CreatePlayerInfo(name, game_score, hand, status) {
     let e = document.createElement("li")
-    e.innerHTML = `${name} | ${game_score} | ${hand} ${status}`
+    e.innerHTML = `${name} | Score: ${game_score} | ${hand} | ${status}`
     other_players_container.appendChild(e)
     return e
 }

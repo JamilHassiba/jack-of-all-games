@@ -280,6 +280,14 @@ def blackjack_player_join():
     blackjack_player = game.AddPlayer(request.sid)
     session["player"] = blackjack_player
 
+    socketio.emit("create_player_label", {
+        "id" : request.sid,
+        "name" : request.sid, ## REPLACE WITH THEIR USERNAME
+        "game_score" : "0",
+        "hand" : "",
+        "status" : "in lobby",
+    }, to=room_id)
+
 @socketio.on("connect")
 def socket_connect(*arg):
     ## VALIDATE
