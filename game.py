@@ -213,8 +213,9 @@ class BlackjackPlayer():
     def HitMe(self):
         cards_list = self.__deck.draw()
 
+        # If deck is empty, reshuffle instead of creating a new deck
         if not cards_list:
-            self.__deck.new(shuffle=True, decks=1, jokers=False)
+            self.__deck.reshuffle(remaining_only=False)  # shuffle all cards back in
             cards_list = self.__deck.draw()
 
         card_data = cards_list[0]
