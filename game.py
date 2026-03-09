@@ -200,9 +200,10 @@ class Room:
 
 class BlackjackPlayer():
     def __init__(self):
-        self.game_score = 0
-        self.hand = []
-        self.hand_total = 0
+        self.__game_score = 0
+        self.__hand = []
+        self.__hand_total = 0
+        self.__deck = Deck(id=None, shuffle=True, decks=1, jokers=False) 
 
     # Getters
     @property
@@ -214,20 +215,22 @@ class BlackjackPlayer():
     @property
     def hand_total(self):
         return self.hand_total
+    @property
+    def deck(self):
+        return self.deck
     
     # Setters
     def AddScore(self, value):
         self.score += value
-    def AddCard(self, card_data): # assumes the formatting returned by deckofcardsapi
-        card_value = card_data["value"]
-        if card_value == ""
-        self.hand_total += card_value
+    def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
+        self.hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
         self.hand.append(card_data)
 
 # Doesn't inherit from Game
 class Blackjack():
     def __init__(self, max_player_count):
         self.__max_player_count = max_player_count
+
 
     @staticmethod
     def convert_card_value_to_int(card_value: str) -> int: # "3" "7" "ACE" "KING" "QUEEN" "JACK"
