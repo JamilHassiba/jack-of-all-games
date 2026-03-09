@@ -6,7 +6,3 @@ console.log("blackjack.js is running...")
 
 // Create socket object;
 //var socket = io();
-
-// Set the title
-Title.innerHTML = "Blackjack | 0123";
-

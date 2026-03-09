@@ -227,10 +227,10 @@ def frontend_room():
 
     # Handle game types
     if room.game_type == "war":
-        return render_template("war.html")
+        return render_template("war.html", code=room_id)
 
     if room.game_type == "blackjack":
-        return render_template("blackjack.html")
+        return render_template("blackjack.html", code=room_id)
 
     if room.game_type == "poker":
         pass  # extension example
@@ -260,12 +260,6 @@ def get_hand():
             player = game.players[session["player_index"]]
             return player.show()
 
-@app.route("/get_roomid")
-def get_roomid(): 
-    if "room" in session.keys(): 
-        room_id = session["room"]
-        if room_id in rooms.keys(): 
-            return room_id 
 
 # socketio routes
 
