@@ -17,11 +17,21 @@ socket.on('connect', function() {
     socket.emit('blackjack_player_join');
 });
 
-
-
 socket.on('set_room_label', function(data) {
     title.innerHTML = title_base.concat(" | ", data.label);
-})
+});
+
+socket.on('write_hand', function(data) {
+    console.log("fired...")
+    if (data.id == socket.id) {
+        console.log("this hand belongs to me")
+    } else if (data.id == "dealer") {
+        console.log("this hand belongs to dealer")
+    } else {
+        console.log("this hand belongs to another player")
+    }
+
+});
 
 
 // UTILITY METHODS

@@ -5,6 +5,7 @@ from game import Room, Game, War
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
+import traceback
 import random
 import threading
 import time
@@ -276,7 +277,7 @@ def blackjack_player_join():
     if not room: print("Tried to connect frontend room - backend room no longer exists"); return
 
     game = room.game
-    blackjack_player = game.AddPlayer()
+    blackjack_player = game.AddPlayer(request.sid)
     session["player"] = blackjack_player
 
 @socketio.on("connect")
@@ -335,6 +336,7 @@ def game_loop():
                 room.game.Update(dt)  # pass delta time in seconds
         except Exception as e:
             print("Error in game loop:", e)
+            traceback.print_exc()
 
         time.sleep(TICK_RATE)
 

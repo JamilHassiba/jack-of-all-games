@@ -204,7 +204,9 @@ class Room:
 ##### BLACKJACK #####
 
 class BlackjackPlayer():
-    def __init__(self):
+    def __init__(self, sid, game):
+        self.__game = game
+        self.__id = sid
         self.__game_score = 0
         self.__hand = []
         self.__hand_total = 0
@@ -242,12 +244,14 @@ class BlackjackPlayer():
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
         self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
         self.__hand.append(card_data["code"])
+        self.__game.socketio.emit('write_hand', {"id" : self.__id}, to=self.__game.room.id)
 
     def __str__(self):
         return f"Player Object | Hand: {self.__hand} | Total: {self.__hand_total}"
 
 class BlackjackDealer():
-    def __init__(self):
+    def __init__(self, game):
+        self.__game = game
         self.__hand = []
         self.__hand_total = 0
         self.__deck = Deck(id=None, shuffle=True, decks=1, jokers=False) 
@@ -278,6 +282,8 @@ class BlackjackDealer():
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
         self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
         self.__hand.append(card_data["code"])
+        print("firing the event")
+        self.__game.socketio.emit("write_hand", {"id" : "dealer"}, to=self.__game.room.id)
 
     def __str__(self):
         return f"Dealer Object | Hand: {self.__hand} | Total: {self.__hand_total}"
@@ -301,7 +307,7 @@ class Blackjack():
         self.__max_player_count = max_player_count
         self.__players = []
         self.__room = room_reference # parent object
-        self.__dealer = BlackjackDealer()
+        self.__dealer = BlackjackDealer(self)
        
         self.__FSM = fsm(self)
         self.__FSM.SetStates({
@@ -318,9 +324,9 @@ class Blackjack():
     def Update(self, dt):
         self.__FSM.Update(dt)
 
-    def AddPlayer(self):
+    def AddPlayer(self, sid):
         # Create a player object
-        player = BlackjackPlayer()
+        player = BlackjackPlayer(sid, self)
         self.__players.append(player)
         return player
 
