@@ -300,7 +300,7 @@ def socket_connect(*arg):
     if room_id not in socketio_rooms:
         socketio_rooms.append(room_id)
 
-    
+    #
     emit("message", {"msg": f"Successfully joined a room - room_id: {room_id}"})
 
 @socketio.on("disconnect")
