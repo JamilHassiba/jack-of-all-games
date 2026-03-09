@@ -280,6 +280,7 @@ def blackjack_player_join():
     blackjack_player = game.AddPlayer(request.sid)
     session["player"] = blackjack_player
 
+    # Tell other players to render this new player as a label
     socketio.emit("create_player_label", {
         "id" : request.sid,
         "name" : request.sid, ## REPLACE WITH THEIR USERNAME
@@ -287,6 +288,16 @@ def blackjack_player_join():
         "hand" : "",
         "status" : "in lobby",
     }, to=room_id)
+
+    # Tell then newly connected player to render all previous players
+    for player in game.players:
+        socketio.emit("create_player_label", {
+            "id" : player.id,
+            "name" : player.id, ## REPLACE WITH THEIR USERNAME
+            "game_score" : player.game_score,
+            "hand" : player.hand,
+            "status" : "",
+        }, to=request.sid)
 
 @socketio.on("connect")
 def socket_connect(*arg):

@@ -226,6 +226,9 @@ class BlackjackPlayer():
 
     # Getters
     @property
+    def id(self):
+        return self.__id
+    @property
     def game_score(self):
         return self.__game_score
     @property
