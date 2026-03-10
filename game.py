@@ -1,5 +1,10 @@
 from api import Deck, Pile
 from time import sleep
+
+# Thomas McPhee
+from static.states.fsm import fsm
+import static.states.blackjack_states as blackjack_states
+
 import random
 chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
@@ -52,7 +57,53 @@ class Game:
         # this action is applied when the game finishes 
         print("game finished")
 
+class War(Game): 
+    def __init__(self, num_decks, num_players, shuffle=True, jokers=False): 
+        super().__init__(num_decks, num_players, shuffle, jokers)
+        self.max_draws = 1 
+        self.max_discards = 1 
 
+    def game_turn(self): 
+        values = {f'{i}':i for i in range(11)}
+        values["J"] = 11 
+        values["Q"] = 12
+        values["K"] = 13 
+        values["A"] = 14   
+        suitValues = {"C": 1, "D": 2, "H": 3, "S": 4}
+        max_value = -10000 
+        winning_player = None 
+        winning_player_indx = 0 
+        winning_card = None 
+        for player_index in range(len(self.players)): 
+            player = self.players[player_index]
+            card = player.discarded[-1]["code"]
+            value = values[card[0]] 
+            if value > max_value: 
+                max_value = value 
+                winning_player = player 
+                winning_player_indx = player_index
+                winning_card = card 
+            elif value == max_value: 
+                print("triggered tiebreak")
+                if value + suitValues[card[1]] > values[winning_card[0]] + suitValues[winning_card[1]]: 
+                    max_value = value 
+                    winning_player = player 
+                    winning_player_indx = player_index
+                    winning_card = card 
+        winning_player.score += 1 
+        print(f"player{winning_player_indx} won a round. Currrent score: {winning_player.score}")
+    
+    def game_finish(self): 
+        max_score = max([i.score for i in self.players])
+        winners = []
+        winners_index = [] 
+        for i in range(len(self.players)): 
+            print(f"Player{i}, Score: {self.players[i].score}")
+            if self.players[i].score == max_score: 
+                winners.append(self.players[i])
+                winners_index.append(i)
+        print(winners_index)
+        return winners 
 
 class Player: 
     def __init__(self, game: Game): 
@@ -128,7 +179,7 @@ class Player:
         return self.pile.show() 
 
 class Room: 
-    def __init__(self, game_type, num_players, id=None): 
+    def __init__(self, socketio, game_type, num_players, id=None): 
         self.game_type = game_type 
         self.player_count = 0 
         self.num_players = num_players
@@ -143,59 +194,199 @@ class Room:
         elif game_type == "poker": 
             pass 
             # this is an example of how we would extend
+        elif game_type == "blackjack":
+            self.game = Blackjack(socketio, num_players, self)
         else:
             pass  
 
-class War(Game): 
-    def __init__(self, num_decks, num_players, shuffle=True, jokers=False): 
-        super().__init__(num_decks, num_players, shuffle, jokers)
-        self.max_draws = 1 
-        self.max_discards = 1 
+### ADDED BY Thomas McPhee ###
 
-    def game_turn(self): 
-        values = {f'{i}':i for i in range(11)}
-        values["J"] = 11 
-        values["Q"] = 12
-        values["K"] = 13 
-        values["A"] = 14   
-        suitValues = {"C": 1, "D": 2, "H": 3, "S": 4}
-        max_value = -10000 
-        winning_player = None 
-        winning_player_indx = 0 
-        winning_card = None 
-        for player_index in range(len(self.players)): 
-            player = self.players[player_index]
-            card = player.discarded[-1]["code"]
-            value = values[card[0]] 
-            if value > max_value: 
-                max_value = value 
-                winning_player = player 
-                winning_player_indx = player_index
-                winning_card = card 
-            elif value == max_value: 
-                print("triggered tiebreak")
-                if value + suitValues[card[1]] > values[winning_card[0]] + suitValues[winning_card[1]]: 
-                    max_value = value 
-                    winning_player = player 
-                    winning_player_indx = player_index
-                    winning_card = card 
-        winning_player.score += 1 
-        print(f"player{winning_player_indx} won a round. Currrent score: {winning_player.score}")
+##### BLACKJACK #####
+
+class BlackjackPlayer():
+    def __init__(self, sid, game):
+        self.__game = game
+        self.__id = sid
+        self.__game_score = 0
+        self.__hand = []
+        self.__hand_total = 0
+        self.__deck = Deck(id=None, shuffle=True, decks=1, jokers=False) 
+
+    def HitMe(self):
+        cards_list = self.__deck.draw()
+
+        # If deck is empty, reshuffle instead of creating a new deck
+        if not cards_list:
+            self.__deck.reshuffle(remaining_only=False)  # shuffle all cards back in
+            cards_list = self.__deck.draw()
+
+        card_data = cards_list[0]
+        self.AddCardToHand(card_data)
+        print(self)
+
+    # Getters
+    @property
+    def id(self):
+        return self.__id
+    @property
+    def game_score(self):
+        return self.__game_score
+    @property
+    def hand(self):
+        return self.__hand
+    @property
+    def hand_total(self):
+        return self.__hand_total
+    @property
+    def deck(self):
+        return self.__deck
     
-    def game_finish(self): 
-        max_score = max([i.score for i in self.players])
-        winners = []
-        winners_index = [] 
-        for i in range(len(self.players)): 
-            print(f"Player{i}, Score: {self.players[i].score}")
-            if self.players[i].score == max_score: 
-                winners.append(self.players[i])
-                winners_index.append(i)
-        print(winners_index)
-        return winners 
+    # Setters
+    def AddGameScore(self, value):
+        self.__game_score += value
+    def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
+        self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
+        self.__hand.append(card_data["code"])
+        self.__game.socketio.emit('write_hand', {"id" : self.__id, "hand" : self.hand}, to=self.__game.room.id)
+
+    def __str__(self):
+        return f"Player Object | Hand: {self.__hand} | Total: {self.__hand_total}"
+
+class BlackjackDealer():
+    def __init__(self, game):
+        self.__game = game
+        self.__hand = []
+        self.__hand_total = 0
+        self.__deck = Deck(id=None, shuffle=True, decks=1, jokers=False) 
+
+    def DealToSelf(self):
+        cards_list = self.__deck.draw()
+
+        if not cards_list:
+            self.__deck.reshuffle(remaining_only=False)
+            cards_list = self.__deck.draw()
+
+        card_data = cards_list[0]
+        self.AddCardToHand(card_data)
+        print(self)
+
+    # Getters
+    @property
+    def hand(self):
+        return self.__hand
+    @property
+    def hand_total(self):
+        return self.__hand_total
+    @property
+    def deck(self):
+        return self.__deck
+    
+    # Setters
+    def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
+        self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
+        self.__hand.append(card_data["code"])
+        print("firing the event")
+        self.__game.socketio.emit("write_hand", {"id" : "dealer", "hand" : self.hand}, to=self.__game.room.id)
+
+    def __str__(self):
+        return f"Dealer Object | Hand: {self.__hand} | Total: {self.__hand_total}"
+
+# Doesn't inherit from Game
+class Blackjack():
+    # STATIC
+    @staticmethod
+    def convert_card_value_to_int(card_value: str) -> int:
+        match card_value:
+            case "KING" | "QUEEN" | "JACK":
+                card_value = "10"
+            case "ACE":
+                card_value = "11"
+
+        return int(card_value)
+
+    # CONSTRUCTOR
+    def __init__(self, socketio, max_player_count, room_reference):
+        self.__socketio = socketio
+        self.__max_player_count = max_player_count
+        self.__players = []
+        self.__room = room_reference # parent object
+        self.__dealer = BlackjackDealer(self)
+       
+        self.__FSM = fsm(self)
+        self.__FSM.SetStates({
+            "intermission" : blackjack_states.intermission(self.__FSM),
+            "round_start" : blackjack_states.round_start(self.__FSM),
+            "players_turn" : blackjack_states.players_turn(self.__FSM),
+            "dealer_turn" : blackjack_states.dealer_turn(self.__FSM),
+            "score" : blackjack_states.score(self.__FSM),
+            "cleanup" : blackjack_states.cleanup(self.__FSM),
+        })
+        self.__FSM.Begin("intermission")
+
+    # Methods
+    def Update(self, dt):
+        self.__FSM.Update(dt)
+
+    def AddPlayer(self, sid):
+        # Create a player object
+        player = BlackjackPlayer(sid, self)
+        self.__players.append(player)
+        return player
+
+    def NewRound(self):
+        print("New round created")
+        self.__current_round = BlackjackRound(self, self.players)
+
+    # Getters
+    @property
+    def room(self):
+        return self.__room
+    @property
+    def socketio(self):
+        return self.__socketio
+    @property
+    def max_player_count(self):
+        return self.__max_player_count
+    @property
+    def players(self):
+        return self.__players
+    @property
+    def current_state(self):
+        return self.__current_state
+    @property
+    def dealer(self):
+        return self.__dealer
+
+    ## Dunders
+    def __str__(self):
+        output = "\n==========\n"
+        output += "BLACKJACK OBJECT\n"
+        output += f"CurrentState: {self.__current_state}\n"
+        output += f"RoomID: {self.__room.id}\n"
+        output += "Players:\n"
+        for player in self.players:
+            output += f"     {player}\n"
+        output += "\n==========\n"
+        return output
+
+class BlackjackRound():
+    def __init__(self, game, players):
+        self.__game = game #reference to the parent game
+        self.__players_in_round = players.copy()
+        self.__players_finished = []
+
+        self.DealInitialCards()
+
+    def DealInitialCards(self):
+        self.__game.dealer.DealToSelf()
+        for player in self.__players_in_round:
+            player.HitMe()
+
+
+### END ###
 
         
-    
+#region 
 # for each game the update needs to include additional code to enforce the rules. 
 # basic workflow currently: 
 # - unlock the game 
@@ -245,3 +436,4 @@ class War(Game):
 #     simGame.game_finish()
 
 # WarGame()
+#endregion

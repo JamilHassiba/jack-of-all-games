@@ -1,10 +1,16 @@
 from flask import Flask, request, render_template, redirect, session, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
-import sqlite3
 from flask_session import Session 
-import random
-from game import Room, Game, War  
 from flask_socketio import emit, join_room, leave_room, SocketIO
+from game import Room, Game, War  
+import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
+
+import traceback
+import random
+import threading
+import time
+
+from static.states import fsm, state, blackjack_states
 
 rooms = {}
 socketio_connected = {} 
@@ -17,7 +23,6 @@ app.config['SESSION_PERMANENT'] = True                     # persistent sessions
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600            # keep session on server for x seconds  
 Session(app)
 socketio = SocketIO(app)
-
 
 # need a secret key for the session retained data
 def db():
@@ -115,46 +120,45 @@ def create_room():                   # frontend sends a POST request and we make
     try: 
         data = request.form 
         game_type = data["game_type"]
-        if not game_type in ["war",]: 
+        if not game_type in ["war", "blackjack"]: 
             return "Cannot create room - game type not supported"
         num_players = int(data["num_players"])
-        room = Room(game_type, num_players)
+        room = Room(socketio, game_type, num_players)
         rooms[room.id] = room                # store rooms in a dict for quick access 
         return f"successfully created room with id {room.id}"
     except:
         return "error, something went wrong. source: creating a room" 
 
-@app.route("/join_room", methods=["POST", "GET"])             # frontend sends a room id for the user to join 
-def backend_join_room(): 
-    # assumed frontend data format: 
-    # form data with attributes: room_id
-    try: 
-        data = request.form 
+@app.route("/join_room", methods=["POST", "GET"])
+def backend_join_room():
+    try:
+        data = request.form
         room_id = data["room_id"]
-        if room_id in rooms.keys(): 
-            if not session.get("room"):  
-                if not session.get("player_index"): 
-                    room = rooms[room_id]                                # fetch the room obj 
-                    game = room.game                                       # fetch the game obj 
-                    if room.player_count < room.num_players:            # store the player obj in session dict 
-                        session["room"] = room.id 
-                        session["player_index"] = room.player_count
-                        room.player_count += 1 
-                        return f"success - joined room with id {room.id}, player num {session['player_index']}"
-                    else: 
-                        return "The room is full"
-                else: 
-                    return "You are already in a room"
-            else:
-                return "You are already in a room"
-        else: 
-            return "Room ID does not exist"
-    except: 
+
+        # Validate
+        if room_id not in rooms: return "Room ID does not exist"
+        if session.get("room"): return "You are already in a room"
+        if session.get("player_index"): return "You are already in a room"
+            
+        room = rooms[room_id]
+        # Room must have space
+        if room.player_count >= room.num_players:
+            return "The room is full"
+
+        # Main logic
+        session["room"] = room.id
+        session["player_index"] = room.player_count
+        room.player_count += 1
+
+        return f"success - joined room with id {room.id}, player num {session['player_index']}"
+
+    except Exception:
         return "error, something went wrong. source: joining room"
+
 
 @app.route("/search_rooms", methods=["POST", "GET"])
 def search_rooms(): 
-    print([room for room in rooms])
+    #print([room for room in rooms])
     data = {
         room.id: {
             "type": room.game_type, 
@@ -218,15 +222,24 @@ def play_card():
         return "Not provided with card code - cannot discard"
 
 @app.route("/room")
-def frontend_room(): 
-    if "room" in session.keys(): 
-        room_id = session["room"]
-        if room_id in rooms.keys(): 
-            room = rooms[room_id]
-            if room.game_type == "war": 
-                return render_template("war.html")
-            elif room.game_type == "poker": 
-                pass                                      # extension example 
+def frontend_room():
+    if "room" not in session: return "You are not in a room"
+    room_id = session["room"]
+
+    if room_id not in rooms: return "Room does not exist"
+    room = rooms[room_id]
+
+    # Handle game types
+    if room.game_type == "war":
+        return render_template("war.html", code=room_id)
+
+    if room.game_type == "blackjack":
+        return render_template("blackjack.html", code=room_id)
+
+    if room.game_type == "poker":
+        pass  # extension example
+
+    return "Unsupported game type"
 
 @app.route("/update")
 def game_update():
@@ -251,69 +264,106 @@ def get_hand():
             player = game.players[session["player_index"]]
             return player.show()
 
-@app.route("/get_roomid")
-def get_roomid(): 
-    if "room" in session.keys(): 
-        room_id = session["room"]
-        if room_id in rooms.keys(): 
-            return room_id 
 
-#socketio routes 
+# socketio routes
+@socketio.on("blackjack_player_join")
+def blackjack_player_join():
+    ## VALIDATE
+    room_id = session.get("room") # User must be in a backend room
+    if not room_id: print("Tried to connect frontend room - user is not in a backend room yet"); return
+
+    # Room must exist
+    room = rooms.get(room_id)
+    if not room: print("Tried to connect frontend room - backend room no longer exists"); return
+
+    game = room.game
+    blackjack_player = game.AddPlayer(request.sid)
+    session["player"] = blackjack_player
+
+    # Tell other players to render this new player as a label
+    socketio.emit("create_player_label", {
+        "id" : request.sid,
+        "name" : request.sid, ## REPLACE WITH THEIR USERNAME
+        "game_score" : "0",
+        "hand" : "",
+        "status" : "",
+    }, to=room_id)
+
+    # Tell then newly connected player to render all previous players
+    for player in game.players:
+        socketio.emit("create_player_label", {
+            "id" : player.id,
+            "name" : player.id, ## REPLACE WITH THEIR USERNAME
+            "game_score" : player.game_score,
+            "hand" : player.hand,
+            "status" : "",
+        }, to=request.sid)
+
 @socketio.on("connect")
-def socket_connect(*arg):         # currently assumes the user is already in a room 
-    if "room" in session.keys():
-        room_id = session["room"]
-        if room_id in rooms.keys(): 
-            room = rooms[room_id]
-            sid = request.sid 
-            socketio_connected[sid] = room        # save the room 
-            if room_id not in socketio_rooms:
-                join_room(room_id)
-                socketio_rooms.append(room_id) 
-            else: 
-                join_room(room_id)
-            emit("message", {"msg":f"Successfully joined a room - room_id: {room_id}"}, to=room_id)
-    else: 
-        print("Tried to connect frontend room - user is not in a backend room yet")
+def socket_connect(*arg):
+    ## VALIDATE
+    room_id = session.get("room") # User must be in a backend room
+    if not room_id: print("Tried to connect frontend room - user is not in a backend room yet"); return
+
+    # Room must exist
+    room = rooms.get(room_id)
+    if not room: print("Tried to connect frontend room - backend room no longer exists"); return
+
+    sid = request.sid
+
+    # Track connection
+    socketio_connected[sid] = room
+
+    # Join socketio room
+    join_room(room_id)
+
+    if room_id not in socketio_rooms:
+        socketio_rooms.append(room_id)
+
+    #
+    emit("message", {"msg": f"Successfully joined a room - room_id: {room_id}"})
 
 @socketio.on("disconnect")
-def socket_disconnect(*arg): 
-    if "room" in session.keys(): 
-        room_id = session["room"]
-        if room_id in rooms.keys(): 
-            room = rooms[room_id]
-            sid = request.sid 
-            socketio_connected.pop(sid)
-            leave_room(room_id)                 # WARNING: NO GARBAGE COLLECTION FOR SOCKETIO_ROOM
-            emit("message", {"msg":"Successfully left a room"}, to=room_id)
-    else: 
-        print("Tried to disconnect frontend room - user is not in a backend room yet")
+def socket_disconnect(*arg):
+    ## VALDIATE
+    room_id = session.get("room")  # User must be in a backend room
+    if not room_id: print("Tried to disconnect frontend room - user is not in a backend room yet"); return
+
+    # Room must exist
+    room = rooms.get(room_id)
+    if not room: print("Tried to disconnect frontend room - backend room no longer exists"); return
+
+    sid = request.sid
+
+    socketio_connected.pop(sid, None)
+
+    leave_room(room_id)
+
+    emit("message", {"msg": "Successfully left a room"})
 
 
+def game_loop():
+    last_time = time.time()
+    TICK_RATE = 1/30  # 30 ticks/sec
+    while True:
+        current_time = time.time()
+        dt = current_time - last_time
+        last_time = current_time
 
-# temporary routes, delete them once the code is fully production ready
+        try:
+            for room_id, room in rooms.items():
+                room.game.Update(dt)  # pass delta time in seconds
+        except Exception as e:
+            print("Error in game loop:", e)
+            traceback.print_exc()
 
-@app.route("/test_conn")
-def ryan(): 
-    session.clear()
-    return render_template("conn_test.html")
-
-@app.route("/send_data")
-def send_data(): 
-    username = session.get("username")
-    print(username)
-    if username: 
-        return jsonify({'username': session["username"]})
-    else: 
-        return jsonify({'username': "UNKNOWN USER"})
-
-
-
-@app.route("/war")
-def war():
-    return render_template("war.html")
-
-    
+        time.sleep(TICK_RATE)
 
 if __name__ == '__main__': 
+    # Added by Thomas McPhee
+    # Start game loop
+    thread = threading.Thread(target=game_loop, daemon=True)
+    thread.start()
+
+
     app.run(host="0.0.0.0")

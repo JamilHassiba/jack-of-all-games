@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blackjack | {{code}}</title>
+    <script src="..\static\games\blackjack.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+</head>
+</head>
+<body>
+
+    <!-- Main Header -->
+    <header>
+        <h1 id="title">Blackjack | {{code}}</h1>
+    </header>
+
+    <!-- Main Game Area -->
+    <main style="display: flex; gap: 20px;">
+
+        <!-- Game Panel (Dealer + Player) -->
+        <div id="game-panel" style="flex: 3; display: flex; flex-direction: column; gap: 20px;">
+
+            <!-- Dealer Section -->
+            <section id="dealer-section">
+                <h2>Dealer</h2>
+                <h3 id="dealer-hand">
+                    <!-- Dealer cards will appear here -->
+                </h3>
+            </section>
+
+            <!-- Player Section -->
+            <section id="player-section">
+                <h2>Your Hand</h2>
+                <h3 id="player-hand">
+                    <!-- Player cards will appear here -->
+                </h3>
+
+                <!-- Player Actions -->
+                <div id="player-actions">
+                    <button id="hit-btn">Hit</button>
+                    <button id="stand-btn">Stand</button>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Side Panel (Other Players) -->
+        <aside id="side-panel" style="flex: 1;">
+            <h2>Other Players</h2>
+            <ul id="other-players">
+                <!-- Other players' status (playing, busted, stood) will appear here -->
+            </ul>
+        </aside>
+
+    </main>
+
+</body>
+</html>
