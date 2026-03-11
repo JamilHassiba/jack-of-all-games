@@ -18,6 +18,7 @@ let title = document.getElementById("title")
 
 // Data
 let player_labels = {}
+let room_state = "unknown";
 
 const title_base = title.innerHTML;
 
@@ -38,8 +39,10 @@ socket.on('connect', function() {
     socket.emit('blackjack_player_join');
 });
 
-socket.on('set_room_label', function(data) {
-    title.innerHTML = title_base.concat(" | ", data.label);
+socket.on('game_state_changed', function(data) {
+    room_state = data.new_state
+    SetRoomStatus(room_state)
+    console.log("clients understanding: ".concat(room_state))
 });
 
 socket.on('write_hand', function(data) {
@@ -75,6 +78,9 @@ function StandButtonClicked() {
 }
 
 // Utility
+function SetRoomStatus(room_status) {
+    title.innerHTML = title_base.concat(" | ", room_status);
+}
 
 function CreatePlayerInfo(id, name, game_score, hand, status) {
     let e = document.createElement("li")
