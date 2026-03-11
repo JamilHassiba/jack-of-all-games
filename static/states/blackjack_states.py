@@ -1,6 +1,5 @@
 from static.states.state import State
 
-
 class intermission(State):
     def __init__(self, fsm):
         super().__init__(fsm)
@@ -23,14 +22,18 @@ class intermission(State):
 class round_start(State):
     def __init__(self, fsm):
         super().__init__(fsm)
+        self.elapsed = 0
 
     def OnEnter(self):
         print("RoundStartState entered")
         self.fsm.root.NewRound()
-        self.fsm.SetState("players_turn")
+        self.elapsed = 0
 
     def Update(self, dt):
-        pass
+        self.elapsed += dt
+
+        if self.elapsed >= 1:
+            self.fsm.SetState("players_turn")
 
     def OnExit(self):
         print("RoundStartState exited")
