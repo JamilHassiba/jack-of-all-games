@@ -301,6 +301,12 @@ def blackjack_player_join():
             "hand_total" : player.hand_total,
             "state" : player.state,
         }, to=request.sid)
+    # As well as the dealer
+    socketio.emit("relay_player_info", {
+            "id" : "dealer",
+            "hand" : game.dealer.hand,
+            "hand_total" : game.dealer.hand_total,
+        }, to=request.sid)
 
 @socketio.on("blackjack_hit_request")
 def blackjack_hit_request():
