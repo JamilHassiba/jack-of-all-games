@@ -117,8 +117,9 @@ class evaluate_game(State):
         super().__init__(fsm)
 
     def OnEnter(self):
-        print("CleanupState entered")
+        print("EvaluateGameState entered")
         self.elapsed = 0
+        self.fsm.root.EvaluateGame()
 
     def Update(self, dt):
         self.elapsed += dt
@@ -126,4 +127,4 @@ class evaluate_game(State):
             self.fsm.SetState('intermission')
 
     def OnExit(self):
-        print("CleanupState exited")
+        print("EvaluateGameState exited")
