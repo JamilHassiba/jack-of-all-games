@@ -14,16 +14,19 @@ let stand_button = document.getElementById("stand-btn");
 let title = document.getElementById("title")
 
 // Data
+// Create socket object;
+var socket = io();
+
+let this_player;
+
 let players = new Map;
 
 let player_labels = {}
 let room_state = "unknown";
-let player_state = "unknown";
 
 const title_base = title.innerHTML;
 
-// Create socket object;
-var socket = io();
+
 
 //// START ////
 title.innerHTML = title_base.concat(" | waiting for state from server")
@@ -37,6 +40,9 @@ stand_button.addEventListener("mousedown", StandButtonClicked);
 
 // Socket
 socket.on('connect', function() {
+    this_player = new PlayerInfo()
+    players.set(socket.id, this_player)
+
     socket.emit('blackjack_player_join');
 });
 
@@ -73,6 +79,7 @@ socket.on('relay_player_info', function(data) {
     let id = data.id;
     let player = players.get(id);
     if (player == null) {
+        console.log("CREATING NEW PLAYER")
         player = new PlayerInfo(id);
         players.set(id, player)
     }
@@ -105,13 +112,14 @@ socket.on('create_player_label', function(data) {
 
 // Player Actions
 function HitButtonClicked() {
-    if (player_state != "playing") return;
+    if (this_player.state != "playing") return;
     if (room_state != "players_turn") return;
 
+    console.log("HIT REQUEST")
     socket.emit("blackjack_hit_request");
 };
 function StandButtonClicked() {
-    if (player_state != "playing") return;
+    if (this_player.state != "playing") return;
     if (room_state != "players_turn") return;
     
     socket.emit("blackjack_stand_request");
