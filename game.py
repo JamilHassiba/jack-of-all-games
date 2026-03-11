@@ -350,6 +350,14 @@ class Blackjack():
         print("New round created")
         self.__current_round = BlackjackRound(self, self.players)
 
+    def PlayerHitRequest(self, sid):
+        if self.__FSM.current_state_name != "players_turn": return
+
+        player = self.GetPlayerFromSID(sid)
+        if not player: return
+
+        player.HitMe()
+
     # Getters
     @property
     def room(self):
@@ -357,22 +365,30 @@ class Blackjack():
     @property
     def socketio(self):
         return self.__socketio
-    @property
-    def max_player_count(self):
-        return self.__max_player_count
-    @property
-    def players(self):
-        return self.__players
+
+
     @property
     def current_state(self):
         return self.__current_state
+
+    @property
+    def current_round(self):
+        return self.__current_round
+    
     @property
     def dealer(self):
         return self.__dealer
     @property
-    def current_round(self):
-        return self.__current_round
-
+    def players(self):
+        return self.__players
+    @property
+    def max_player_count(self):
+        return self.__max_player_count
+    def GetPlayerFromSID(self, sid):
+        for player in self.players:
+            if player.id == sid: return player
+        return None
+    
     ## Dunders
     def __str__(self):
         output = "\n==========\n"

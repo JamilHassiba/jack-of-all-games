@@ -18,6 +18,9 @@ class fsm():
     # Getters
     def GetCurrentState(self):
         return self.__states[self.__current_state_name]
+    @property
+    def current_state_name(self):
+        return self.__current_state_name
 
     # Setters
     def SetState(self, new_state_name: str):

@@ -308,10 +308,15 @@ def blackjack_player_join():
             "status" : "",
         }, to=request.sid)
 
-@socket.on("blackjack_hit_request")
+@socketio.on("blackjack_hit_request")
 def blackjack_hit_request():
-    print("blackjack hit request received")
     if not socket_validate(session): return
+    
+    room_id = session.get("room")
+    room = rooms.get(room_id)
+    sid = request.sid
+
+    room.game.PlayerHitRequest(sid);
 
 @socketio.on("connect")
 def socket_connect(*arg):
@@ -340,7 +345,7 @@ def socket_disconnect(*arg):
     room_id = session.get("room")
     room = rooms.get(room_id)
     sid = request.sid
-    
+
     socketio_connected.pop(sid, None)
 
     leave_room(room_id)
