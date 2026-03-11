@@ -322,7 +322,12 @@ class BlackjackDealer():
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
         self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
         self.__hand.append(card_data["code"])
-        self.__game.socketio.emit("write_hand", {"id" : "dealer", "hand" : self.hand}, to=self.__game.room.id)
+
+        self.__game.socketio.emit(
+            'relay_player_info',
+            {"id": "dealer", "hand": self.hand, "hand_total": self.hand_total},
+            to=self.__game.room.id)
+        #self.__game.socketio.emit("write_hand", {"id" : "dealer", "hand" : self.hand}, to=self.__game.room.id)
 
     def __str__(self):
         return f"Dealer Object | Hand: {self.__hand} | Total: {self.__hand_total}"
@@ -454,7 +459,6 @@ class BlackjackRound():
             player.SetState('playing')
             player.HitMe()
 
-
     def EvaluatePlayer(self, player):
         is_bust = BlackjackRound.IsEntityBust(player)
         has_blackjack = BlackjackRound.DoesEntityHaveBlackjack(player)
@@ -465,16 +469,16 @@ class BlackjackRound():
 
             if is_bust: 
                 self.__game.socketio.emit(
-                    "entity_goes_bust_or_blackjack", 
-                    {"id" : player.id, "type" : "bust"}, 
+                    "relay_player_info",
+                    {"id": player.id, "is_bust": True},
                     to=self.__game.room.id)
                 
             else:
                 self.__game.socketio.emit(
-                    "entity_goes_bust_or_blackjack",
-                    {"id" : player.id, "type" : "blackjack"},
-                    to=self.__game.room.id
-                )
+                    "relay_player_info",
+                    {"id": player.id, "has_blackjack": True},
+                    to=self.__game.room.id)
+                
     def EvaluateDealer(self):
         dealer = self.__game.dealer
         is_bust = BlackjackRound.IsEntityBust(dealer)
@@ -482,13 +486,13 @@ class BlackjackRound():
 
         if is_bust:
             self.__game.socketio.emit(
-                "entity_goes_bust_or_blackjack", 
-                {"id" : "dealer", "type" : "bust"}, 
+                "relay_player_info",
+                {"id": "dealer", "is_bust": True},
                 to=self.__game.room.id)
         elif has_blackjack:
             self.__game.socketio.emit(
-                "entity_goes_bust_or_blackjack", 
-                {"id" : "dealer", "type" : "blackjack"}, 
+                "relay_player_info",
+                {"id": "dealer", "has_blackjack": True},
                 to=self.__game.room.id)
 
     def PlayerHitRequest(self, sid):

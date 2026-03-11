@@ -52,39 +52,24 @@ socket.on('relay_game_state', function(data) {
         case 'cleanup'      : Game_EnteredCleanupState();      break;
     }
 });
-// socket.on('relay_player_state', function(data) {
-//     if (data.id == socket.id) {
-//         player_state = data.new_state
-        
-//         switch (player_state) {
-//             case 'lobby'    : ThisPlayer_EnteredLobbyState();    break;
-//             case 'playing'  : ThisPlayer_EnteredPlayingState();  break;
-//             case 'finished' : ThisPlayer_EnteredFinishedState(); break;
-//         }
-//     } else {
-//         switch(data.new_state) {
-//             case 'lobby'    : OtherPlayer_EnteredLobbyState();    break;
-//             case 'playing'  : OtherPlayer_EnteredPlayingState();  break;
-//             case 'finished' : OtherPlayer_EnteredFinishedState(); break;
-//         }
 
-//     }
-// })
-
-function UpdatePlayerField(id, field, value, callback1, callback2) {
+function UpdatePlayerField(id, field, value, thisplayer_callback=()=>{}, otherplayer_callback=()=>{}, dealer_callback=()=>{}) {
     let player = players.get(id)
     player[field] = value
     
+    
     if (id==socket.id) {
         // This player is this client's player
-        callback1(id, value)
+        thisplayer_callback(id, value)
+    } else if (id=="dealer") {
+        // This player is the dealer
+        dealer_callback(id, value)
     } else {
         // This player is some other player
-        callback2(id, value)
+        otherplayer_callback(id, value)
     }
 }
 socket.on('relay_player_info', function(data) {
-    console.log("RECEIVED")
     let id = data.id;
     let player = players.get(id);
     if (player == null) {
@@ -93,43 +78,19 @@ socket.on('relay_player_info', function(data) {
     }
 
     if (data.hand) 
-        UpdatePlayerField(id, "hand", data.hand, ThisPlayer_HandUpdated, OtherPlayer_HandUpdated)
+        UpdatePlayerField(id, "hand", data.hand, ThisPlayer_HandUpdated, OtherPlayer_HandUpdated, Dealer_HandUpdated)
     if (data.hand_total) 
-        UpdatePlayerField(id, "hand_total", data.hand_total, ThisPlayer_HandTotalUpdated, OtherPlayer_HandTotalUpdated)
+        UpdatePlayerField(id, "hand_total", data.hand_total, ThisPlayer_HandTotalUpdated, OtherPlayer_HandTotalUpdated, Dealer_HandTotalUpdated)
     if (data.game_score) 
         UpdatePlayerField(id, "game_score", data.game_score, ThisPlayer_GameScoreUpdated, OtherPlayer_GameScoreUpdated)
     if (data.state) 
         UpdatePlayerField(id, "state", data.state, ThisPlayer_StateUpdated, OtherPlayer_StateUpdated)
+    if (data.is_bust)
+        UpdatePlayerField(id, "is_bust", data.is_bust, ThisPlayer_IsBust_Updated, OtherPlayer_IsBust_Updated, Dealer_IsBust_Updated)
+    if (data.has_blackjack)
+        UpdatePlayerField(id, "has_blackjack", data.has_blackjack, ThisPlayer_HasBlackjack_Updated, OtherPlayer_HasBlackjack_Updated, Dealer_HasBlackjack_Updated)
 })
 
-socket.on('entity_goes_bust_or_blackjack', function(data) {
-    if (data.id == socket.id) {
-        if (data.type == "bust") ThisPlayer_WentBust();
-        else ThisPlayer_HasBlackjack();
-
-    } else if (data.id == "dealer") {
-        if (data.type == "bust") Dealer_WentBust();
-        else Dealer_HasBlackjack();
-
-    } else {
-        if (data.type == "bust") OtherPlayer_WentBust(data.id);
-        else OtherPlayer_HasBlackjack();
-    }
-})
-
-
-socket.on('write_hand', function(data) {
-    let hand = data.hand
-
-    if (data.id == socket.id) {
-        player_hand_container.innerHTML = hand
-    } else if (data.id == "dealer") {
-        dealer_hand_container.innerHTML = hand
-    } else {
-        UpdatePlayerLabelHand(data.id, hand)
-    }
-
-});
 
 socket.on('create_player_label', function(data) {
     if (data.id == socket.id) return
@@ -158,9 +119,9 @@ function StandButtonClicked() {
 
 // This Player Handlers
 function ThisPlayer_HandUpdated(playerid, new_hand) {
-    
+    player_hand_container.innerHTML = new_hand
 }
-function ThisPlayer_HandTotalUpdated(playerid, new_hand) {
+function ThisPlayer_HandTotalUpdated(playerid, new_hand_total) {
 
 }
 function ThisPlayer_GameScoreUpdated(playerid, new_hand) {
@@ -183,18 +144,20 @@ function ThisPlayer_StateUpdated(playerid, new_state) {
         }
     }
 }
-function ThisPlayer_WentBust() {
-    alert("You are bust!");
+function ThisPlayer_IsBust_Updated(playerid, is_bust) {
+    if (is_bust)
+        alert("You are bust!");
 }
-function ThisPlayer_HasBlackjack() {
-    alert("Blackjack!");
+function ThisPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
+    if (has_blackjack)
+        alert("Blackjack!");
 }
 
 // Other Player Handlers
 function OtherPlayer_HandUpdated(playerid, new_hand) {
     
 }
-function OtherPlayer_HandTotalUpdated(playerid, new_hand) {
+function OtherPlayer_HandTotalUpdated(playerid, new_hand_total) {
 
 }
 function OtherPlayer_GameScoreUpdated(playerid, new_hand) {
@@ -215,20 +178,29 @@ function OtherPlayer_StateUpdated(playerid, new_state) {
         }
     }
 }
-function OtherPlayer_WentBust(playerid) {
+function OtherPlayer_IsBust_Updated(playerid, is_bust) {
 
 }
-function OtherPlayer_HasBlackjack(playerid) {
+function OtherPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
 
 }
 
 // Dealer State Change Methods
-function Dealer_HasBlackjack() {
-    alert("Dealer has blackjack!");
+function Dealer_HandUpdated(dealerid, new_hand) {
+    dealer_hand_container.innerHTML = new_hand
 }
-function Dealer_WentBust() {
-    alert("Dealer went bust!");
+function Dealer_HandTotalUpdated(dealerid, new_hand_total) {
+    
 }
+function Dealer_IsBust_Updated(dealerid, is_bust) {
+    if (is_bust)
+        alert("Dealer went bust!");
+}
+function Dealer_HasBlackjack_Updated(dealerid, has_blackjack) {
+    if (has_blackjack)
+        alert("Dealer has blackjack!");
+}
+
 
 
 // Game State Change Methods
