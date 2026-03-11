@@ -29,6 +29,7 @@ let title = document.getElementById("title")
 var socket = io();
 
 let this_player;
+let old_game_score = 0;
 
 let players = new Map;
 let player_labels = new Map;
@@ -141,6 +142,10 @@ function ThisPlayer_HandTotalUpdated(playerid, new_hand_total) {
 }
 function ThisPlayer_GameScoreUpdated(playerid, new_game_score) {
     player_elements.game_score.innerHTML = new_game_score
+
+    let delta = new_game_score - old_game_score;
+    old_game_score = new_game_score;
+    alert(`You gained ${delta} score!`)
 }
 function ThisPlayer_StateUpdated(playerid, new_state) {
     switch (new_state) {
