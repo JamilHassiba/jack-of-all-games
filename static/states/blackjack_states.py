@@ -11,7 +11,7 @@ class intermission(State):
     def Update(self, dt):
         self.elapsed += dt
 
-        if self.elapsed >= 4:
+        if self.elapsed >= 10:
             self.fsm.SetState("round_start")
 
     def OnExit(self):
