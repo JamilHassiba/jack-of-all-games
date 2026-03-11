@@ -62,8 +62,7 @@ socket.on('relay_game_state', function(data) {
 function UpdatePlayerField(id, field, value, thisplayer_callback=()=>{}, otherplayer_callback=()=>{}, dealer_callback=()=>{}) {
     let player = players.get(id)
     player[field] = value
-    
-    
+        
     if (id==socket.id) {
         // This player is this client's player
         thisplayer_callback(id, value)
