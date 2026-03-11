@@ -517,12 +517,14 @@ class BlackjackRound():
 
     def EvaluateRound(self):
         match self.EvaluateDealer():
-            case "bust": BlackjackRound.WinPlayers(self.__players_in_round.copy())
+            case "bust": 
+                winners = filter(lambda p: not BlackjackRound.IsEntityBust(p), self.__players_in_round)
+                BlackjackRound.WinPlayers(self.__players_in_round.copy())
             case "blackjack": BlackjackRound.LosePlayers(self.__players_in_round.copy())
             case _:
                 score_to_beat = self.__game.dealer.hand_total
-                winners = filter(lambda p: p.hand_total > score_to_beat, self.__players_in_round)
-                losers = filter(lambda p: p.hand_total <= score_to_beat, self.__players_in_round)
+                winners = filter(lambda p: p.hand_total > score_to_beat and not BlackjackRound.IsEntityBust(p), self.__players_in_round)
+                losers = filter(lambda p: p.hand_total <= score_to_beat or BlackjackRound.IsEntityBust(p), self.__players_in_round)
 
                 BlackjackRound.WinPlayers(winners)
                 BlackjackRound.LosePlayers(losers)
