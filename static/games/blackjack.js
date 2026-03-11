@@ -4,18 +4,36 @@ import {SendData} from '../utils.js';
 
 console.log("blackjack.js is running...")
 
-// REFERENCES
+//// INITIALISATION ////
+
+// References
 let player_hand_container = document.getElementById("player-hand");
 let dealer_hand_container = document.getElementById("dealer-hand");
 let other_players_container = document.getElementById("other-players");
-let title = document.getElementById("title")
-const title_base = title.innerHTML;
-title.innerHTML = title_base.concat(" | waiting for state from server")
 
+let hit_button = document.getElementById("hit-btn");
+let stand_button = document.getElementById("stand-btn");
+
+let title = document.getElementById("title")
+
+// Data
 let player_labels = {}
+
+const title_base = title.innerHTML;
 
 // Create socket object;
 var socket = io();
+
+//// START ////
+title.innerHTML = title_base.concat(" | waiting for state from server")
+
+// Events
+hit_button.addEventListener("mousedown", HitButtonClicked);
+stand_button.addEventListener("mousedown", StandButtonClicked);
+
+//// METHODS ////
+
+// Socket
 socket.on('connect', function() {
     socket.emit('blackjack_player_join');
 });
@@ -48,8 +66,16 @@ socket.on('create_player_label', function(data) {
     )
 })
 
+// Buttons
+function HitButtonClicked() {
+    console.log("hit clicked");
+};
+function StandButtonClicked() {
+    console.log("stand clicked");
+}
 
-// UTILITY METHODS
+// Utility
+
 function CreatePlayerInfo(id, name, game_score, hand, status) {
     let e = document.createElement("li")
     other_players_container.appendChild(e)
