@@ -77,17 +77,11 @@ function UpdatePlayerField(id, field, value, callback1, callback2) {
     
     if (id==socket.id) {
         // This player is this client's player
-        callback1()
+        callback1(id, value)
     } else {
         // This player is some other player
-        callback2()
+        callback2(id, value)
     }
-}
-function test1() {
-    console.log("YO")
-}
-function test2() {
-    console.log("OTHER")
 }
 socket.on('relay_player_info', function(data) {
     console.log("RECEIVED")
@@ -98,12 +92,14 @@ socket.on('relay_player_info', function(data) {
         players.set(id, player)
     }
 
-    if (data.hand) UpdatePlayerField(id, "hand", data.hand, test1, test2)
-
-    if (data.hand) player.hand = data.hand;
-    if (data.hand_total) player.hand_total = data.hand_total;
-    if (data.game_score) player.game_Score = data.game_score;
-    if (data.state) player.state = data.state;
+    if (data.hand) 
+        UpdatePlayerField(id, "hand", data.hand, ThisPlayer_HandUpdated, OtherPlayer_HandUpdated)
+    if (data.hand_total) 
+        UpdatePlayerField(id, "hand_total", data.hand_total, ThisPlayer_HandTotalUpdated, OtherPlayer_HandTotalUpdated)
+    if (data.game_score) 
+        UpdatePlayerField(id, "game_score", data.game_score, ThisPlayer_GameScoreUpdated, OtherPlayer_GameScoreUpdated)
+    if (data.state) 
+        UpdatePlayerField(id, "state", data.state, ThisPlayer_StateUpdated, OtherPlayer_StateUpdated)
 })
 
 socket.on('entity_goes_bust_or_blackjack', function(data) {
@@ -146,15 +142,46 @@ socket.on('create_player_label', function(data) {
     )
 })
 
-// Player State Change Methods
-function ThisPlayer_EnteredLobbyState() {
+// Player Actions
+function HitButtonClicked() {
+    if (player_state != "playing") return;
+    if (room_state != "players_turn") return;
+
+    socket.emit("blackjack_hit_request");
+};
+function StandButtonClicked() {
+    if (player_state != "playing") return;
+    if (room_state != "players_turn") return;
+    
+    socket.emit("blackjack_stand_request");
+}
+
+// This Player Handlers
+function ThisPlayer_HandUpdated(playerid, new_hand) {
+    
+}
+function ThisPlayer_HandTotalUpdated(playerid, new_hand) {
 
 }
-function ThisPlayer_EnteredPlayingState() {
-    CanRequestActions(true);
+function ThisPlayer_GameScoreUpdated(playerid, new_hand) {
+
 }
-function ThisPlayer_EnteredFinishedState() {
-    CanRequestActions(false);
+function ThisPlayer_StateUpdated(playerid, new_state) {
+    switch (new_state) {
+        case "lobby" : {
+            break;
+        }
+
+        case "playing" : {
+            CanRequestActions(true);
+            break;
+        }
+
+        case "finished" : {
+            CanRequestActions(false);
+            break;
+        }
+    }
 }
 function ThisPlayer_WentBust() {
     alert("You are bust!");
@@ -163,15 +190,30 @@ function ThisPlayer_HasBlackjack() {
     alert("Blackjack!");
 }
 
-// Other Player State Change Methods
-function OtherPlayer_EnteredLobbyState(playerid) {
+// Other Player Handlers
+function OtherPlayer_HandUpdated(playerid, new_hand) {
+    
+}
+function OtherPlayer_HandTotalUpdated(playerid, new_hand) {
 
 }
-function OtherPlayer_EnteredPlayingState(playerid) {
-
+function OtherPlayer_GameScoreUpdated(playerid, new_hand) {
+    
 }
-function OtherPlayer_EnteredFinishedState(playerid) {
+function OtherPlayer_StateUpdated(playerid, new_state) {
+    switch (new_state) {
+        case "lobby" : {
+            break;
+        }
 
+        case "playing" : {
+            break;
+        }
+
+        case "finished" : {
+            break;
+        }
+    }
 }
 function OtherPlayer_WentBust(playerid) {
 
@@ -207,20 +249,6 @@ function Game_EnteredScoreState() {
 }
 function Game_EnteredCleanupState() {
 
-}
-
-// Buttons
-function HitButtonClicked() {
-    if (player_state != "playing") return;
-    if (room_state != "players_turn") return;
-
-    socket.emit("blackjack_hit_request");
-};
-function StandButtonClicked() {
-    if (player_state != "playing") return;
-    if (room_state != "players_turn") return;
-    
-    socket.emit("blackjack_stand_request");
 }
 
 // Utility
