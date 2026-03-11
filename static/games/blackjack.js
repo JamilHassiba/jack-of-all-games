@@ -6,8 +6,17 @@ console.log("blackjack.js is running...")
 //// INITIALISATION ////
 
 // References
-let player_hand_container = document.getElementById("player-hand");
-let dealer_hand_container = document.getElementById("dealer-hand");
+let player_elements = {
+    "hand" : document.getElementById("player-hand"),
+    "hand_total" : document.getElementById("player-hand-total"),
+    "game_score" : document.getElementById("player-game-score"),
+}
+
+let dealer_elements = {
+    "hand" : document.getElementById("dealer-hand"),
+    "hand_total" : document.getElementById("dealer-hand-total"),
+}
+
 let other_players_container = document.getElementById("other-players");
 
 let hit_button = document.getElementById("hit-btn");
@@ -125,13 +134,13 @@ function StandButtonClicked() {
 
 // This Player Handlers
 function ThisPlayer_HandUpdated(playerid, new_hand) {
-    player_hand_container.innerHTML = new_hand
+    player_elements.hand.innerHTML = new_hand
 }
 function ThisPlayer_HandTotalUpdated(playerid, new_hand_total) {
-
+    player_elements.hand_total.innerHTML = new_hand_total
 }
-function ThisPlayer_GameScoreUpdated(playerid, new_hand) {
-
+function ThisPlayer_GameScoreUpdated(playerid, new_game_score) {
+    player_elements.game_score.innerHTML = new_game_score
 }
 function ThisPlayer_StateUpdated(playerid, new_state) {
     switch (new_state) {
@@ -167,7 +176,7 @@ function OtherPlayer_HandUpdated(playerid, new_hand) {
 function OtherPlayer_HandTotalUpdated(playerid, new_hand_total) {
 
 }
-function OtherPlayer_GameScoreUpdated(playerid, new_hand) {
+function OtherPlayer_GameScoreUpdated(playerid, new_game_score) {
     
 }
 function OtherPlayer_StateUpdated(playerid, new_state) {
@@ -194,10 +203,10 @@ function OtherPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
 
 // Dealer State Change Methods
 function Dealer_HandUpdated(dealerid, new_hand) {
-    dealer_hand_container.innerHTML = new_hand
+    dealer_elements.hand.innerHTML = new_hand
 }
 function Dealer_HandTotalUpdated(dealerid, new_hand_total) {
-    
+    dealer_elements.hand_total.innerHTML = new_hand_total
 }
 function Dealer_IsBust_Updated(dealerid, is_bust) {
     if (is_bust)
