@@ -80,10 +80,13 @@ class score(State):
 
     def OnEnter(self):
         print("ScoreState entered")
-        self.fsm.root.EvaluateDealer()
+        self.elapsed = 0
+        self.fsm.root.EvaluateRound()
 
     def Update(self, dt):
-        pass
+        self.elapsed += dt
+        if self.elapsed >= 5:
+            self.fsm.SetState('cleanup')
 
     def OnExit(self):
         print("ScoreState exited")

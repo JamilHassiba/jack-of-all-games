@@ -379,9 +379,9 @@ class Blackjack():
         print("New round created")
         self.__current_round = BlackjackRound(self, self.players)
 
-    def EvaluateDealer(self):
+    def EvaluateRound(self):
         if self.__current_round == None: return
-        self.__current_round.EvaluateDealer()
+        self.__current_round.EvaluateRound()
     def PlayerHitRequest(self, sid):
         if self.__current_round == None: return
         self.__current_round.PlayerHitRequest(sid)
@@ -441,6 +441,16 @@ class BlackjackRound():
     def DoesEntityHaveBlackjack(entity):
         return entity.hand_total == 21
 
+    @staticmethod
+    def WinPlayers(winners):
+        for player in winners:
+            if BlackjackRound.DoesEntityHaveBlackjack(player): player.AddGameScore(2)
+            else: player.AddGameScore(1)
+
+    @staticmethod
+    def LosePlayers(losers):
+        pass
+
     def __init__(self, game, players):
         self.__game = game #reference to the parent game
         self.__players_in_round = players.copy()
@@ -479,6 +489,28 @@ class BlackjackRound():
                     {"id": player.id, "has_blackjack": True},
                     to=self.__game.room.id)
                 
+
+    def EvaluateRound(self):
+        dealer_result = self.EvaluateDealer()
+
+        match dealer_result:
+            case "bust":
+                # Everyone wins!
+                BlackjackRound.WinPlayers(self.__players_in_round.copy())
+
+            case "blackjack":
+                # Everyone loses!
+                BlackjackRound.LosePlayers(self.__players_in_round.copy())
+
+            case _:
+                score_to_beat = self.__game.dealer.hand_total
+                winners = filter(lambda p: p.hand_total > score_to_beat, self.__players_in_round)
+                losers = filter(lambda p: p.hand_total <= score_to_beat, self.__players_in_round)
+
+                BlackjackRound.WinPlayers(winners)
+                BlackjackRound.LosePlayers(losers)
+
+
     def EvaluateDealer(self):
         dealer = self.__game.dealer
         is_bust = BlackjackRound.IsEntityBust(dealer)
@@ -489,11 +521,17 @@ class BlackjackRound():
                 "relay_player_info",
                 {"id": "dealer", "is_bust": True},
                 to=self.__game.room.id)
+            
+            return "bust"
         elif has_blackjack:
             self.__game.socketio.emit(
                 "relay_player_info",
                 {"id": "dealer", "has_blackjack": True},
                 to=self.__game.room.id)
+            
+            return "blackjack"
+        
+        return ""
 
     def PlayerHitRequest(self, sid):
         if self.__game.FSM.current_state_name != "players_turn": return
@@ -512,7 +550,6 @@ class BlackjackRound():
         if not player: return
         if player.state != "playing": return
 
-        print("CALL STAND")
         player.Stand()
         self.__players_finished.append(player)
 
