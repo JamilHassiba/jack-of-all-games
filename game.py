@@ -282,6 +282,15 @@ class BlackjackPlayer():
             'relay_player_info',
             {"id": self.id, "hand": self.hand, "hand_total": self.hand_total},
             to=self.__game.room.id)
+        
+    def ClearHand(self):
+        self.__hand_total = 0
+        self.__hand = []
+
+        self.__game.socketio.emit(
+            'relay_player_info',
+            {"id": self.id, "hand": self.hand, "hand_total": self.hand_total},
+            to=self.__game.room.id)
 
     def __str__(self):
         return f"Player Object | Hand: {self.__hand} | Total: {self.__hand_total}"
@@ -327,8 +336,16 @@ class BlackjackDealer():
             'relay_player_info',
             {"id": "dealer", "hand": self.hand, "hand_total": self.hand_total},
             to=self.__game.room.id)
-        #self.__game.socketio.emit("write_hand", {"id" : "dealer", "hand" : self.hand}, to=self.__game.room.id)
+    
+    def ClearHand(self):
+        self.__hand_total = 0
+        self.__hand = []
 
+        self.__game.socketio.emit(
+            'relay_player_info',
+            {"id": "dealer", "hand": self.hand, "hand_total": self.hand_total},
+            to=self.__game.room.id)
+        
     def __str__(self):
         return f"Dealer Object | Hand: {self.__hand} | Total: {self.__hand_total}"
 
@@ -362,6 +379,7 @@ class Blackjack():
             "dealer_turn" : blackjack_states.dealer_turn(self.__FSM),
             "score" : blackjack_states.score(self.__FSM),
             "cleanup" : blackjack_states.cleanup(self.__FSM),
+            "evaluate_game" : blackjack_states.evaluate_game(self.__FSM)
         })
         self.__FSM.Begin("intermission")
 
@@ -375,10 +393,17 @@ class Blackjack():
         self.__players.append(player)
         return player
 
-    def NewRound(self):
-        print("New round created")
-        self.__current_round = BlackjackRound(self, self.players)
+    # Game Routes
+    def EvaluateGame(self):
+        print("evaluating the game...")
 
+    # Round Routes
+    def NewRound(self):
+        self.__current_round = BlackjackRound(self, self.players)
+    def CleanupRound(self):
+        for player in self.players: player.ClearHand()
+        self.dealer.ClearHand()
+        self.__current_round = None
     def EvaluateRound(self):
         if self.__current_round == None: return
         self.__current_round.EvaluateRound()
@@ -491,17 +516,9 @@ class BlackjackRound():
                 
 
     def EvaluateRound(self):
-        dealer_result = self.EvaluateDealer()
-
-        match dealer_result:
-            case "bust":
-                # Everyone wins!
-                BlackjackRound.WinPlayers(self.__players_in_round.copy())
-
-            case "blackjack":
-                # Everyone loses!
-                BlackjackRound.LosePlayers(self.__players_in_round.copy())
-
+        match self.EvaluateDealer():
+            case "bust": BlackjackRound.WinPlayers(self.__players_in_round.copy())
+            case "blackjack": BlackjackRound.LosePlayers(self.__players_in_round.copy())
             case _:
                 score_to_beat = self.__game.dealer.hand_total
                 winners = filter(lambda p: p.hand_total > score_to_beat, self.__players_in_round)

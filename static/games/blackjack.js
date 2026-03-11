@@ -136,6 +136,7 @@ function ThisPlayer_GameScoreUpdated(playerid, new_hand) {
 function ThisPlayer_StateUpdated(playerid, new_state) {
     switch (new_state) {
         case "lobby" : {
+            console.log("I AM NOW A LOBBY DUDE")
             break;
         }
 

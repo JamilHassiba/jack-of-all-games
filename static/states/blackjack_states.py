@@ -7,6 +7,8 @@ class intermission(State):
     def OnEnter(self):
         print("IntermissionState entered")
         self.elapsed = 0
+        for player in self.fsm.root.players:
+            player.SetState('lobby')
 
     def Update(self, dt):
         self.elapsed += dt
@@ -98,9 +100,30 @@ class cleanup(State):
 
     def OnEnter(self):
         print("CleanupState entered")
+        self.elapsed = 0
+        self.fsm.root.CleanupRound()
 
     def Update(self, dt):
-        pass
+        self.elapsed += dt
+        if self.elapsed >= 1:
+            self.fsm.SetState('evaluate_game')
+
+    def OnExit(self):
+        print("CleanupState exited")
+
+        
+class evaluate_game(State):
+    def __init__(self, fsm):
+        super().__init__(fsm)
+
+    def OnEnter(self):
+        print("CleanupState entered")
+        self.elapsed = 0
+
+    def Update(self, dt):
+        self.elapsed += dt
+        if self.elapsed >= 3:
+            self.fsm.SetState('intermission')
 
     def OnExit(self):
         print("CleanupState exited")
