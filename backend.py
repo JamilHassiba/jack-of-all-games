@@ -298,6 +298,11 @@ def blackjack_player_join():
         "status" : "",
     }, to=room_id)
 
+    socketio.emit("relay_player_info", {
+        "id": request.sid,
+        "hand" : [],
+    }, to=room_id)
+
     # Tell then newly connected player to render all previous players
     for player in game.players:
         socketio.emit("create_player_label", {

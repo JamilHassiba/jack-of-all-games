@@ -1,7 +1,4 @@
-import {Card} from '../card.js';
-import {Deck} from '../deck.js';
-import {SendData} from '../utils.js';
-
+import {PlayerInfo} from "../classes/playerinfo.js";
 console.log("blackjack.js is running...")
 
 //// INITIALISATION ////
@@ -17,6 +14,8 @@ let stand_button = document.getElementById("stand-btn");
 let title = document.getElementById("title")
 
 // Data
+let players = new Map;
+
 let player_labels = {}
 let room_state = "unknown";
 let player_state = "unknown";
@@ -53,24 +52,60 @@ socket.on('relay_game_state', function(data) {
         case 'cleanup'      : Game_EnteredCleanupState();      break;
     }
 });
-socket.on('relay_player_state', function(data) {
-    if (data.id == socket.id) {
-        player_state = data.new_state
+// socket.on('relay_player_state', function(data) {
+//     if (data.id == socket.id) {
+//         player_state = data.new_state
         
-        switch (player_state) {
-            case 'lobby'    : ThisPlayer_EnteredLobbyState();    break;
-            case 'playing'  : ThisPlayer_EnteredPlayingState();  break;
-            case 'finished' : ThisPlayer_EnteredFinishedState(); break;
-        }
-    } else {
-        switch(data.new_state) {
-            case 'lobby'    : OtherPlayer_EnteredLobbyState();    break;
-            case 'playing'  : OtherPlayer_EnteredPlayingState();  break;
-            case 'finished' : OtherPlayer_EnteredFinishedState(); break;
-        }
+//         switch (player_state) {
+//             case 'lobby'    : ThisPlayer_EnteredLobbyState();    break;
+//             case 'playing'  : ThisPlayer_EnteredPlayingState();  break;
+//             case 'finished' : ThisPlayer_EnteredFinishedState(); break;
+//         }
+//     } else {
+//         switch(data.new_state) {
+//             case 'lobby'    : OtherPlayer_EnteredLobbyState();    break;
+//             case 'playing'  : OtherPlayer_EnteredPlayingState();  break;
+//             case 'finished' : OtherPlayer_EnteredFinishedState(); break;
+//         }
 
+//     }
+// })
+
+function UpdatePlayerField(id, field, value, callback1, callback2) {
+    let player = players.get(id)
+    player[field] = value
+    
+    if (id==socket.id) {
+        // This player is this client's player
+        callback1()
+    } else {
+        // This player is some other player
+        callback2()
     }
+}
+function test1() {
+    console.log("YO")
+}
+function test2() {
+    console.log("OTHER")
+}
+socket.on('relay_player_info', function(data) {
+    console.log("RECEIVED")
+    let id = data.id;
+    let player = players.get(id);
+    if (player == null) {
+        player = new PlayerInfo(id);
+        players.set(id, player)
+    }
+
+    if (data.hand) UpdatePlayerField(id, "hand", data.hand, test1, test2)
+
+    if (data.hand) player.hand = data.hand;
+    if (data.hand_total) player.hand_total = data.hand_total;
+    if (data.game_score) player.game_Score = data.game_score;
+    if (data.state) player.state = data.state;
 })
+
 socket.on('entity_goes_bust_or_blackjack', function(data) {
     if (data.id == socket.id) {
         if (data.type == "bust") ThisPlayer_WentBust();
@@ -85,10 +120,7 @@ socket.on('entity_goes_bust_or_blackjack', function(data) {
         else OtherPlayer_HasBlackjack();
     }
 })
-socket.on('update_player_info', function(data) {
-    let id = data.id
-    
-})
+
 
 socket.on('write_hand', function(data) {
     let hand = data.hand
@@ -189,31 +221,6 @@ function StandButtonClicked() {
     if (room_state != "players_turn") return;
     
     socket.emit("blackjack_stand_request");
-}
-
-// Classes
-class PlayerCollection {
-    constructor() {
-        this.collection = {}
-    }
-
-    AddPlayer(id, player) {
-        this.collection[id] = player
-    }
-
-    RemovePlayer(id, player) {
-        this.collection[id] = null
-    }
-}
-
-class PlayerInfo {
-    constructor(id) {
-        this.id = id
-        this.hand = []
-        this.hand_score = 0
-        this.game_score = []
-        this.state = "unknown"
-    }
 }
 
 // Utility
