@@ -43,11 +43,9 @@ class players_turn(State):
 
     def OnEnter(self):
         print("PlayersTurnState entered")
-        self.elapsed = 0
 
     def Update(self, dt):
-        self.elapsed += dt
-        if self.fsm.root.current_round.AllPlayersFinished() or self.elapsed > 5:
+        if self.fsm.root.current_round.AllPlayersFinished():
             self.fsm.SetState("dealer_turn")
 
     def OnExit(self):

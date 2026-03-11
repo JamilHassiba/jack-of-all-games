@@ -84,7 +84,9 @@ function WhenEnteredDealerTurn() {
 
 // Buttons
 function HitButtonClicked() {
-    console.log("hit clicked");
+    if (room_state != "players_turn") return;
+
+    socket.emit("blackjack_hit_request");
 };
 function StandButtonClicked() {
     console.log("stand clicked");
