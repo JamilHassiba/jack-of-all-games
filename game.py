@@ -232,6 +232,9 @@ class BlackjackPlayer():
         self.AddCardToHand(card_data)
         print(self)
 
+    def Stand(self):
+        self.SetState("finished")
+
     # Getters
     @property
     def state(self):
@@ -355,6 +358,9 @@ class Blackjack():
     def PlayerHitRequest(self, sid):
         if self.__current_round == None: return
         self.__current_round.PlayerHitRequest(sid)
+    def PlayerStandRequest(self, sid):
+        if self.__current_round == None: return
+        self.__current_round.PlayerStandRequest(sid)
 
     # Getters
     @property
@@ -444,6 +450,17 @@ class BlackjackRound():
 
         player.HitMe()
         self.EvaluatePlayer(player)
+
+    def PlayerStandRequest(self, sid):
+        if self.__game.FSM.current_state_name != "players_turn": return
+
+        player = self.GetPlayerFromSID(sid)
+        if not player: return
+        if player.state != "playing": return
+
+        print("CALL STAND")
+        player.Stand()
+        self.__players_finished.append(player)
 
 
     def AreAllPlayersFinished(self):

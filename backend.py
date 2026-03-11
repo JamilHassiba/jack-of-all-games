@@ -316,7 +316,17 @@ def blackjack_hit_request():
     room = rooms.get(room_id)
     sid = request.sid
 
-    room.game.PlayerHitRequest(sid);
+    room.game.PlayerHitRequest(sid)
+
+@socketio.on("blackjack_stand_request")
+def blackjack_stand_request():
+    if not socket_validate(session): return
+
+    room_id = session.get("room")
+    room = rooms.get(room_id)
+    sid = request.sid
+
+    room.game.PlayerStandRequest(sid)
 
 @socketio.on("connect")
 def socket_connect(*arg):

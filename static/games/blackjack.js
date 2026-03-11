@@ -100,12 +100,16 @@ function Player_EnteredFinishedState() {
 
 // Buttons
 function HitButtonClicked() {
+    if (player_state != "playing") return;
     if (room_state != "players_turn") return;
 
     socket.emit("blackjack_hit_request");
 };
 function StandButtonClicked() {
-    console.log("stand clicked");
+    if (player_state != "playing") return;
+    if (room_state != "players_turn") return;
+    
+    socket.emit("blackjack_stand_request");
 }
 
 // Utility
