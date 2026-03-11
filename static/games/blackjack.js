@@ -46,23 +46,21 @@ socket.on('relay_game_state', function(data) {
     SetRoomStatus(room_state)
 
     switch (room_state) {
-        case 'intermission': break;
-        case 'round_start': break;
-        case 'players_turn': break;
-        case 'dealer_turn': break;
-        case 'score': break;
-        case 'cleanup': break;
+        case 'intermission' : Game_EnteredIntermissionState(); break;
+        case 'round_start'  : Game_EnteredRoundStartState();   break;
+        case 'players_turn' : Game_EnteredPlayersTurnState();  break;
+        case 'dealer_turn'  : Game_EnteredDealersTurnState();  break;
+        case 'score'        : Game_EnteredScoreState();        break;
+        case 'cleanup'      : Game_EnteredCleanupState();      break;
     }
 });
 socket.on('relay_player_state', function(data) {
-    console.log("my state changed")
-    console.log(data.new_state)
     player_state = data.new_state
     
     switch (player_state) {
-        case 'lobby': break;
-        case 'playing': Player_EnteredPlayingState(); break;
-        case 'finished': Player_EnteredFinishedState(); break;
+        case 'lobby'    : Player_EnteredLobbyState();    break;
+        case 'playing'  : Player_EnteredPlayingState();  break;
+        case 'finished' : Player_EnteredFinishedState(); break;
     }
 })
 
@@ -90,12 +88,35 @@ socket.on('create_player_label', function(data) {
     )
 })
 
-// State Change Methods
+// Player State Change Methods
+function Player_EnteredLobbyState() {
+
+}
 function Player_EnteredPlayingState() {
     CanRequestActions(true);
 }
 function Player_EnteredFinishedState() {
     CanRequestActions(false);
+}
+
+// Game State Change Methods
+function Game_EnteredIntermissionState() {
+
+}
+function Game_EnteredRoundStartState() {
+
+}
+function Game_EnteredPlayersTurnState() {
+
+}
+function Game_EnteredDealersTurnState() {
+
+}
+function Game_EnteredScoreState() {
+
+}
+function Game_EnteredCleanupState() {
+
 }
 
 // Buttons
