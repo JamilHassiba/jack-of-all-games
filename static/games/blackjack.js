@@ -85,6 +85,10 @@ socket.on('entity_goes_bust_or_blackjack', function(data) {
         else OtherPlayer_HasBlackjack();
     }
 })
+socket.on('update_player_info', function(data) {
+    let id = data.id
+    
+})
 
 socket.on('write_hand', function(data) {
     let hand = data.hand
@@ -185,6 +189,31 @@ function StandButtonClicked() {
     if (room_state != "players_turn") return;
     
     socket.emit("blackjack_stand_request");
+}
+
+// Classes
+class PlayerCollection {
+    constructor() {
+        this.collection = {}
+    }
+
+    AddPlayer(id, player) {
+        this.collection[id] = player
+    }
+
+    RemovePlayer(id, player) {
+        this.collection[id] = null
+    }
+}
+
+class PlayerInfo {
+    constructor(id) {
+        this.id = id
+        this.hand = []
+        this.hand_score = 0
+        this.game_score = []
+        this.state = "unknown"
+    }
 }
 
 // Utility
