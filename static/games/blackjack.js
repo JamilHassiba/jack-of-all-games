@@ -43,7 +43,6 @@ socket.on('connect', function() {
 
 socket.on('relay_game_state', function(data) {
     room_state = data.new_state
-    SetRoomStatus(room_state)
 
     switch (room_state) {
         case 'intermission' : Game_EnteredIntermissionState(); break;
@@ -55,12 +54,21 @@ socket.on('relay_game_state', function(data) {
     }
 });
 socket.on('relay_player_state', function(data) {
-    player_state = data.new_state
-    
-    switch (player_state) {
-        case 'lobby'    : Player_EnteredLobbyState();    break;
-        case 'playing'  : Player_EnteredPlayingState();  break;
-        case 'finished' : Player_EnteredFinishedState(); break;
+    if (data.id == socket.id) {
+        player_state = data.new_state
+        
+        switch (player_state) {
+            case 'lobby'    : ThisPlayer_EnteredLobbyState();    break;
+            case 'playing'  : ThisPlayer_EnteredPlayingState();  break;
+            case 'finished' : ThisPlayer_EnteredFinishedState(); break;
+        }
+    } else {
+        switch(data.new_state) {
+            case 'lobby'    : OtherPlayer_EnteredLobbyState();    break;
+            case 'playing'  : OtherPlayer_EnteredPlayingState();  break;
+            case 'finished' : OtherPlayer_EnteredFinishedState(); break;
+        }
+
     }
 })
 
@@ -89,31 +97,41 @@ socket.on('create_player_label', function(data) {
 })
 
 // Player State Change Methods
-function Player_EnteredLobbyState() {
+function ThisPlayer_EnteredLobbyState() {
 
 }
-function Player_EnteredPlayingState() {
+function ThisPlayer_EnteredPlayingState() {
     CanRequestActions(true);
 }
-function Player_EnteredFinishedState() {
+function ThisPlayer_EnteredFinishedState() {
     CanRequestActions(false);
+}
+
+function OtherPlayer_EnteredLobbyState(playerid) {
+
+}
+function OtherPlayer_EnteredPlayingState(playerid) {
+
+}
+function OtherPlayer_EnteredFinishedState(playerid) {
+
 }
 
 // Game State Change Methods
 function Game_EnteredIntermissionState() {
-
-}
+    SetRoomStatus("Waiting for a round to begin...")
+}   
 function Game_EnteredRoundStartState() {
 
 }
 function Game_EnteredPlayersTurnState() {
-
+    SetRoomStatus("Player's turn")
 }
 function Game_EnteredDealersTurnState() {
-
+    SetRoomStatus("Dealer is playing...")
 }
 function Game_EnteredScoreState() {
-
+    SetRoomStatus("Evaluating round")
 }
 function Game_EnteredCleanupState() {
 

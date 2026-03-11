@@ -58,9 +58,17 @@ class dealer_turn(State):
 
     def OnEnter(self):
         print("DealerTurnState entered")
+        self.elapsed = 0
 
     def Update(self, dt):
-        pass
+        self.elapsed += dt
+        if self.elapsed >= 2:
+            self.elapsed = 0
+
+            if self.fsm.root.dealer.ShouldIDraw():
+                self.fsm.root.dealer.DealToSelf()
+            else:
+                self.fsm.SetState("score")
 
     def OnExit(self):
         print("DealerTurnState exited")

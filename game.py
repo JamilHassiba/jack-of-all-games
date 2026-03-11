@@ -258,14 +258,14 @@ class BlackjackPlayer():
     # Setters
     def SetState(self, new_state: str):
         self.__state = new_state
-        self.__game.socketio.emit('relay_player_state', {"new_state" : new_state}, to=self.id)
+        self.__game.socketio.emit('relay_player_state', {"id" : self.id, "new_state" : new_state}, to=self.__game.room.id)
 
     def AddGameScore(self, value):
         self.__game_score += value
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
         self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
         self.__hand.append(card_data["code"])
-        self.__game.socketio.emit('write_hand', {"id" : self.__id, "hand" : self.hand}, to=self.__game.room.id)
+        self.__game.socketio.emit('write_hand', {"id" : self.id, "hand" : self.hand}, to=self.__game.room.id)
 
     def __str__(self):
         return f"Player Object | Hand: {self.__hand} | Total: {self.__hand_total}"
@@ -298,6 +298,9 @@ class BlackjackDealer():
     @property
     def deck(self):
         return self.__deck
+    
+    def ShouldIDraw(self):
+        return self.hand_total <= 16;
     
     # Setters
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
