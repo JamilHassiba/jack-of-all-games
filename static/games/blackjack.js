@@ -27,6 +27,7 @@ var socket = io();
 
 //// START ////
 title.innerHTML = title_base.concat(" | waiting for state from server")
+CanRequestActions(true);
 
 // Events
 hit_button.addEventListener("mousedown", HitButtonClicked);
@@ -78,6 +79,11 @@ function StandButtonClicked() {
 }
 
 // Utility
+function CanRequestActions(bool) {
+    hit_button.disabled = !bool;
+    stand_button.disabled = !bool;
+}
+
 function SetRoomStatus(room_status) {
     title.innerHTML = title_base.concat(" | ", room_status);
 }
