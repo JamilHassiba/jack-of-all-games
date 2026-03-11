@@ -3,7 +3,6 @@ from static.states.state import State
 class intermission(State):
     def __init__(self, fsm):
         super().__init__(fsm)
-        self.elapsed = 0
 
     def OnEnter(self):
         print("IntermissionState entered")
@@ -22,7 +21,6 @@ class intermission(State):
 class round_start(State):
     def __init__(self, fsm):
         super().__init__(fsm)
-        self.elapsed = 0
 
     def OnEnter(self):
         print("RoundStartState entered")
@@ -45,9 +43,11 @@ class players_turn(State):
 
     def OnEnter(self):
         print("PlayersTurnState entered")
+        self.elapsed = 0
 
     def Update(self, dt):
-        if self.fsm.root.current_round.AllPlayersFinished():
+        self.elapsed += dt
+        if self.fsm.root.current_round.AllPlayersFinished() or self.elapsed > 5:
             self.fsm.SetState("dealer_turn")
 
     def OnExit(self):

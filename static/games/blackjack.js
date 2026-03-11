@@ -27,7 +27,7 @@ var socket = io();
 
 //// START ////
 title.innerHTML = title_base.concat(" | waiting for state from server")
-CanRequestActions(true);
+CanRequestActions(false);
 
 // Events
 hit_button.addEventListener("mousedown", HitButtonClicked);
@@ -43,7 +43,11 @@ socket.on('connect', function() {
 socket.on('game_state_changed', function(data) {
     room_state = data.new_state
     SetRoomStatus(room_state)
-    console.log("clients understanding: ".concat(room_state))
+
+    switch (room_state) {
+        case 'round_start': WhenEnteredRoundStart(); break;
+        case 'dealer_turn': WhenEnteredDealerTurn(); break;
+    }
 });
 
 socket.on('write_hand', function(data) {
@@ -69,6 +73,14 @@ socket.on('create_player_label', function(data) {
         data.status
     )
 })
+
+// State Change Methods
+function WhenEnteredRoundStart() {
+    CanRequestActions(true);
+}
+function WhenEnteredDealerTurn() {
+    CanRequestActions(false);
+}
 
 // Buttons
 function HitButtonClicked() {
