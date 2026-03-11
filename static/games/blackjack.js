@@ -1,4 +1,6 @@
 import {PlayerInfo} from "../classes/playerinfo.js";
+import { PlayerLabel } from "../classes/playerlabel.js";
+
 console.log("blackjack.js is running...")
 
 //// INITIALISATION ////
@@ -20,13 +22,11 @@ var socket = io();
 let this_player;
 
 let players = new Map;
+let player_labels = new Map;
 
-let player_labels = {}
 let room_state = "unknown";
 
 const title_base = title.innerHTML;
-
-
 
 //// START ////
 title.innerHTML = title_base.concat(" | waiting for state from server")
@@ -40,7 +40,7 @@ stand_button.addEventListener("mousedown", StandButtonClicked);
 
 // Socket
 socket.on('connect', function() {
-    this_player = new PlayerInfo()
+    this_player = new PlayerInfo(socket.id)
     players.set(socket.id, this_player)
 
     socket.emit('blackjack_player_join');
@@ -75,11 +75,20 @@ function UpdatePlayerField(id, field, value, thisplayer_callback=()=>{}, otherpl
         otherplayer_callback(id, value)
     }
 }
+function UpdatePlayerLabel(id, player) {
+    let label = player_labels.get(id)
+    if (!label) {
+        label = new PlayerLabel(id)
+        other_players_container.appendChild(label.e)
+        player_labels.set(id, label)
+    }
+
+    label.update(player);
+}
 socket.on('relay_player_info', function(data) {
     let id = data.id;
     let player = players.get(id);
     if (player == null) {
-        console.log("CREATING NEW PLAYER")
         player = new PlayerInfo(id);
         players.set(id, player)
     }
@@ -96,18 +105,9 @@ socket.on('relay_player_info', function(data) {
         UpdatePlayerField(id, "is_bust", data.is_bust, ThisPlayer_IsBust_Updated, OtherPlayer_IsBust_Updated, Dealer_IsBust_Updated)
     if (data.has_blackjack)
         UpdatePlayerField(id, "has_blackjack", data.has_blackjack, ThisPlayer_HasBlackjack_Updated, OtherPlayer_HasBlackjack_Updated, Dealer_HasBlackjack_Updated)
-})
 
-
-socket.on('create_player_label', function(data) {
-    if (data.id == socket.id) return
-    CreatePlayerInfo(
-        data.id,
-        (data.id).substring(0,4),
-        data.game_score,
-        data.hand,
-        data.status
-    )
+    if (player != this_player && id != "dealer") 
+        UpdatePlayerLabel(id, player)
 })
 
 // Player Actions
@@ -115,7 +115,6 @@ function HitButtonClicked() {
     if (this_player.state != "playing") return;
     if (room_state != "players_turn") return;
 
-    console.log("HIT REQUEST")
     socket.emit("blackjack_hit_request");
 };
 function StandButtonClicked() {
@@ -239,32 +238,4 @@ function CanRequestActions(bool) {
 
 function SetRoomStatus(room_status) {
     title.innerHTML = title_base.concat(" | ", room_status);
-}
-
-function CreatePlayerInfo(id, name, game_score, hand, status) {
-    let e = document.createElement("li")
-    other_players_container.appendChild(e)
-
-    player_labels[id] = {
-        "id" : id,
-        "name" : name,
-        "game_score" : game_score,
-        "hand" : hand,
-        "status" : status,
-        "e" : e
-    }
-
-    SetPlayerLabelText(id)
-    return e
-}
-
-function UpdatePlayerLabelHand(id, hand) {
-    let data = player_labels[id]
-    data.hand = hand
-    SetPlayerLabelText(id)
-}
-
-function SetPlayerLabelText(id) {
-    let data = player_labels[id]
-    data.e.innerHTML = `${data.name} | Score: ${data.game_score} | ${data.hand} | ${data.status}`
 }
