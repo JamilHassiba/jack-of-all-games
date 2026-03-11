@@ -298,7 +298,6 @@ class BlackjackDealer():
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
         self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
         self.__hand.append(card_data["code"])
-        print("firing the event")
         self.__game.socketio.emit("write_hand", {"id" : "dealer", "hand" : self.hand}, to=self.__game.room.id)
 
     def __str__(self):
@@ -324,6 +323,7 @@ class Blackjack():
         self.__players = []
         self.__room = room_reference # parent object
         self.__dealer = BlackjackDealer(self)
+        self.__current_round = None
        
         self.__FSM = fsm(self)
         self.__FSM.SetStates({
@@ -351,12 +351,8 @@ class Blackjack():
         self.__current_round = BlackjackRound(self, self.players)
 
     def PlayerHitRequest(self, sid):
-        if self.__FSM.current_state_name != "players_turn": return
-
-        player = self.GetPlayerFromSID(sid)
-        if not player: return
-
-        player.HitMe()
+        if self.__current_round == None: return
+        self.__current_round.PlayerHitRequest(sid)
 
     # Getters
     @property
@@ -365,12 +361,14 @@ class Blackjack():
     @property
     def socketio(self):
         return self.__socketio
+    @property
+    def FSM(self):
+        return self.__FSM
 
 
     @property
     def current_state(self):
         return self.__current_state
-
     @property
     def current_round(self):
         return self.__current_round
@@ -384,10 +382,7 @@ class Blackjack():
     @property
     def max_player_count(self):
         return self.__max_player_count
-    def GetPlayerFromSID(self, sid):
-        for player in self.players:
-            if player.id == sid: return player
-        return None
+
     
     ## Dunders
     def __str__(self):
@@ -402,6 +397,15 @@ class Blackjack():
         return output
 
 class BlackjackRound():
+    # entity in this context is either dealer or player (both implement a hand_total field)
+    @staticmethod
+    def IsEntityBust(entity):
+        return entity.hand_total > 21
+
+    @staticmethod
+    def DoesEntityHaveBlackjack(entity):
+        return entity.hand_total == 21
+
     def __init__(self, game, players):
         self.__game = game #reference to the parent game
         self.__players_in_round = players.copy()
@@ -409,13 +413,38 @@ class BlackjackRound():
 
         self.DealInitialCards()
 
+    def GetPlayerFromSID(self, sid):
+        for player in self.__players_in_round:
+            if player.id == sid: return player
+        return None
+
     def DealInitialCards(self):
         self.__game.dealer.DealToSelf()
         for player in self.__players_in_round:
             player.SetState('playing')
             player.HitMe()
 
-    def AllPlayersFinished(self):
+
+    def EvaluatePlayer(self, player):
+        is_bust = BlackjackRound.IsEntityBust(player)
+        has_blackjack = BlackjackRound.DoesEntityHaveBlackjack(player)
+
+        if is_bust or has_blackjack:
+            player.SetState("finished")
+            self.__players_finished.append(player)
+
+    def PlayerHitRequest(self, sid):
+        if self.__game.FSM.current_state_name != "players_turn": return
+
+        player = self.GetPlayerFromSID(sid)
+        if not player: return
+        if player.state != "playing": return
+
+        player.HitMe()
+        self.EvaluatePlayer(player)
+
+
+    def AreAllPlayersFinished(self):
         return len(self.__players_in_round) == len(self.__players_finished)
 
 
