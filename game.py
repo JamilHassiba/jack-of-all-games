@@ -211,6 +211,14 @@ class BlackjackPlayer():
         self.__hand = []
         self.__hand_total = 0
         self.__deck = Deck(id=None, shuffle=True, decks=1, jokers=False) 
+        self.__state = "none"
+        '''
+            Player states:
+                - none -> default state, no state assigned
+                - lobby -> inside the blackjack game, but isn't participating in the current round, or is waiting for a round to start
+                - playing -> actively pressing hit/stick
+                - finished -> entered when: hit blackjack | stuck | bust | timeout
+        '''
 
     def HitMe(self):
         cards_list = self.__deck.draw()
@@ -225,6 +233,9 @@ class BlackjackPlayer():
         print(self)
 
     # Getters
+    @property
+    def state(self):
+        return self.__state
     @property
     def id(self):
         return self.__id
@@ -242,6 +253,8 @@ class BlackjackPlayer():
         return self.__deck
     
     # Setters
+    def SetState(self, new_state: str):
+        self.__state = new_state
     def AddGameScore(self, value):
         self.__game_score += value
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
@@ -356,6 +369,9 @@ class Blackjack():
     @property
     def dealer(self):
         return self.__dealer
+    @property
+    def current_round(self):
+        return self.__current_round
 
     ## Dunders
     def __str__(self):
@@ -380,7 +396,11 @@ class BlackjackRound():
     def DealInitialCards(self):
         self.__game.dealer.DealToSelf()
         for player in self.__players_in_round:
+            player.SetState('playing')
             player.HitMe()
+
+    def AllPlayersFinished(self):
+        return len(self.__players_in_round) == len(self.__players_finished)
 
 
 ### END ###
