@@ -300,7 +300,7 @@ class BlackjackDealer():
         return self.__deck
     
     def ShouldIDraw(self):
-        return self.hand_total <= 16;
+        return self.hand_total <= 16
     
     # Setters
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
@@ -358,6 +358,9 @@ class Blackjack():
         print("New round created")
         self.__current_round = BlackjackRound(self, self.players)
 
+    def EvaluateDealer(self):
+        if self.__current_round == None: return
+        self.__current_round.EvaluateDealer()
     def PlayerHitRequest(self, sid):
         if self.__current_round == None: return
         self.__current_round.PlayerHitRequest(sid)
@@ -443,6 +446,34 @@ class BlackjackRound():
         if is_bust or has_blackjack:
             player.SetState("finished")
             self.__players_finished.append(player)
+
+            if is_bust: 
+                self.__game.socketio.emit(
+                    "entity_goes_bust_or_blackjack", 
+                    {"id" : player.id, "type" : "bust"}, 
+                    to=self.__game.room.id)
+                
+            else:
+                self.__game.socketio.emit(
+                    "entity_goes_bust_or_blackjack",
+                    {"id" : player.id, "type" : "blackjack"},
+                    to=self.__game.room.id
+                )
+    def EvaluateDealer(self):
+        dealer = self.__game.dealer
+        is_bust = BlackjackRound.IsEntityBust(dealer)
+        has_blackjack = BlackjackRound.DoesEntityHaveBlackjack(dealer)
+
+        if is_bust:
+            self.__game.socketio.emit(
+                "entity_goes_bust_or_blackjack", 
+                {"id" : "dealer", "type" : "bust"}, 
+                to=self.__game.room.id)
+        elif has_blackjack:
+            self.__game.socketio.emit(
+                "entity_goes_bust_or_blackjack", 
+                {"id" : "dealer", "type" : "blackjack"}, 
+                to=self.__game.room.id)
 
     def PlayerHitRequest(self, sid):
         if self.__game.FSM.current_state_name != "players_turn": return

@@ -71,6 +71,20 @@ socket.on('relay_player_state', function(data) {
 
     }
 })
+socket.on('entity_goes_bust_or_blackjack', function(data) {
+    if (data.id == socket.id) {
+        if (data.type == "bust") ThisPlayer_WentBust();
+        else ThisPlayer_HasBlackjack();
+
+    } else if (data.id == "dealer") {
+        if (data.type == "bust") Dealer_WentBust();
+        else Dealer_HasBlackjack();
+
+    } else {
+        if (data.type == "bust") OtherPlayer_WentBust(data.id);
+        else OtherPlayer_HasBlackjack();
+    }
+})
 
 socket.on('write_hand', function(data) {
     let hand = data.hand
@@ -106,7 +120,14 @@ function ThisPlayer_EnteredPlayingState() {
 function ThisPlayer_EnteredFinishedState() {
     CanRequestActions(false);
 }
+function ThisPlayer_WentBust() {
+    alert("You are bust!");
+}
+function ThisPlayer_HasBlackjack() {
+    alert("Blackjack!");
+}
 
+// Other Player State Change Methods
 function OtherPlayer_EnteredLobbyState(playerid) {
 
 }
@@ -116,13 +137,28 @@ function OtherPlayer_EnteredPlayingState(playerid) {
 function OtherPlayer_EnteredFinishedState(playerid) {
 
 }
+function OtherPlayer_WentBust(playerid) {
+
+}
+function OtherPlayer_HasBlackjack(playerid) {
+
+}
+
+// Dealer State Change Methods
+function Dealer_HasBlackjack() {
+    alert("Dealer has blackjack!");
+}
+function Dealer_WentBust() {
+    alert("Dealer went bust!");
+}
+
 
 // Game State Change Methods
 function Game_EnteredIntermissionState() {
     SetRoomStatus("Waiting for a round to begin...")
 }   
 function Game_EnteredRoundStartState() {
-
+    SetRoomStatus("Dealing initial cards...")
 }
 function Game_EnteredPlayersTurnState() {
     SetRoomStatus("Player's turn")

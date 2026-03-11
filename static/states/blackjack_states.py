@@ -80,6 +80,7 @@ class score(State):
 
     def OnEnter(self):
         print("ScoreState entered")
+        self.fsm.root.EvaluateDealer()
 
     def Update(self, dt):
         pass
