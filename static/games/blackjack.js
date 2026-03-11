@@ -19,6 +19,7 @@ let title = document.getElementById("title")
 // Data
 let player_labels = {}
 let room_state = "unknown";
+let player_state = "unknown";
 
 const title_base = title.innerHTML;
 
@@ -40,15 +41,30 @@ socket.on('connect', function() {
     socket.emit('blackjack_player_join');
 });
 
-socket.on('game_state_changed', function(data) {
+socket.on('relay_game_state', function(data) {
     room_state = data.new_state
     SetRoomStatus(room_state)
 
     switch (room_state) {
+        case 'intermission': break;
         case 'round_start': WhenEnteredRoundStart(); break;
+        case 'players_turn': break;
         case 'dealer_turn': WhenEnteredDealerTurn(); break;
+        case 'score': break;
+        case 'cleanup': break;
     }
 });
+socket.on('relay_player_state', function(data) {
+    console.log("my state changed")
+    console.log(data.new_state)
+    player_state = data.new_state
+    
+    switch (player_state) {
+        case 'lobby': break;
+        case 'playing': break;
+        case 'finished': break;
+    }
+})
 
 socket.on('write_hand', function(data) {
     let hand = data.hand

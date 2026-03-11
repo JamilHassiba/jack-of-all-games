@@ -255,6 +255,8 @@ class BlackjackPlayer():
     # Setters
     def SetState(self, new_state: str):
         self.__state = new_state
+        self.__game.socketio.emit('relay_player_state', {"new_state" : new_state}, to=self.id)
+
     def AddGameScore(self, value):
         self.__game_score += value
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
