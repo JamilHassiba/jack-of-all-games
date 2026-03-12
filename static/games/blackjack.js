@@ -66,6 +66,7 @@ socket.on('relay_game_state', function(data) {
         case 'dealer_turn'  : Game_EnteredDealersTurnState();  break;
         case 'score'        : Game_EnteredScoreState();        break;
         case 'cleanup'      : Game_EnteredCleanupState();      break;
+        case 'evaluate_game': Game_EnteredEvaluateGameState(); break;
     }
 });
 
@@ -246,7 +247,10 @@ function Game_EnteredScoreState() {
     SetRoomStatus("Evaluating round")
 }
 function Game_EnteredCleanupState() {
-
+    SetRoomStatus("Finishing round...")
+}
+function Game_EnteredEvaluateGameState() {
+    SetRoomStatus("Evaluating game...")
 }
 
 // Utility
