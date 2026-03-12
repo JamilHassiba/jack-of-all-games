@@ -1,0 +1,137 @@
+body {
+    background-color: #122e1c;
+    overflow: hidden;
+    height: 100%;
+    margin: 0;
+}
+
+.hand {
+    display: flex;
+    gap: 0;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+.OBJ_card {
+    height: 18vh;
+    width: auto;
+    margin: 0 -8vh 0 0;
+    position: relative;
+}
+
+.OBJ_card:last-child {
+    margin-right: 0;
+}
+
+.OBJ_card.self {
+    height: 25vh;
+    width: auto;
+}
+
+h3,
+h4 {
+    color: white;
+    margin: 5px 0;
+}
+
+.seat {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transform: translate(-50%, -50%)
+}
+
+.seat.p1 {
+    left: 11%;
+    top: 25%;
+}
+
+.seat.p2 {
+    left: 26%;
+    top: 46%;
+}
+
+/* self player */
+.seat.p3 {
+    left: 50%;
+    top: 55%;
+}
+
+.seat.p4 {
+    left: 74%;
+    top: 46%;
+}
+
+.seat.p5 {
+    left: 89%;
+    top: 25%;
+}
+
+.dealer-area {
+    top: 20%;
+    left: 50%;
+}
+
+/* Game Status Box */
+.game-status {
+    position: fixed;
+    bottom: 3vh;
+    left: 2vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 0.3vw solid #c9a84c;
+    padding: 2vh 2.5vw;
+    border-radius: 0.5vw;
+    z-index: 10;
+}
+
+.game-status p {
+    margin: 0;
+    color: #c9a84c;
+    font-size: 1.8vw;
+    font-weight: bold;
+}
+
+/* Action Buttons */
+.action-buttons {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2vw;
+    z-index: 10;
+}
+
+.btn {
+    padding: 1.5vh 3vw;
+    font-size: 1.8vw;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.5vw;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.btn-hit {
+    background-color: #2d5a3d;
+    border: 0.3vw solid #4a8f5c;
+}
+
+.btn-hit:hover {
+    background-color: #4a8f5c;
+    box-shadow: 0 0 10px rgba(74, 143, 92, 0.5);
+}
+
+.btn-stand {
+    background-color: #5a3d2d;
+    border: 0.3vw solid #8f6c4a;
+}
+
+.btn-stand:hover {
+    background-color: #8f6c4a;
+    box-shadow: 0 0 10px rgba(143, 108, 74, 0.5);
+}

@@ -1,19 +1,8 @@
-import {Card} from '../card.js';
-import {Deck} from '../deck.js';
-import {SendData} from '../utils.js';
+// Some elemnts used throughout
+const gameStatus = document.getElementById("game-status-p");
 
-console.log("blackjack.js is running...")
 
-// REFERENCES
-let player_hand_container = document.getElementById("player-hand");
-let dealer_hand_container = document.getElementById("dealer-hand");
-let other_players_container = document.getElementById("other-players");
-let title = document.getElementById("title")
-const title_base = title.innerHTML;
-title.innerHTML = title_base.concat(" | waiting for state from server")
-
-let player_labels = {}
-
+// SOCKET CODE FOR INTERACTING WITH BACKEND
 // Create socket object;
 var socket = io();
 socket.on('connect', function() {
@@ -21,16 +10,20 @@ socket.on('connect', function() {
 });
 
 socket.on('set_room_label', function(data) {
-    title.innerHTML = title_base.concat(" | ", data.label);
+    // title.innerHTML = title_base.concat(" | ", data.label);
+    console.log("Room Label", data.label)
+    gameStatus.innerHTML = "Room Label: " + data.label
 });
 
 socket.on('write_hand', function(data) {
     let hand = data.hand
 
     if (data.id == socket.id) {
-        player_hand_container.innerHTML = hand
+        console.log("Player Hand -> ", hand)
+        // player_hand_container.innerHTML = hand
     } else if (data.id == "dealer") {
-        dealer_hand_container.innerHTML = hand
+        // dealer_hand_container.innerHTML = hand
+        console.log("Dealer Hand -> ", hand)
     } else {
         UpdatePlayerLabelHand(data.id, hand)
     }
@@ -48,32 +41,15 @@ socket.on('create_player_label', function(data) {
     )
 })
 
-
-// UTILITY METHODS
 function CreatePlayerInfo(id, name, game_score, hand, status) {
-    let e = document.createElement("li")
-    other_players_container.appendChild(e)
-
-    player_labels[id] = {
-        "id" : id,
-        "name" : name,
-        "game_score" : game_score,
-        "hand" : hand,
-        "status" : status,
-        "e" : e
-    }
-
-    SetPlayerLabelText(id)
-    return e
+    console.log("Player -> ", id, name, game_score, hand, status)
 }
 
-function UpdatePlayerLabelHand(id, hand) {
-    let data = player_labels[id]
-    data.hand = hand
-    SetPlayerLabelText(id)
+
+function createCard(id) {
+    return `<img src="https://deckofcardsapi.com/static/img/${id}.png" class="OBJ_card" alt="${id}">`
 }
 
-function SetPlayerLabelText(id) {
-    let data = player_labels[id]
-    data.e.innerHTML = `${data.name} | Score: ${data.game_score} | ${data.hand} | ${data.status}`
+function addCardToHand(hand_container, card_id) {
+    hand_container.innerHTML += createCard(card_id)
 }
