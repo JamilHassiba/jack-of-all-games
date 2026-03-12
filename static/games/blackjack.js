@@ -102,17 +102,22 @@ socket.on('relay_player_info', function(data) {
         players.set(id, player)
     }
 
-    if (data.hand) 
+    if (data.hand !== undefined)
         UpdatePlayerField(id, "hand", data.hand, ThisPlayer_HandUpdated, OtherPlayer_HandUpdated, Dealer_HandUpdated)
-    if (data.hand_total) 
+
+    if (data.hand_total !== undefined)
         UpdatePlayerField(id, "hand_total", data.hand_total, ThisPlayer_HandTotalUpdated, OtherPlayer_HandTotalUpdated, Dealer_HandTotalUpdated)
-    if (data.game_score) 
+
+    if (data.game_score !== undefined)
         UpdatePlayerField(id, "game_score", data.game_score, ThisPlayer_GameScoreUpdated, OtherPlayer_GameScoreUpdated)
-    if (data.state) 
+
+    if (data.state !== undefined)
         UpdatePlayerField(id, "state", data.state, ThisPlayer_StateUpdated, OtherPlayer_StateUpdated)
-    if (data.is_bust)
+
+    if (data.is_bust !== undefined)
         UpdatePlayerField(id, "is_bust", data.is_bust, ThisPlayer_IsBust_Updated, OtherPlayer_IsBust_Updated, Dealer_IsBust_Updated)
-    if (data.has_blackjack)
+
+    if (data.has_blackjack !== undefined)
         UpdatePlayerField(id, "has_blackjack", data.has_blackjack, ThisPlayer_HasBlackjack_Updated, OtherPlayer_HasBlackjack_Updated, Dealer_HasBlackjack_Updated)
 
     if (player != this_player && id != "dealer") 
