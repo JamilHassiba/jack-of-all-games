@@ -287,7 +287,7 @@ def blackjack_player_join():
     room = rooms.get(room_id)
     game = room.game
     blackjack_player = game.AddPlayer(request.sid)
-    session["player"] = blackjack_player
+    session["player_obj"] = blackjack_player
 
     # Tell other players to render this new player as a label
     socketio.emit("relay_player_info", {"id" : request.sid,}, to=room_id)
