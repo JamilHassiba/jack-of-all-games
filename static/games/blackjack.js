@@ -29,7 +29,6 @@ let title = document.getElementById("title")
 var socket = io();
 
 let this_player;
-let old_game_score = 0;
 
 let players = new Map;
 let player_labels = new Map;
@@ -125,6 +124,19 @@ socket.on('relay_player_info', function(data) {
         UpdatePlayerLabel(id, player)
 })
 
+socket.on('player_score_event', function(data) {
+    let id = data.id
+    let old_score = data.old_score
+    let delta_score = data.delta_score
+    let new_score = data.new_score
+
+    if (id == this_player.id) {
+        ThisPlayer_ScoreEvent(id, old_score, delta_score, new_score)
+    } else {
+        OtherPlayer_ScoreEvent(id, old_score, delta_score, new_score)
+    }
+})
+
 // Player Actions
 function HitButtonClicked() {
     if (this_player.state != "playing") return;
@@ -147,16 +159,18 @@ function ThisPlayer_HandTotalUpdated(playerid, new_hand_total) {
     player_elements.hand_total.innerHTML = new_hand_total
 }
 function ThisPlayer_GameScoreUpdated(playerid, new_game_score) {
+    console.log("my new score")
+    console.log(new_game_score)
     player_elements.game_score.innerHTML = new_game_score
-
-    let delta = new_game_score - old_game_score;
-    old_game_score = new_game_score;
-    alert(`You gained ${delta} score!`)
+}
+function ThisPlayer_ScoreEvent(playerid, old_score, delta_score, new_game_score) {
+    if (delta_score==0) alert("You failed to beat the dealer, 0 points");
+    else if (delta_score==1) alert("You beat the dealer! +1 points");
+    else if (delta_score==2) alert("You beat the dealer with blackjack! +2 points");
 }
 function ThisPlayer_StateUpdated(playerid, new_state) {
     switch (new_state) {
         case "lobby" : {
-            console.log("I AM NOW A LOBBY DUDE")
             break;
         }
 
@@ -189,6 +203,9 @@ function OtherPlayer_HandTotalUpdated(playerid, new_hand_total) {
 }
 function OtherPlayer_GameScoreUpdated(playerid, new_game_score) {
     
+}
+function OtherPlayer_ScoreEvent(playerid, old_score, delta_score, new_score) {
+
 }
 function OtherPlayer_StateUpdated(playerid, new_state) {
     switch (new_state) {

@@ -266,12 +266,20 @@ class BlackjackPlayer():
             to=self.__game.room.id)
 
     def AddGameScore(self, value):
+        old_score = self.__game_score
         self.__game_score += value
+        new_score = self.__game_score
 
         # Broadcast this change to the room's clients
         self.__game.socketio.emit(
             'relay_player_info', 
             {"id": self.id, "game_score": value}, 
+            to=self.__game.room.id)
+
+        # Broadcast player score event
+        self.__game.socketio.emit(
+            'player_score_event',
+            {"id": self.id, "old_score": old_score, "delta_score": new_score-old_score, "new_score": new_score},
             to=self.__game.room.id)
 
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
