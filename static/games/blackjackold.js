@@ -1,4 +1,4 @@
-import {Card} from '../card.js';
+import {Card} from '../classes/card.js';
 import {Deck} from '../deck.js';
 import {SendData} from '../utils.js';
 
