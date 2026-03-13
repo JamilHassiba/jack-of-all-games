@@ -1,108 +1,79 @@
-// Some elements used throughout
-const gameStatus = document.getElementById("game-status-p");
+import {Card} from '../classes/card.js';
+import {Deck} from '../deck.js';
+import {SendData} from '../utils.js';
 
-// SOCKET CODE FOR INTERACTING WITH BACKEND
+console.log("blackjack.js is running...")
+
+// REFERENCES
+let player_hand_container = document.getElementById("player-hand");
+let dealer_hand_container = document.getElementById("dealer-hand");
+let other_players_container = document.getElementById("other-players");
+let title = document.getElementById("title")
+const title_base = title.innerHTML;
+title.innerHTML = title_base.concat(" | waiting for state from server")
+
+let player_labels = {}
+
 // Create socket object;
 var socket = io();
-socket.on('connect', function () {
+socket.on('connect', function() {
     socket.emit('blackjack_player_join');
 });
 
-socket.on('set_room_label', function (data) {
-    // title.innerHTML = title_base.concat(" | ", data.label);
-    // console.log("Room Label", data.label)
-    gameStatus.innerHTML = "Room Label: " + data.label
+socket.on('set_room_label', function(data) {
+    title.innerHTML = title_base.concat(" | ", data.label);
 });
 
-socket.on('write_hand', function (data) {
-    console.log(data)
+socket.on('write_hand', function(data) {
     let hand = data.hand
 
-    if (data.id == socket.id) { // CAN REDUCE THIS LATER
-        updatePlayerLabelHand(socket.id, hand)
+    if (data.id == socket.id) {
+        player_hand_container.innerHTML = hand
     } else if (data.id == "dealer") {
-        updatePlayerLabelHand("dealer", hand)
+        dealer_hand_container.innerHTML = hand
     } else {
-        updatePlayerLabelHand(data.id, hand)
+        UpdatePlayerLabelHand(data.id, hand)
     }
 
 });
 
-socket.on('create_player_label', function (data) {
-    if (data.id == socket.id) {
-        players[1] = data.id
-        return
-    }
-    addPlayer(data.id, data.id) // UPDATE W UNAME WHEN IMPLEMENTED
+socket.on('create_player_label', function(data) {
+    if (data.id == socket.id) return
     CreatePlayerInfo(
         data.id,
-        (data.id).substring(0, 4),
+        (data.id).substring(0,4),
         data.game_score,
         data.hand,
         data.status
     )
 })
 
+
+// UTILITY METHODS
 function CreatePlayerInfo(id, name, game_score, hand, status) {
-    return
-    // console.log("Player -> ", id, name, game_score, hand, status)
-}
+    let e = document.createElement("li")
+    other_players_container.appendChild(e)
 
-
-
-// Hand and Card Creation Logic
-function createCard(id) {
-    return `<img src="https://deckofcardsapi.com/static/img/${id}.png" class="OBJ_card" alt="${id}">`
-}
-
-function addCardToHand(hand_container, card_id) {
-    hand_container.innerHTML += createCard(card_id)
-}
-
-function wipeHand(hand_container) {
-    hand_container.innerHTML = ""
-}
-
-function updatePlayerLabelHand(player_id, hand) {
-    let handcontainer
-    if (player_id == "dealer") {
-        handcontainer = document.getElementById("dealer-hand")
-    } else {
-        handcontainer = document.getElementById("hand-p" + getPlayerNum(player_id))
+    player_labels[id] = {
+        "id" : id,
+        "name" : name,
+        "game_score" : game_score,
+        "hand" : hand,
+        "status" : status,
+        "e" : e
     }
-    wipeHand(handcontainer)
-    for (let card_id of hand) {
-        addCardToHand(handcontainer, card_id)
-    }
+
+    SetPlayerLabelText(id)
+    return e
 }
 
-
-// Adding Players to the game
-let player_num = 1   // number of players in game
-document.getElementById("seat-p1").innerHTML = "You!"
-
-let players = {
-    1: socket.id, // self player
-    2: null,
-    3: null,
-    4: null,
-    5: null
+function UpdatePlayerLabelHand(id, hand) {
+    let data = player_labels[id]
+    data.hand = hand
+    SetPlayerLabelText(id)
 }
 
-function addPlayer(name, id) {
-    player_num++;
-    players[player_num] = id
-    document.getElementById("seat-p" + player_num).innerHTML = name
-}
-
-
-function getPlayerNum(player_id) {
-    console.log(player_id, "----")
-    for (let num in players) {
-        console.log(players[num])
-        if (players[num] == player_id) {
-            return num
-        }
-    }
-    return null
+function SetPlayerLabelText(id) {
+    let data = player_labels[id]
+    data.e.innerHTML = `${data.name} | Score: ${data.game_score} | ${data.hand} | ${data.status}`
 }
