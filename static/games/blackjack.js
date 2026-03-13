@@ -1,84 +1,4 @@
-<<<<<<< HEAD
-import {Card} from '../classes/card.js';
-import {Deck} from '../deck.js';
-import {SendData} from '../utils.js';
-
-console.log("blackjack.js is running...")
-
-// REFERENCES
-let player_hand_container = document.getElementById("player-hand");
-let dealer_hand_container = document.getElementById("dealer-hand");
-let other_players_container = document.getElementById("other-players");
-let title = document.getElementById("title")
-const title_base = title.innerHTML;
-title.innerHTML = title_base.concat(" | waiting for state from server")
-
-let player_labels = {}
-
-// Create socket object;
-var socket = io();
-socket.on('connect', function() {
-    socket.emit('blackjack_player_join');
-});
-
-socket.on('set_room_label', function(data) {
-    title.innerHTML = title_base.concat(" | ", data.label);
-});
-
-socket.on('write_hand', function(data) {
-    let hand = data.hand
-
-    if (data.id == socket.id) {
-        player_hand_container.innerHTML = hand
-    } else if (data.id == "dealer") {
-        dealer_hand_container.innerHTML = hand
-    } else {
-        UpdatePlayerLabelHand(data.id, hand)
-    }
-
-});
-
-socket.on('create_player_label', function(data) {
-    if (data.id == socket.id) return
-    CreatePlayerInfo(
-        data.id,
-        (data.id).substring(0,4),
-        data.game_score,
-        data.hand,
-        data.status
-    )
-})
-
-
-// UTILITY METHODS
-function CreatePlayerInfo(id, name, game_score, hand, status) {
-    let e = document.createElement("li")
-    other_players_container.appendChild(e)
-
-    player_labels[id] = {
-        "id" : id,
-        "name" : name,
-        "game_score" : game_score,
-        "hand" : hand,
-        "status" : status,
-        "e" : e
-    }
-
-    SetPlayerLabelText(id)
-    return e
-}
-
-function UpdatePlayerLabelHand(id, hand) {
-    let data = player_labels[id]
-    data.hand = hand
-    SetPlayerLabelText(id)
-}
-
-function SetPlayerLabelText(id) {
-    let data = player_labels[id]
-    data.e.innerHTML = `${data.name} | Score: ${data.game_score} | ${data.hand} | ${data.status}`
-=======
-import {PlayerInfo} from "../classes/playerinfo.js";
+import { PlayerInfo } from "../classes/playerinfo.js";
 import { PlayerLabel } from "../classes/playerlabel.js";
 
 console.log("blackjack.js is running...")
@@ -87,14 +7,14 @@ console.log("blackjack.js is running...")
 
 // References
 let player_elements = {
-    "hand" : document.getElementById("player-hand"),
-    "hand_total" : document.getElementById("player-hand-total"),
-    "game_score" : document.getElementById("player-game-score"),
+    "hand": document.getElementById("player-hand"),
+    "hand_total": document.getElementById("player-hand-total"),
+    "game_score": document.getElementById("player-game-score"),
 }
 
 let dealer_elements = {
-    "hand" : document.getElementById("dealer-hand"),
-    "hand_total" : document.getElementById("dealer-hand-total"),
+    "hand": document.getElementById("dealer-hand"),
+    "hand_total": document.getElementById("dealer-hand-total"),
 }
 
 let other_players_container = document.getElementById("other-players");
@@ -112,6 +32,7 @@ let this_player;
 
 let players = new Map;
 let player_labels = new Map;
+let playerSeats;
 
 let room_state = "unknown";
 
@@ -128,35 +49,41 @@ stand_button.addEventListener("mousedown", StandButtonClicked);
 //// METHODS ////
 
 // Socket
-socket.on('connect', function() {
+socket.on('connect', function () {
     this_player = new PlayerInfo(socket.id)
-    players.set(socket.id, this_player)
-
+    players.set(socket.id, this_player)    
+    playerSeats = {
+        1: socket.id,
+        2: null,
+        3: null,
+        4: null,
+        5: null
+    }
     socket.emit('blackjack_player_join');
 });
 
-socket.on('relay_game_state', function(data) {
+socket.on('relay_game_state', function (data) {
     room_state = data.new_state
 
     switch (room_state) {
-        case 'intermission' : Game_EnteredIntermissionState(); break;
-        case 'round_start'  : Game_EnteredRoundStartState();   break;
-        case 'players_turn' : Game_EnteredPlayersTurnState();  break;
-        case 'dealer_turn'  : Game_EnteredDealersTurnState();  break;
-        case 'score'        : Game_EnteredScoreState();        break;
-        case 'cleanup'      : Game_EnteredCleanupState();      break;
+        case 'intermission': Game_EnteredIntermissionState(); break;
+        case 'round_start': Game_EnteredRoundStartState(); break;
+        case 'players_turn': Game_EnteredPlayersTurnState(); break;
+        case 'dealer_turn': Game_EnteredDealersTurnState(); break;
+        case 'score': Game_EnteredScoreState(); break;
+        case 'cleanup': Game_EnteredCleanupState(); break;
         case 'evaluate_game': Game_EnteredEvaluateGameState(); break;
     }
 });
 
-function UpdatePlayerField(id, field, value, thisplayer_callback=()=>{}, otherplayer_callback=()=>{}, dealer_callback=()=>{}) {
+function UpdatePlayerField(id, field, value, thisplayer_callback = () => { }, otherplayer_callback = () => { }, dealer_callback = () => { }) {
     let player = players.get(id)
     player[field] = value
-        
-    if (id==socket.id) {
+
+    if (id == socket.id) {
         // This player is this client's player
         thisplayer_callback(id, value)
-    } else if (id=="dealer") {
+    } else if (id == "dealer") {
         // This player is the dealer
         dealer_callback(id, value)
     } else {
@@ -174,12 +101,15 @@ function UpdatePlayerLabel(id, player) {
 
     label.update(player);
 }
-socket.on('relay_player_info', function(data) {
+socket.on('relay_player_info', function (data) {
     let id = data.id;
     let player = players.get(id);
     if (player == null) {
         player = new PlayerInfo(id);
-        players.set(id, player)
+        players.set(id, player)        // Assign seat for new players (not self, not dealer)
+        if (id != socket.id && id != "dealer") {
+            addPlayer(id, id); // Use id as name for now
+        }
     }
 
     if (data.hand !== undefined)
@@ -200,11 +130,11 @@ socket.on('relay_player_info', function(data) {
     if (data.has_blackjack !== undefined)
         UpdatePlayerField(id, "has_blackjack", data.has_blackjack, ThisPlayer_HasBlackjack_Updated, OtherPlayer_HasBlackjack_Updated, Dealer_HasBlackjack_Updated)
 
-    if (player != this_player && id != "dealer") 
+    if (player != this_player && id != "dealer")
         UpdatePlayerLabel(id, player)
 })
 
-socket.on('player_score_event', function(data) {
+socket.on('player_score_event', function (data) {
     let id = data.id
     let old_score = data.old_score
     let delta_score = data.delta_score
@@ -227,7 +157,7 @@ function HitButtonClicked() {
 function StandButtonClicked() {
     if (this_player.state != "playing") return;
     if (room_state != "players_turn") return;
-    
+
     socket.emit("blackjack_stand_request");
 }
 
@@ -244,22 +174,22 @@ function ThisPlayer_GameScoreUpdated(playerid, new_game_score) {
     player_elements.game_score.innerHTML = new_game_score
 }
 function ThisPlayer_ScoreEvent(playerid, old_score, delta_score, new_game_score) {
-    if (delta_score==0) alert("You failed to beat the dealer, 0 points");
-    else if (delta_score==1) alert("You beat the dealer! +1 points");
-    else if (delta_score==2) alert("You beat the dealer with blackjack! +2 points");
+    if (delta_score == 0) alert("You failed to beat the dealer, 0 points");
+    else if (delta_score == 1) alert("You beat the dealer! +1 points");
+    else if (delta_score == 2) alert("You beat the dealer with blackjack! +2 points");
 }
 function ThisPlayer_StateUpdated(playerid, new_state) {
     switch (new_state) {
-        case "lobby" : {
+        case "lobby": {
             break;
         }
 
-        case "playing" : {
+        case "playing": {
             CanRequestActions(true);
             break;
         }
 
-        case "finished" : {
+        case "finished": {
             CanRequestActions(false);
             break;
         }
@@ -276,28 +206,31 @@ function ThisPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
 
 // Other Player Handlers
 function OtherPlayer_HandUpdated(playerid, new_hand) {
-    
+    updatePlayerLabelHand(playerid, new_hand)
 }
 function OtherPlayer_HandTotalUpdated(playerid, new_hand_total) {
-
+    // STUB
+    return
 }
 function OtherPlayer_GameScoreUpdated(playerid, new_game_score) {
-    
+    // STUB
+    return
 }
 function OtherPlayer_ScoreEvent(playerid, old_score, delta_score, new_score) {
-
+    // STUB
+    return
 }
 function OtherPlayer_StateUpdated(playerid, new_state) {
     switch (new_state) {
-        case "lobby" : {
+        case "lobby": {
             break;
         }
 
-        case "playing" : {
+        case "playing": {
             break;
         }
 
-        case "finished" : {
+        case "finished": {
             break;
         }
     }
@@ -311,10 +244,10 @@ function OtherPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
 
 // Dealer State Change Methods
 function Dealer_HandUpdated(dealerid, new_hand) {
-    dealer_elements.hand.innerHTML = new_hand
+    updatePlayerLabelHand("dealer", new_hand)
 }
 function Dealer_HandTotalUpdated(dealerid, new_hand_total) {
-    dealer_elements.hand_total.innerHTML = new_hand_total
+    // dealer_elements.hand_total.innerHTML = new_hand_total
 }
 function Dealer_IsBust_Updated(dealerid, is_bust) {
     if (is_bust)
@@ -330,7 +263,7 @@ function Dealer_HasBlackjack_Updated(dealerid, has_blackjack) {
 // Game State Change Methods
 function Game_EnteredIntermissionState() {
     SetRoomStatus("Waiting for a round to begin...")
-}   
+}
 function Game_EnteredRoundStartState() {
     SetRoomStatus("Dealing initial cards...")
 }
@@ -358,5 +291,57 @@ function CanRequestActions(bool) {
 
 function SetRoomStatus(room_status) {
     title.innerHTML = title_base.concat(" | ", room_status);
->>>>>>> MVP
+}
+
+// Card Utility
+function createCard(id) {
+    return `<img src="https://deckofcardsapi.com/static/img/${id}.png" class="OBJ_card" alt="${id}">`
+}
+
+function addCardToHand(hand_container, card_id) {
+    hand_container.innerHTML += createCard(card_id)
+}
+
+function wipeHand(hand_container) {
+    hand_container.innerHTML = ""
+}
+
+function updatePlayerLabelHand(player_id, hand) {
+    let handcontainer
+    if (player_id == "dealer") {
+        handcontainer = document.getElementById("dealer-hand")
+    } else {
+        handcontainer = document.getElementById("hand-p" + getPlayerNum(player_id))
+    }
+    wipeHand(handcontainer)
+    for (let card_id of hand) {
+        addCardToHand(handcontainer, card_id)
+    }
+}
+
+
+// Adding Players to the game
+let player_num = 1   // number of players in game
+document.getElementById("seat-p1").innerHTML = "You!"
+
+function addPlayer(name, id) {
+    // Find next available seat (2-5)
+    for (let seat = 2; seat <= 5; seat++) {
+        if (playerSeats[seat] === null) {
+            playerSeats[seat] = id;
+            document.getElementById("seat-p" + seat).innerHTML = name;
+            break;
+        }
+    }
+}
+
+function getPlayerNum(player_id) {
+    console.log(player_id, "----")
+    for (let num in playerSeats) {
+        console.log(playerSeats[num])
+        if (playerSeats[num] == player_id) {
+            return num
+        }
+    }
+    return null
 }
