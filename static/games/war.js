@@ -29,57 +29,45 @@ const DECK_POSITIONS = {
 let haveplayedcard = false;
 
 // Create socket object;
-//var socket = io();
+var socket = io();
+
+// init socket
+socket.on("update", (data) => {
+	console.log("recieved data from server (socket)")
+	console.log(data)
+})
 
 // Set the title
 Title.innerHTML = "WAR | 0123";
+
+let res = await fetch("/get_roomid");
+let roomid = await res.text();
+Title.innerHTML = "WAR | " + roomid
+console.log(roomid);
 // will be: Title.innerHTML = "WAR | {{ code }}"
 
 
-////// TEMP CODE FOR GENERATING A FAKE DECK //////
-fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
-	.then(r => r.json())
-	.then(deck => {
-		console.log("\tdeck fetched")
-		fetch('https://deckofcardsapi.com/api/deck/' + deck.deck_id + '/draw/?count=52')
-			.then(r => r.json())
-			.then(data => {
-					console.log("\tcards fetched")
+let main_deck = Deck.faceDown(BOARD);
+main_deck.setPosition(WIDTH/2, HEIGHT/2)
 
-					let card_jsons = []
-					if (data.success) {
-					    data.cards.forEach(function(card_json) {card_jsons.push(card_json)});
-					}
-					main(card_jsons);
+// setTimeout(function() {
+// 	let cards = main_deck.dealCards()
 
-				})
-			.catch(e => console.error("Fetch failed: ", e));
-		})
-  	.catch(e => console.error("Fetch failed:", e));
+// 	let p1 = {
+// 		drawDeck: Deck.fromCards(BOARD, cards[0], DECK_POSITIONS.player1.drawDeck.x, DECK_POSITIONS.player1.drawDeck.y),
+// 		fightDeck: Deck.empty(BOARD, DECK_POSITIONS.player1.fightDeck.x, DECK_POSITIONS.player1.fightDeck.y),
+// 		winDeck: Deck.empty(BOARD, DECK_POSITIONS.player1.winDeck.x, DECK_POSITIONS.player1.winDeck.y)
+// 	}
+// 	let p2 = {
+// 		drawDeck: Deck.fromCards(BOARD, cards[1], DECK_POSITIONS.player2.drawDeck.x, DECK_POSITIONS.player2.drawDeck.y),
+// 		fightDeck: Deck.empty(BOARD, DECK_POSITIONS.player2.fightDeck.x, DECK_POSITIONS.player2.fightDeck.y),
+// 		winDeck: Deck.empty(BOARD, DECK_POSITIONS.player2.winDeck.x, DECK_POSITIONS.player2.winDeck.y),
+// 	}
 
-function main(card_jsons) {
-	console.log("main is running")
-	let main_deck = Deck.fromJSONs(BOARD, card_jsons);
-	main_deck.setPosition(WIDTH/2, HEIGHT/2)
+// 	let clickbox = Card.CreateCardClickbox(BOARD, p1.drawDeck.x, p1.drawDeck.y)
+// 	clickbox.addEventListener("click", function() {PlayMyCard(p1.drawDeck, p1.fightDeck)})
+// }, 1000)
 
-	setTimeout(function() {
-		let cards = main_deck.dealCards(2)
-
-		let p1 = {
-			drawDeck: Deck.fromCards(BOARD, cards[0], DECK_POSITIONS.player1.drawDeck.x, DECK_POSITIONS.player1.drawDeck.y),
-			fightDeck: Deck.empty(BOARD, DECK_POSITIONS.player1.fightDeck.x, DECK_POSITIONS.player1.fightDeck.y),
-			winDeck: Deck.empty(BOARD, DECK_POSITIONS.player1.winDeck.x, DECK_POSITIONS.player1.winDeck.y)
-		}
-		let p2 = {
-			drawDeck: Deck.fromCards(BOARD, cards[1], DECK_POSITIONS.player2.drawDeck.x, DECK_POSITIONS.player2.drawDeck.y),
-			fightDeck: Deck.empty(BOARD, DECK_POSITIONS.player2.fightDeck.x, DECK_POSITIONS.player2.fightDeck.y),
-			winDeck: Deck.empty(BOARD, DECK_POSITIONS.player2.winDeck.x, DECK_POSITIONS.player2.winDeck.y),
-		}
-
-		let clickbox = Card.CreateCardClickbox(BOARD, p1.drawDeck.x, p1.drawDeck.y)
-		clickbox.addEventListener("click", function() {PlayMyCard(p1.drawDeck, p1.fightDeck)})
-	}, 1000)
-}
 
 async function PlayMyCard(drawDeck, fightDeck) {
 	if (haveplayedcard && false) {return;}
@@ -95,13 +83,5 @@ async function PlayMyCard(drawDeck, fightDeck) {
 		let response2 = await SendData("/draw_card", {})
 		console.log(response2)
 
-		// const formData = new FormData();
-		// formData.append("card", "5H");
-		// console.log(formData);
-
-		// fetch("/draw_card", {
-		// 	method: "POST",
-		// 	body: formData,
-		// })
 	}
 }

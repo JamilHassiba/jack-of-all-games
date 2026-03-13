@@ -214,7 +214,7 @@ def play_card():
                 if status == []: 
                     return "Either player is locked or exceeded max discard count"
                 else: 
-                    socketio.emit("message", {"msg": f"{player_index} has played a card"})
+                    socketio.emit("message", {"msg": f"{player_index} has played a card"}, to=room_id)
                     return f"Discarded the card {status}"
         else: 
             return "User has not joined a room!"
@@ -266,49 +266,74 @@ def get_hand():
 
 
 # socketio routes
-@socketio.on("blackjack_player_join")
-def blackjack_player_join():
-    ## VALIDATE
+
+# Validates to check whether the user is in a room, and that the room exists
+# Returns true/false
+def socket_validate(session):
     room_id = session.get("room") # User must be in a backend room
-    if not room_id: print("Tried to connect frontend room - user is not in a backend room yet"); return
+    if not room_id: print("Tried to connect frontend room - user is not in a backend room yet"); return False
 
     # Room must exist
     room = rooms.get(room_id)
-    if not room: print("Tried to connect frontend room - backend room no longer exists"); return
+    if not room: print("Tried to connect frontend room - backend room no longer exists"); return False
 
+    return True
+
+@socketio.on("blackjack_player_join")
+def blackjack_player_join():
+    if not socket_validate(session): return
+
+    room_id = session.get("room")
+    room = rooms.get(room_id)
     game = room.game
     blackjack_player = game.AddPlayer(request.sid)
-    session["player"] = blackjack_player
+    session["player_obj"] = blackjack_player
 
     # Tell other players to render this new player as a label
-    socketio.emit("create_player_label", {
-        "id" : request.sid,
-        "name" : request.sid, ## REPLACE WITH THEIR USERNAME
-        "game_score" : "0",
-        "hand" : "",
-        "status" : "",
-    }, to=room_id)
+    socketio.emit("relay_player_info", {"id" : request.sid,}, to=room_id)
 
     # Tell then newly connected player to render all previous players
     for player in game.players:
-        socketio.emit("create_player_label", {
+        socketio.emit("relay_player_info", {
             "id" : player.id,
-            "name" : player.id, ## REPLACE WITH THEIR USERNAME
             "game_score" : player.game_score,
             "hand" : player.hand,
-            "status" : "",
+            "hand_total" : player.hand_total,
+            "state" : player.state,
         }, to=request.sid)
+    # As well as the dealer
+    socketio.emit("relay_player_info", {
+            "id" : "dealer",
+            "hand" : game.dealer.hand,
+            "hand_total" : game.dealer.hand_total,
+        }, to=request.sid)
+
+@socketio.on("blackjack_hit_request")
+def blackjack_hit_request():
+    if not socket_validate(session): return
+    
+    room_id = session.get("room")
+    room = rooms.get(room_id)
+    sid = request.sid
+
+    room.game.PlayerHitRequest(sid)
+
+@socketio.on("blackjack_stand_request")
+def blackjack_stand_request():
+    if not socket_validate(session): return
+
+    room_id = session.get("room")
+    room = rooms.get(room_id)
+    sid = request.sid
+
+    room.game.PlayerStandRequest(sid)
 
 @socketio.on("connect")
 def socket_connect(*arg):
-    ## VALIDATE
-    room_id = session.get("room") # User must be in a backend room
-    if not room_id: print("Tried to connect frontend room - user is not in a backend room yet"); return
+    if not socket_validate(session): return
 
-    # Room must exist
+    room_id = session.get("room")
     room = rooms.get(room_id)
-    if not room: print("Tried to connect frontend room - backend room no longer exists"); return
-
     sid = request.sid
 
     # Track connection
@@ -325,14 +350,10 @@ def socket_connect(*arg):
 
 @socketio.on("disconnect")
 def socket_disconnect(*arg):
-    ## VALDIATE
-    room_id = session.get("room")  # User must be in a backend room
-    if not room_id: print("Tried to disconnect frontend room - user is not in a backend room yet"); return
+    if not socket_validate(session): return
 
-    # Room must exist
+    room_id = session.get("room")
     room = rooms.get(room_id)
-    if not room: print("Tried to disconnect frontend room - backend room no longer exists"); return
-
     sid = request.sid
 
     socketio_connected.pop(sid, None)

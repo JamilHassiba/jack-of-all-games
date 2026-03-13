@@ -211,6 +211,14 @@ class BlackjackPlayer():
         self.__hand = []
         self.__hand_total = 0
         self.__deck = Deck(id=None, shuffle=True, decks=1, jokers=False) 
+        self.__state = "none"
+        '''
+            Player states:
+                - none -> default state, no state assigned
+                - lobby -> inside the blackjack game, but isn't participating in the current round, or is waiting for a round to start
+                - playing -> actively pressing hit/stick
+                - finished -> entered when: hit blackjack | stuck | bust | timeout
+        '''
 
     def HitMe(self):
         cards_list = self.__deck.draw()
@@ -224,7 +232,13 @@ class BlackjackPlayer():
         self.AddCardToHand(card_data)
         print(self)
 
+    def Stand(self):
+        self.SetState("finished")
+
     # Getters
+    @property
+    def state(self):
+        return self.__state
     @property
     def id(self):
         return self.__id
@@ -242,12 +256,49 @@ class BlackjackPlayer():
         return self.__deck
     
     # Setters
+    def SetState(self, new_state: str):
+        self.__state = new_state
+
+        # Broadcast this change to the room's clients
+        self.__game.socketio.emit(
+            'relay_player_info', 
+            {"id": self.id, "state": new_state}, 
+            to=self.__game.room.id)
+
     def AddGameScore(self, value):
+        old_score = self.__game_score
         self.__game_score += value
+        new_score = self.__game_score
+
+        # Broadcast this change to the room's clients
+        self.__game.socketio.emit(
+            'relay_player_info', 
+            {"id": self.id, "game_score": value}, 
+            to=self.__game.room.id)
+
+        # Broadcast player score event
+        self.__game.socketio.emit(
+            'player_score_event',
+            {"id": self.id, "old_score": old_score, "delta_score": new_score-old_score, "new_score": new_score},
+            to=self.__game.room.id)
+
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
         self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
         self.__hand.append(card_data["code"])
-        self.__game.socketio.emit('write_hand', {"id" : self.__id, "hand" : self.hand}, to=self.__game.room.id)
+
+        self.__game.socketio.emit(
+            'relay_player_info',
+            {"id": self.id, "hand": self.hand, "hand_total": self.hand_total},
+            to=self.__game.room.id)
+        
+    def ClearHand(self):
+        self.__hand_total = 0
+        self.__hand = []
+
+        self.__game.socketio.emit(
+            'relay_player_info',
+            {"id": self.id, "hand": self.hand, "hand_total": self.hand_total},
+            to=self.__game.room.id)
 
     def __str__(self):
         return f"Player Object | Hand: {self.__hand} | Total: {self.__hand_total}"
@@ -281,13 +332,28 @@ class BlackjackDealer():
     def deck(self):
         return self.__deck
     
+    def ShouldIDraw(self):
+        return self.hand_total <= 16
+    
     # Setters
     def AddCardToHand(self, card_data): # assumes the formatting returned by deckofcardsapi
         self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
         self.__hand.append(card_data["code"])
-        print("firing the event")
-        self.__game.socketio.emit("write_hand", {"id" : "dealer", "hand" : self.hand}, to=self.__game.room.id)
 
+        self.__game.socketio.emit(
+            'relay_player_info',
+            {"id": "dealer", "hand": self.hand, "hand_total": self.hand_total},
+            to=self.__game.room.id)
+    
+    def ClearHand(self):
+        self.__hand_total = 0
+        self.__hand = []
+
+        self.__game.socketio.emit(
+            'relay_player_info',
+            {"id": "dealer", "hand": self.hand, "hand_total": self.hand_total},
+            to=self.__game.room.id)
+        
     def __str__(self):
         return f"Dealer Object | Hand: {self.__hand} | Total: {self.__hand_total}"
 
@@ -311,6 +377,7 @@ class Blackjack():
         self.__players = []
         self.__room = room_reference # parent object
         self.__dealer = BlackjackDealer(self)
+        self.__current_round = None
        
         self.__FSM = fsm(self)
         self.__FSM.SetStates({
@@ -320,6 +387,7 @@ class Blackjack():
             "dealer_turn" : blackjack_states.dealer_turn(self.__FSM),
             "score" : blackjack_states.score(self.__FSM),
             "cleanup" : blackjack_states.cleanup(self.__FSM),
+            "evaluate_game" : blackjack_states.evaluate_game(self.__FSM)
         })
         self.__FSM.Begin("intermission")
 
@@ -333,9 +401,26 @@ class Blackjack():
         self.__players.append(player)
         return player
 
+    # Game Routes
+    def EvaluateGame(self):
+        print("evaluating the game...")
+
+    # Round Routes
     def NewRound(self):
-        print("New round created")
         self.__current_round = BlackjackRound(self, self.players)
+    def CleanupRound(self):
+        for player in self.players: player.ClearHand()
+        self.dealer.ClearHand()
+        self.__current_round = None
+    def EvaluateRound(self):
+        if self.__current_round == None: return
+        self.__current_round.EvaluateRound()
+    def PlayerHitRequest(self, sid):
+        if self.__current_round == None: return
+        self.__current_round.PlayerHitRequest(sid)
+    def PlayerStandRequest(self, sid):
+        if self.__current_round == None: return
+        self.__current_round.PlayerStandRequest(sid)
 
     # Getters
     @property
@@ -345,18 +430,28 @@ class Blackjack():
     def socketio(self):
         return self.__socketio
     @property
-    def max_player_count(self):
-        return self.__max_player_count
-    @property
-    def players(self):
-        return self.__players
+    def FSM(self):
+        return self.__FSM
+
+
     @property
     def current_state(self):
         return self.__current_state
     @property
+    def current_round(self):
+        return self.__current_round
+    
+    @property
     def dealer(self):
         return self.__dealer
+    @property
+    def players(self):
+        return self.__players
+    @property
+    def max_player_count(self):
+        return self.__max_player_count
 
+    
     ## Dunders
     def __str__(self):
         output = "\n==========\n"
@@ -370,6 +465,25 @@ class Blackjack():
         return output
 
 class BlackjackRound():
+    # entity in this context is either dealer or player (both implement a hand_total field)
+    @staticmethod
+    def IsEntityBust(entity):
+        return entity.hand_total > 21
+
+    @staticmethod
+    def DoesEntityHaveBlackjack(entity):
+        return entity.hand_total == 21
+
+    @staticmethod
+    def WinPlayers(winners):
+        for player in winners:
+            if BlackjackRound.DoesEntityHaveBlackjack(player): player.AddGameScore(2)
+            else: player.AddGameScore(1)
+
+    @staticmethod
+    def LosePlayers(losers):
+        pass
+
     def __init__(self, game, players):
         self.__game = game #reference to the parent game
         self.__players_in_round = players.copy()
@@ -377,10 +491,98 @@ class BlackjackRound():
 
         self.DealInitialCards()
 
+    def GetPlayerFromSID(self, sid):
+        for player in self.__players_in_round:
+            if player.id == sid: return player
+        return None
+
     def DealInitialCards(self):
         self.__game.dealer.DealToSelf()
         for player in self.__players_in_round:
+            player.SetState('playing')
             player.HitMe()
+
+    def EvaluatePlayer(self, player):
+        is_bust = BlackjackRound.IsEntityBust(player)
+        has_blackjack = BlackjackRound.DoesEntityHaveBlackjack(player)
+
+        if is_bust or has_blackjack:
+            player.SetState("finished")
+            self.__players_finished.append(player)
+
+            if is_bust: 
+                self.__game.socketio.emit(
+                    "relay_player_info",
+                    {"id": player.id, "is_bust": True},
+                    to=self.__game.room.id)
+                
+            else:
+                self.__game.socketio.emit(
+                    "relay_player_info",
+                    {"id": player.id, "has_blackjack": True},
+                    to=self.__game.room.id)
+                
+
+    def EvaluateRound(self):
+        match self.EvaluateDealer():
+            case "bust": 
+                winners = filter(lambda p: not BlackjackRound.IsEntityBust(p), self.__players_in_round)
+                BlackjackRound.WinPlayers(self.__players_in_round.copy())
+            case "blackjack": BlackjackRound.LosePlayers(self.__players_in_round.copy())
+            case _:
+                score_to_beat = self.__game.dealer.hand_total
+                winners = filter(lambda p: p.hand_total > score_to_beat and not BlackjackRound.IsEntityBust(p), self.__players_in_round)
+                losers = filter(lambda p: p.hand_total <= score_to_beat or BlackjackRound.IsEntityBust(p), self.__players_in_round)
+
+                BlackjackRound.WinPlayers(winners)
+                BlackjackRound.LosePlayers(losers)
+
+
+    def EvaluateDealer(self):
+        dealer = self.__game.dealer
+        is_bust = BlackjackRound.IsEntityBust(dealer)
+        has_blackjack = BlackjackRound.DoesEntityHaveBlackjack(dealer)
+
+        if is_bust:
+            self.__game.socketio.emit(
+                "relay_player_info",
+                {"id": "dealer", "is_bust": True},
+                to=self.__game.room.id)
+            
+            return "bust"
+        elif has_blackjack:
+            self.__game.socketio.emit(
+                "relay_player_info",
+                {"id": "dealer", "has_blackjack": True},
+                to=self.__game.room.id)
+            
+            return "blackjack"
+        
+        return ""
+
+    def PlayerHitRequest(self, sid):
+        if self.__game.FSM.current_state_name != "players_turn": return
+
+        player = self.GetPlayerFromSID(sid)
+        if not player: return
+        if player.state != "playing": return
+
+        player.HitMe()
+        self.EvaluatePlayer(player)
+
+    def PlayerStandRequest(self, sid):
+        if self.__game.FSM.current_state_name != "players_turn": return
+
+        player = self.GetPlayerFromSID(sid)
+        if not player: return
+        if player.state != "playing": return
+
+        player.Stand()
+        self.__players_finished.append(player)
+
+
+    def AreAllPlayersFinished(self):
+        return len(self.__players_in_round) == len(self.__players_finished)
 
 
 ### END ###

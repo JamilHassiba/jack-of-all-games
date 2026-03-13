@@ -15,3 +15,4 @@ export async function SendData(route, data) {
 		return await response
 	}
 }
+

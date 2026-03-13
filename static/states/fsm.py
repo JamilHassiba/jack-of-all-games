@@ -18,6 +18,9 @@ class fsm():
     # Getters
     def GetCurrentState(self):
         return self.__states[self.__current_state_name]
+    @property
+    def current_state_name(self):
+        return self.__current_state_name
 
     # Setters
     def SetState(self, new_state_name: str):
@@ -34,6 +37,6 @@ class fsm():
         new_state = self.GetCurrentState()
         new_state.OnEnter()
 
-        self.root.socketio.emit('set_room_label', {'label' : new_state_name}, to=self.root.room.id)
+        self.root.socketio.emit("relay_game_state", {"new_state": new_state_name}, to=self.root.room.id)
 
     
