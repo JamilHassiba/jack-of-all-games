@@ -44,7 +44,7 @@ h4 {
     transform: translate(-50%, -50%)
 }
 
-.seat.p1 {
+.seat.p4 {
     left: 11%;
     top: 25%;
 }
@@ -55,12 +55,12 @@ h4 {
 }
 
 /* self player */
-.seat.p3 {
+.seat.p1 {
     left: 50%;
     top: 55%;
 }
 
-.seat.p4 {
+.seat.p3 {
     left: 74%;
     top: 46%;
 }
