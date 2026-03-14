@@ -17,12 +17,12 @@ let dealer_elements = {
     "hand_total": document.getElementById("dealer-hand-total"),
 }
 
-let other_players_container = document.getElementById("other-players");
+// let other_players_container = document.getElementById("other-players");
 
 let hit_button = document.getElementById("hit-btn");
 let stand_button = document.getElementById("stand-btn");
 
-let title = document.getElementById("title")
+let title = document.getElementById("game-status-p")
 
 // Data
 // Create socket object;
@@ -36,10 +36,10 @@ let playerSeats;
 
 let room_state = "unknown";
 
-const title_base = title.innerHTML;
+const title_base = "";
 
 //// START ////
-title.innerHTML = title_base.concat(" | waiting for state from server")
+title.innerHTML = title_base.concat("waiting for state from server")
 CanRequestActions(false);
 
 // Events
@@ -95,7 +95,7 @@ function UpdatePlayerLabel(id, player) {
     let label = player_labels.get(id)
     if (!label) {
         label = new PlayerLabel(id) // RM?
-        other_players_container.appendChild(label.e) // RM
+        // other_players_container.appendChild(label.e) // RM
         player_labels.set(id, label)
     }
 
@@ -163,15 +163,16 @@ function StandButtonClicked() {
 
 // This Player Handlers
 function ThisPlayer_HandUpdated(playerid, new_hand) {
-    player_elements.hand.innerHTML = new_hand
+    // player_elements.hand.innerHTML = new_hand
+    updatePlayerLabelHand(playerid, new_hand)
 }
 function ThisPlayer_HandTotalUpdated(playerid, new_hand_total) {
-    player_elements.hand_total.innerHTML = new_hand_total
+    // player_elements.hand_total.innerHTML = new_hand_total
 }
 function ThisPlayer_GameScoreUpdated(playerid, new_game_score) {
     console.log("my new score")
     console.log(new_game_score)
-    player_elements.game_score.innerHTML = new_game_score
+    // player_elements.game_score.innerHTML = new_game_score
 }
 function ThisPlayer_ScoreEvent(playerid, old_score, delta_score, new_game_score) {
     if (delta_score == 0) alert("You failed to beat the dealer, 0 points");
@@ -290,7 +291,7 @@ function CanRequestActions(bool) {
 }
 
 function SetRoomStatus(room_status) {
-    title.innerHTML = title_base.concat(" | ", room_status);
+    title.innerHTML = room_status;
 }
 
 // Card Utility
