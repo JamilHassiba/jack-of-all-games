@@ -94,8 +94,8 @@ function UpdatePlayerField(id, field, value, thisplayer_callback = () => { }, ot
 function UpdatePlayerLabel(id, player) {
     let label = player_labels.get(id)
     if (!label) {
-        label = new PlayerLabel(id)
-        other_players_container.appendChild(label.e)
+        label = new PlayerLabel(id) // RM?
+        other_players_container.appendChild(label.e) // RM
         player_labels.set(id, label)
     }
 
@@ -321,7 +321,6 @@ function updatePlayerLabelHand(player_id, hand) {
 
 
 // Adding Players to the game
-let player_num = 1   // number of players in game
 document.getElementById("seat-p1").innerHTML = "You!"
 
 function addPlayer(name, id) {
