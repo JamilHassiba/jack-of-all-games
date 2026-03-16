@@ -168,6 +168,10 @@ function ThisPlayer_HandUpdated(playerid, new_hand) {
 }
 function ThisPlayer_HandTotalUpdated(playerid, new_hand_total) {
     // player_elements.hand_total.innerHTML = new_hand_total
+    let seat = getPlayerNum(playerid)
+    if (seat) {
+        document.getElementById("score-p" + seat).innerHTML = new_hand_total
+    }
 }
 function ThisPlayer_GameScoreUpdated(playerid, new_game_score) {
     console.log("my new score")
@@ -210,8 +214,7 @@ function OtherPlayer_HandUpdated(playerid, new_hand) {
     updatePlayerLabelHand(playerid, new_hand)
 }
 function OtherPlayer_HandTotalUpdated(playerid, new_hand_total) {
-    // STUB
-    return
+    return ThisPlayer_HandTotalUpdated(playerid, new_hand_total)
 }
 function OtherPlayer_GameScoreUpdated(playerid, new_game_score) {
     // STUB
@@ -249,6 +252,7 @@ function Dealer_HandUpdated(dealerid, new_hand) {
 }
 function Dealer_HandTotalUpdated(dealerid, new_hand_total) {
     // dealer_elements.hand_total.innerHTML = new_hand_total
+    document.getElementById("dealer-score").innerHTML = new_hand_total
 }
 function Dealer_IsBust_Updated(dealerid, is_bust) {
     if (is_bust)

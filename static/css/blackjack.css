@@ -135,3 +135,11 @@ h4 {
     background-color: #8f6c4a;
     box-shadow: 0 0 10px rgba(143, 108, 74, 0.5);
 }
+
+.score {
+    background-color: black;
+    color: #c9a84c;
+    font-size: 1.5vw;
+    font-weight: bold;
+    display: flex;
+}
