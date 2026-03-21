@@ -108,7 +108,7 @@ socket.on('relay_player_info', function (data) {
         player = new PlayerInfo(id);
         players.set(id, player)        // Assign seat for new players (not self, not dealer)
         if (id != socket.id && id != "dealer") {
-            addPlayer(id, id); // Use id as name for now
+            addPlayer(data.name, id); // Use id as name for now
         }
     }
 
