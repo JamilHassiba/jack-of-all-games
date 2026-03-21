@@ -204,9 +204,10 @@ class Room:
 ##### BLACKJACK #####
 
 class BlackjackPlayer():
-    def __init__(self, sid, game):
+    def __init__(self, sid, game, username):
         self.__game = game
         self.__id = sid
+        self.__username = username
         self.__game_score = 0
         self.__hand = []
         self.__hand_total = 0
@@ -236,6 +237,9 @@ class BlackjackPlayer():
         self.SetState("finished")
 
     # Getters
+    @property
+    def username(self):
+        return self.__username
     @property
     def state(self):
         return self.__state
@@ -395,9 +399,9 @@ class Blackjack():
     def Update(self, dt):
         self.__FSM.Update(dt)
 
-    def AddPlayer(self, sid):
+    def AddPlayer(self, sid, username):
         # Create a player object
-        player = BlackjackPlayer(sid, self)
+        player = BlackjackPlayer(sid, self, username)
         self.__players.append(player)
         return player
 
@@ -476,9 +480,13 @@ class BlackjackRound():
 
     @staticmethod
     def WinPlayers(winners):
+        from backend import record_win
         for player in winners:
+            print(f"WinPlayers called for {player.username}")
             if BlackjackRound.DoesEntityHaveBlackjack(player): player.AddGameScore(2)
             else: player.AddGameScore(1)
+            if player.username:
+                record_win(player.username)
 
     @staticmethod
     def LosePlayers(losers):
@@ -528,7 +536,7 @@ class BlackjackRound():
         match self.EvaluateDealer():
             case "bust": 
                 winners = filter(lambda p: not BlackjackRound.IsEntityBust(p), self.__players_in_round)
-                BlackjackRound.WinPlayers(self.__players_in_round.copy())
+                BlackjackRound.WinPlayers(winners)
             case "blackjack": BlackjackRound.LosePlayers(self.__players_in_round.copy())
             case _:
                 score_to_beat = self.__game.dealer.hand_total

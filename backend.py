@@ -36,10 +36,19 @@ with db() as conn:
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL
+            password_hash TEXT NOT NULL,
+            wins INTEGER NOT NULL DEFAULT 0
         )
     """)
     # creates user table if it doesnt exist
+    try:
+        conn.execute("ALTER TABLE users ADD COLUMN wins INTEGER NOT NULL DEFAULT 0")
+    except sqlite3.OperationalError:
+        pass
+
+def record_win(username):
+    with db() as conn:
+        conn.execute("UPDATE users SET wins = wins + 1 WHERE username = ?", (username,))
 
 @app.route('/')
 def home_page():
@@ -286,7 +295,8 @@ def blackjack_player_join():
     room_id = session.get("room")
     room = rooms.get(room_id)
     game = room.game
-    blackjack_player = game.AddPlayer(request.sid)
+    username = session.get("username")
+    blackjack_player = game.AddPlayer(request.sid, username)
     session["player_obj"] = blackjack_player
 
     # Tell other players to render this new player as a label

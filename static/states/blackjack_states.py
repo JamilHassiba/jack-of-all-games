@@ -47,7 +47,7 @@ class players_turn(State):
         print("PlayersTurnState entered")
 
     def Update(self, dt):
-        if self.fsm.root.current_round.AreAllPlayersFinished():
+        if self.fsm.root.current_round and self.fsm.root.current_round.AreAllPlayersFinished():
             self.fsm.SetState("dealer_turn")
 
     def OnExit(self):
