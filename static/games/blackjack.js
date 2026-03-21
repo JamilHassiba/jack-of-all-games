@@ -202,7 +202,9 @@ function ThisPlayer_StateUpdated(playerid, new_state) {
 }
 function ThisPlayer_IsBust_Updated(playerid, is_bust) {
     if (is_bust)
-        alert("You are bust!");
+        stand_button.classList.add("disabled")
+    hit_button.classList.add("disabled")
+    alert("You are bust!");
 }
 function ThisPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
     if (has_blackjack)
@@ -273,6 +275,8 @@ function Game_EnteredRoundStartState() {
     SetRoomStatus("Dealing initial cards...")
 }
 function Game_EnteredPlayersTurnState() {
+    hit_button.classList.remove("disabled")
+    stand_button.classList.remove("disabled")
     SetRoomStatus("Player's turn")
 }
 function Game_EnteredDealersTurnState() {
@@ -307,15 +311,16 @@ function createCardLink(id) {
     return "https://deckofcardsapi.com/static/img/" + id + ".png"
 }
 
-function addCardToHand(hand_container, card_id, selfplayer = false) {
+function addCardToHand(hand_container, card_id, selfplayer = false, dealer = false) {
     // if first 2 cards are invisible - replace their source with card
     // and make visible again - else add new card to hand
     let cards = hand_container.getElementsByClassName("OBJ_card")
     for (let i = 0; i < cards.length; i++) {
-        if (cards[i].classList.contains("hidden")) {
+        if (cards[i].classList.contains("back")) {
             cards[i].src = createCardLink(card_id)
             cards[i].alt = card_id
             cards[i].classList.remove("hidden")
+            cards[i].classList.remove("back")
             animateDeal(cards[i])
 
             if (selfplayer) {
@@ -350,6 +355,7 @@ function wipeHand(hand_container, is_dealer = false) {
             cards[i].src = "https://deckofcardsapi.com/static/img/back.png"
             cards[i].alt = "Card back"
             cards[i].classList.add("hidden")
+            cards[i].classList.add("back")
         } else {
             cards[i].remove()
         }
@@ -357,8 +363,7 @@ function wipeHand(hand_container, is_dealer = false) {
     if (is_dealer) {
         // Dealer should always show 2 back cards
         for (let i = 0; i < 2; i++) {
-            cards[i].src = "https://deckofcardsapi.com/static/img/back.png"
-            cards[i].alt = "Card back"
+            cards[i].classList.remove("hidden")
         }
     }
 }
