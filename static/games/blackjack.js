@@ -39,7 +39,7 @@ let room_state = "unknown";
 const title_base = "";
 
 //// START ////
-title.innerHTML = title_base.concat("waiting for state from server")
+title.innerHTML = title_base.concat("Waiting for the next round to start...")
 CanRequestActions(false);
 
 // Events
@@ -316,6 +316,7 @@ function addCardToHand(hand_container, card_id, selfplayer = false) {
             cards[i].src = createCardLink(card_id)
             cards[i].alt = card_id
             cards[i].classList.remove("hidden")
+            animateDeal(cards[i])
 
             if (selfplayer) {
                 // If self player make cards bigger
@@ -329,10 +330,18 @@ function addCardToHand(hand_container, card_id, selfplayer = false) {
         card = card.replace("OBJ_card", "OBJ_card self")
     }
     hand_container.innerHTML += card
+    animateDeal(hand_container.lastElementChild)
+}
+
+function animateDeal(cardEl) {
+    // deals card with a flip animation for smoothness
+    cardEl.classList.remove("dealing")
+    void cardEl.offsetWidth  // force reflow so re-adding works
+    cardEl.classList.add("dealing")
 }
 
 
-function wipeHand(hand_container) {
+function wipeHand(hand_container, is_dealer = false) {
     // Recommended because it preserves layout of page
     // make first 2 cards invisible - then remove extra cards
     let cards = hand_container.getElementsByClassName("OBJ_card")
@@ -343,6 +352,13 @@ function wipeHand(hand_container) {
             cards[i].classList.add("hidden")
         } else {
             cards[i].remove()
+        }
+    }
+    if (is_dealer) {
+        // Dealer should always show 2 back cards
+        for (let i = 0; i < 2; i++) {
+            cards[i].src = "https://deckofcardsapi.com/static/img/back.png"
+            cards[i].alt = "Card back"
         }
     }
 }
@@ -359,7 +375,7 @@ function updatePlayerLabelHand(player_id, hand) {
         handcontainer = document.getElementById("hand-p" + getPlayerNum(player_id))
     }
     let isSelfPlayer = (player_id == socket.id) || (player_id == "dealer")
-    wipeHand(handcontainer)
+    wipeHand(handcontainer, player_id == "dealer")
     for (let card_id of hand) {
         addCardToHand(handcontainer, card_id, isSelfPlayer)
     }
