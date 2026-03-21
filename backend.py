@@ -125,7 +125,7 @@ def create_room():                   # frontend sends a POST request and we make
         num_players = int(data["num_players"])
         room = Room(socketio, game_type, num_players)
         rooms[room.id] = room                # store rooms in a dict for quick access 
-        return f"successfully created room with id {room.id}"
+        return room.id
     except:
         return "error, something went wrong. source: creating a room" 
 

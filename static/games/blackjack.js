@@ -51,7 +51,7 @@ stand_button.addEventListener("mousedown", StandButtonClicked);
 // Socket
 socket.on('connect', function () {
     this_player = new PlayerInfo(socket.id)
-    players.set(socket.id, this_player)    
+    players.set(socket.id, this_player)
     playerSeats = {
         1: socket.id,
         2: null,
@@ -300,17 +300,57 @@ function SetRoomStatus(room_status) {
 
 // Card Utility
 function createCard(id) {
-    return `<img src="https://deckofcardsapi.com/static/img/${id}.png" class="OBJ_card" alt="${id}">`
+    return `<img src="${createCardLink(id)}" class="OBJ_card" alt="${id}">`
 }
 
-function addCardToHand(hand_container, card_id) {
-    hand_container.innerHTML += createCard(card_id)
+function createCardLink(id) {
+    return "https://deckofcardsapi.com/static/img/" + id + ".png"
 }
+
+function addCardToHand(hand_container, card_id, selfplayer = false) {
+    // if first 2 cards are invisible - replace their source with card
+    // and make visible again - else add new card to hand
+    let cards = hand_container.getElementsByClassName("OBJ_card")
+    for (let i = 0; i < cards.length; i++) {
+        if (cards[i].classList.contains("hidden")) {
+            cards[i].src = createCardLink(card_id)
+            cards[i].alt = card_id
+            cards[i].classList.remove("hidden")
+
+            if (selfplayer) {
+                // If self player make cards bigger
+                cards[i].classList.add("self")
+            }
+            return;
+        }
+    }
+    let card = createCard(card_id)
+    if (selfplayer) {
+        card = card.replace("OBJ_card", "OBJ_card self")
+    }
+    hand_container.innerHTML += card
+}
+
 
 function wipeHand(hand_container) {
-    hand_container.innerHTML = ""
+    // Recommended because it preserves layout of page
+    // make first 2 cards invisible - then remove extra cards
+    let cards = hand_container.getElementsByClassName("OBJ_card")
+    for (let i = cards.length - 1; i >= 0; i--) { // iterate backwards because hand is a live collection
+        if (i < 2) {
+            cards[i].src = "https://deckofcardsapi.com/static/img/back.png"
+            cards[i].alt = "Card back"
+            cards[i].classList.add("hidden")
+        } else {
+            cards[i].remove()
+        }
+    }
 }
 
+function bruteWipeHand(hand_container) {
+    // Not Recommended because it will shift layout of page around
+    hand_container.innerHTML = ""
+}
 function updatePlayerLabelHand(player_id, hand) {
     let handcontainer
     if (player_id == "dealer") {
@@ -318,9 +358,10 @@ function updatePlayerLabelHand(player_id, hand) {
     } else {
         handcontainer = document.getElementById("hand-p" + getPlayerNum(player_id))
     }
+    let isSelfPlayer = (player_id == socket.id) || (player_id == "dealer")
     wipeHand(handcontainer)
     for (let card_id of hand) {
-        addCardToHand(handcontainer, card_id)
+        addCardToHand(handcontainer, card_id, isSelfPlayer)
     }
 }
 

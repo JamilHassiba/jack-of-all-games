@@ -13,21 +13,52 @@ body {
     justify-content: center;
 }
 
+.outer-hand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: 0.3vw solid orangered;
+    width: 12vw;
+    height: 16vh;
+
+}
+
+.outer-hand-p1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: 0.3vw solid orangered;
+    width: 15vw;
+    height: 16vh;
+}
+
+.outer-hand-dealer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: 0.3vw solid orangered;
+    width: 15vw;
+    height: 16vh;
+}
+
 .OBJ_card {
     height: 18vh;
     width: auto;
-    margin: 0 -8vh 0 0;
+    margin: 0 -10vh 0 0;
     position: relative;
+}
+
+.OBJ_card.self {
+    height: 25vh;
+    width: auto;
+    margin: 0 -14vh 0 0;
 }
 
 .OBJ_card:last-child {
     margin-right: 0;
 }
 
-.OBJ_card.self {
-    height: 25vh;
-    width: auto;
-}
+
 
 h3,
 h4 {
@@ -41,33 +72,36 @@ h4 {
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    transform: translate(-50%, -50%)
+    transform: translate(-50%, -50%);
+    width: 13vw;
 }
 
 .seat.p4 {
     left: 11%;
-    top: 25%;
+    top: 30%;
 }
 
 .seat.p2 {
-    left: 26%;
-    top: 46%;
+    left: 28%;
+    top: 51%;
 }
 
 /* self player */
 .seat.p1 {
     left: 50%;
-    top: 55%;
+    top: 58%;
+
+    width: 15vw;
 }
 
 .seat.p3 {
-    left: 74%;
-    top: 46%;
+    left: 72%;
+    top: 51%;
 }
 
 .seat.p5 {
     left: 89%;
-    top: 25%;
+    top: 30%;
 }
 
 .dealer-area {
@@ -142,4 +176,15 @@ h4 {
     font-size: 1.5vw;
     font-weight: bold;
     display: flex;
+}
+
+.score-self  {
+    margin-top: 4vh;
+}
+.score-dealer {
+    margin-top: 3vh;
+}
+
+.hidden {
+    visibility: hidden;
 }

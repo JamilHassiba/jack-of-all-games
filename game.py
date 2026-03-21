@@ -501,6 +501,7 @@ class BlackjackRound():
         for player in self.__players_in_round:
             player.SetState('playing')
             player.HitMe()
+            player.HitMe()
 
     def EvaluatePlayer(self, player):
         is_bust = BlackjackRound.IsEntityBust(player)
