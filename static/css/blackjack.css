@@ -138,6 +138,31 @@ h4 {
     font-weight: bold;
 }
 
+/* Score Status Box */
+.score-status {
+    position: fixed;
+    bottom: 3vh;
+    right: 2vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 0.3vw solid #c9a84c;
+    padding: 2vh 2.5vw;
+    border-radius: 0.5vw;
+    z-index: 10;
+}
+
+#score-display {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+}
+
+#my-score-info,
+#others-score-info div {
+    color: white;
+    font-size: 1.2vw;
+    font-weight: bold;
+}
+
 /* Action Buttons */
 .action-buttons {
     position: fixed;
