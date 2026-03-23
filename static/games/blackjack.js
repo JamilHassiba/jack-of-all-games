@@ -237,7 +237,7 @@ function ThisPlayer_IsBust_Updated(playerid, is_bust) {
     // alert("You are bust!");
 }
 function ThisPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
-    if (has_blackjack)
+    // if (has_blackjack)
         // alert("Blackjack!");
 }
 
@@ -294,11 +294,11 @@ function Dealer_HandTotalUpdated(dealerid, new_hand_total) {
     document.getElementById("dealer-score").innerHTML = new_hand_total
 }
 function Dealer_IsBust_Updated(dealerid, is_bust) {
-    if (is_bust)
+    // if (is_bust)
         // alert("Dealer went bust!");
 }
 function Dealer_HasBlackjack_Updated(dealerid, has_blackjack) {
-    if (has_blackjack)
+    // if (has_blackjack)
         // alert("Dealer has blackjack!");
 }
 
