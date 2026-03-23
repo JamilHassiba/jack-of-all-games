@@ -102,14 +102,19 @@ function UpdatePlayerLabel(id, player) {
     label.update(player);
 }
 socket.on('relay_player_info', function (data) {
+    console.log("relay_player_info received:", data);
     let id = data.id;
     let player = players.get(id);
     if (player == null) {
         player = new PlayerInfo(id);
         players.set(id, player)        // Assign seat for new players (not self, not dealer)
         if (id != socket.id && id != "dealer") {
-            addPlayer(data.name, id); // Use id as name for now
+            addPlayer(data.username, id); // Use id as name for now
         }
+    }
+
+    if (data.username !== undefined) {
+        player.name = data.username;
     }
 
     if (data.hand !== undefined)
