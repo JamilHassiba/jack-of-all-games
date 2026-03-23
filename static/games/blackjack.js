@@ -153,17 +153,42 @@ function HitButtonClicked() {
     if (room_state != "players_turn") return;
 
     socket.emit("blackjack_hit_request");
+
+    lockHitButton()
+    lockStandButton()
 };
+
+function lockHitButton() {
+    hit_button.classList.add("disabled")
+}
+
+function unlockHitButton() {
+    hit_button.classList.remove("disabled")
+}
+
+function lockStandButton() {
+    stand_button.classList.add("disabled")
+}
+
+function unlockStandButton() {
+    stand_button.classList.remove("disabled")
+}
+
 function StandButtonClicked() {
     if (this_player.state != "playing") return;
     if (room_state != "players_turn") return;
 
     socket.emit("blackjack_stand_request");
+
+    lockHitButton()
+    lockStandButton()
 }
 
 // This Player Handlers
 function ThisPlayer_HandUpdated(playerid, new_hand) {
     // player_elements.hand.innerHTML = new_hand
+    unlockHitButton()
+    unlockStandButton()
     updatePlayerLabelHand(playerid, new_hand)
 }
 function ThisPlayer_HandTotalUpdated(playerid, new_hand_total) {
@@ -201,9 +226,10 @@ function ThisPlayer_StateUpdated(playerid, new_state) {
     }
 }
 function ThisPlayer_IsBust_Updated(playerid, is_bust) {
-    if (is_bust)
-        stand_button.classList.add("disabled")
-    hit_button.classList.add("disabled")
+    if (is_bust) {
+        lockStandButton()
+        lockHitButton()
+    }
     alert("You are bust!");
 }
 function ThisPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
@@ -275,8 +301,8 @@ function Game_EnteredRoundStartState() {
     SetRoomStatus("Dealing initial cards...")
 }
 function Game_EnteredPlayersTurnState() {
-    hit_button.classList.remove("disabled")
-    stand_button.classList.remove("disabled")
+    unlockHitButton()
+    unlockStandButton()
     SetRoomStatus("Player's turn")
 }
 function Game_EnteredDealersTurnState() {
