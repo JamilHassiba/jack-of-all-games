@@ -472,7 +472,21 @@ class BlackjackRound():
     # entity in this context is either dealer or player (both implement a hand_total field)
     @staticmethod
     def IsEntityBust(entity):
-        return entity.hand_total > 21
+        if entity.hand_total > 21: 
+            temp_hand = entity.hand.copy()
+
+            # scan for aces when bust 
+            for card_index in range(len(temp_hand)): 
+                card = temp_hand[card_index]
+                if card[0] == "A": 
+                    # treat it as a 1 instead 
+                    entity.hand_total -= 10 
+                    if entity.hand_total <= 21: 
+                        break 
+                        # don't scan for more aces if they are no longer bust 
+            return entity.hand_total > 21
+        else: 
+            return False 
 
     @staticmethod
     def DoesEntityHaveBlackjack(entity):
