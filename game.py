@@ -56,6 +56,7 @@ class Game:
         # use polymorphism to define new game_finish
         # this action is applied when the game finishes 
         print("game finished")
+    
 
 class War(Game): 
     def __init__(self, num_decks, num_players, shuffle=True, jokers=False): 

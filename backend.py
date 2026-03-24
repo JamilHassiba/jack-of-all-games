@@ -333,6 +333,10 @@ def blackjack_player_join():
             "hand_total" : game.dealer.hand_total,
         }, to=request.sid)
 
+@socketio.on("blackjack_player_leave")
+def blackjack_player_leave(): 
+    pass 
+
 @socketio.on("blackjack_hit_request")
 def blackjack_hit_request():
     if not socket_validate(session): return
