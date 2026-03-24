@@ -476,7 +476,7 @@ class BlackjackRound():
             temp_hand = entity.hand.copy()
 
             # scan for aces when bust 
-            for card_index in temp_hand: 
+            for card_index in range(len(temp_hand)): 
                 card = temp_hand[card_index]
                 if card[0] == "A": 
                     # treat it as a 1 instead 
