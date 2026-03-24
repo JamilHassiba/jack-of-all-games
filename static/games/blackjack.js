@@ -59,6 +59,7 @@ socket.on('connect', function () {
         4: null,
         5: null
     }
+    document.getElementById("my-score-info").innerHTML = "You: 0 (+0)";
     socket.emit('blackjack_player_join');
 });
 
@@ -209,9 +210,7 @@ function ThisPlayer_GameScoreUpdated(playerid, new_game_score) {
     // player_elements.game_score.innerHTML = new_game_score
 }
 function ThisPlayer_ScoreEvent(playerid, old_score, delta_score, new_game_score) {
-    if (delta_score == 0) alert("You failed to beat the dealer, 0 points");
-    else if (delta_score == 1) alert("You beat the dealer! +1 points");
-    else if (delta_score == 2) alert("You beat the dealer with blackjack! +2 points");
+    document.getElementById("my-score-info").innerHTML = `You: ${new_game_score} (+${delta_score})`;
 }
 function ThisPlayer_StateUpdated(playerid, new_state) {
     switch (new_state) {
@@ -235,11 +234,11 @@ function ThisPlayer_IsBust_Updated(playerid, is_bust) {
         lockStandButton()
         lockHitButton()
     }
-    alert("You are bust!");
+    // alert("You are bust!");
 }
 function ThisPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
-    if (has_blackjack)
-        alert("Blackjack!");
+    // if (has_blackjack)
+        // alert("Blackjack!");
 }
 
 // Other Player Handlers
@@ -254,8 +253,15 @@ function OtherPlayer_GameScoreUpdated(playerid, new_game_score) {
     return
 }
 function OtherPlayer_ScoreEvent(playerid, old_score, delta_score, new_score) {
-    // STUB
-    return
+    let player = players.get(playerid);
+    let name = player ? (player.name || "Player") : "Player";
+    let div = document.createElement("div");
+    div.innerHTML = `${name}: ${new_score} (+${delta_score})`;
+    div.id = `score-${playerid}`;
+    // Remove existing if any
+    let existing = document.getElementById(`score-${playerid}`);
+    if (existing) existing.remove();
+    document.getElementById("others-score-info").appendChild(div);
 }
 function OtherPlayer_StateUpdated(playerid, new_state) {
     switch (new_state) {
@@ -288,12 +294,12 @@ function Dealer_HandTotalUpdated(dealerid, new_hand_total) {
     document.getElementById("dealer-score").innerHTML = new_hand_total
 }
 function Dealer_IsBust_Updated(dealerid, is_bust) {
-    if (is_bust)
-        alert("Dealer went bust!");
+    // if (is_bust)
+        // alert("Dealer went bust!");
 }
 function Dealer_HasBlackjack_Updated(dealerid, has_blackjack) {
-    if (has_blackjack)
-        alert("Dealer has blackjack!");
+    // if (has_blackjack)
+        // alert("Dealer has blackjack!");
 }
 
 
@@ -427,6 +433,11 @@ function addPlayer(name, id) {
         if (playerSeats[seat] === null) {
             playerSeats[seat] = id;
             document.getElementById("seat-p" + seat).innerHTML = name;
+            // Initialize score display
+            let div = document.createElement("div");
+            div.innerHTML = `${name}: 0 (+0)`;
+            div.id = `score-${id}`;
+            document.getElementById("others-score-info").appendChild(div);
             break;
         }
     }

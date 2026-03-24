@@ -76,10 +76,8 @@
             <h3 id="seat-dealer">Dealer</h3> <!-- TODO add this in CSS-->
             <div class="outer-hand-dealer">
                 <div id="dealer-hand" class="hand">
-                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card self"
-                        alt="Card back">
-                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card self"
-                        alt="Card back">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card self" alt="Card back">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card self" alt="Card back">
                 </div>
             </div>
             <div id="dealer-score" class="score score-dealer">0</div>
@@ -109,15 +107,15 @@
 
         <div class="seat p1">
             <h3 id="seat-p1">You</h4>
-            <div class="outer-hand-p1">
-                <div id="hand-p1" class="hand p1">
-                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden self"
-                        alt="Card back">
-                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden self"
-                        alt="Card back">
+                <div class="outer-hand-p1">
+                    <div id="hand-p1" class="hand p1">
+                        <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden self"
+                            alt="Card back">
+                        <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden self"
+                            alt="Card back">
+                    </div>
                 </div>
-            </div>
-            <div id="score-p1" class="score score-self">0</div>
+                <div id="score-p1" class="score score-self">0</div>
         </div>
         <div class="seat p3">
             <h4 id="seat-p3">Player 3 - Empty</h4>
@@ -144,7 +142,7 @@
 
     <!-- Game Status Box -->
     <div class="game-status">
-        <p id="game-status-p">Waiting for server</p>
+        <p id="game-status-p">Connecting To Server</p>
     </div>
 
     <!-- Action Buttons -->
@@ -152,6 +150,16 @@
         <button class="btn btn-hit disabled" id="hit-btn">Hit</button>
         <button class="btn btn-stand disabled" id="stand-btn">Stand</button>
     </div>
+
+    <!-- Score Status Box -->
+    <div class="score-status">
+        <div id="score-display">
+            <div id="my-score-info">You: 0 (+0)</div>
+            <div id="others-score-info"></div>
+        </div>
+    </div>
+
+
 
 </body>
 
