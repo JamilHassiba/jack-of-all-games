@@ -86,7 +86,7 @@
 
                     <div class="configure-slider-container">
                         <input class="configure-slider" type="range" id="player-slider" name="player_count" min="2"
-                            max="4" value="4">
+                            max="5" value="5">
                         <span id="player-count-display">4</span>
                     </div>
                 </div>
@@ -111,7 +111,11 @@
         <section class="card" id="join-room-card">
             <header class="join-card-header">
                 <h3 class="card-title">Rooms</h3>
-                <input class="join-search" type="search" id="room-search" placeholder="Search">
+                <div class="join-header-controls">
+                    <button class="nav-btn" type="button" id="refresh-button"
+                        onclick="populateRoomList()">Refresh</button>
+                    <input class="join-search" type="search" id="room-search" placeholder="Search">
+                </div>
             </header>
 
             <div class="room-list scrollable-div" id="room-list">
@@ -417,6 +421,18 @@
                 room.style.display = 'none';
             }
         });
+    });
+
+    /* --- Refresh Button Active State --- */
+
+    const refreshButton = document.getElementById('refresh-button');
+
+    refreshButton.addEventListener('mousedown', function () {
+        refreshButton.classList.add('active');
+    });
+
+    refreshButton.addEventListener('mouseup', function () {
+        refreshButton.classList.remove('active');
     });
 
 

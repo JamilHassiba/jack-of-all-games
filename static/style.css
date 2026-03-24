@@ -309,7 +309,14 @@ body {
 .join-card-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
+}
+
+.join-header-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .join-search {
@@ -372,7 +379,8 @@ body {
     height: 25pc;
     overflow-y: scroll;
     scrollbar-width: thin;
-    scrollbar-gutter: stable both-edges; /* reserves space for scrollbar to avoid layout shift */
+    scrollbar-gutter: stable both-edges;
+    /* reserves space for scrollbar to avoid layout shift */
     scrollbar-color: transparent transparent;
 }
 

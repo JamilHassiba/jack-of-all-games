@@ -505,6 +505,8 @@ class BlackjackRound():
 
     @staticmethod
     def LosePlayers(losers):
+        for player in losers:
+            player.AddGameScore(0)
         pass
 
     def __init__(self, game, players):
@@ -552,7 +554,10 @@ class BlackjackRound():
             case "bust": 
                 winners = filter(lambda p: not BlackjackRound.IsEntityBust(p), self.__players_in_round)
                 BlackjackRound.WinPlayers(winners)
-            case "blackjack": BlackjackRound.LosePlayers(self.__players_in_round.copy())
+
+            case "blackjack": 
+                BlackjackRound.LosePlayers(self.__players_in_round.copy())
+
             case _:
                 score_to_beat = self.__game.dealer.hand_total
                 winners = filter(lambda p: p.hand_total > score_to_beat and not BlackjackRound.IsEntityBust(p), self.__players_in_round)
@@ -560,7 +565,6 @@ class BlackjackRound():
 
                 BlackjackRound.WinPlayers(winners)
                 BlackjackRound.LosePlayers(losers)
-
 
     def EvaluateDealer(self):
         dealer = self.__game.dealer
