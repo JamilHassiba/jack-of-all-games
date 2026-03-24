@@ -1,0 +1,284 @@
+body {
+    background-color: #122e1c;
+    overflow: hidden;
+    height: 100%;
+    margin: 0;
+}
+
+.hand {
+    display: flex;
+    gap: 0;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+.outer-hand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: 0.3vw solid rgba(206, 200, 203, 0.45);
+    width: 12vw;
+    height: 16vh;
+    border-radius: 1vh;
+
+}
+
+.outer-hand-p1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: 0.3vw solid rgba(206, 200, 203, 0.45);
+    width: 15vw;
+    height: 16vh;
+    border-radius: 1vh;
+}
+
+.outer-hand-dealer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: 0.3vw solid rgba(206, 200, 203, 0.45);
+    width: 15vw;
+    height: 16vh;
+    border-radius: 1vh;
+}
+
+.OBJ_card {
+    height: 18vh;
+    width: auto;
+    margin: 0 -10vh 0 0;
+    position: relative;
+}
+
+.OBJ_card.self {
+    height: 25vh;
+    width: auto;
+    margin: 0 -14vh 0 0;
+}
+
+.OBJ_card:last-child {
+    margin-right: 0;
+}
+
+
+#seat-dealer,
+#seat-p1 {
+    margin-bottom: 5vh;
+}
+
+h3,
+h4 {
+    color: white;
+    margin: 3vh 0;
+    font-weight: bold;
+}
+
+
+
+.seat {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transform: translate(-50%, -50%);
+    width: 13vw;
+}
+
+.seat.p4 {
+    left: 11%;
+    top: 33%;
+}
+
+.seat.p2 {
+    left: 28%;
+    top: 54%;
+}
+
+/* self player */
+.seat.p1 {
+    left: 50%;
+    top: 61%;
+
+    width: 15vw;
+}
+
+.seat.p3 {
+    left: 72%;
+    top: 54%;
+}
+
+.seat.p5 {
+    left: 89%;
+    top: 33%;
+}
+
+.dealer-area {
+    top: 23%;
+    left: 50%;
+}
+
+/* Game Status Box */
+.game-status {
+    position: fixed;
+    bottom: 3vh;
+    left: 2vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 0.3vw solid #c9a84c;
+    padding: 2vh 2.5vw;
+    border-radius: 0.5vw;
+    z-index: 10;
+}
+
+.game-status p {
+    margin: 0;
+    color: #c9a84c;
+    font-size: 1.8vw;
+    font-weight: bold;
+}
+
+/* Score Status Box */
+.score-status {
+    position: fixed;
+    bottom: 3vh;
+    right: 2vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 0.3vw solid #c9a84c;
+    padding: 2vh 2.5vw;
+    border-radius: 0.5vw;
+    z-index: 10;
+}
+
+#score-display {
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+}
+
+#my-score-info,
+#others-score-info div {
+    color: white;
+    font-size: 1.2vw;
+    font-weight: bold;
+}
+
+/* Action Buttons */
+.action-buttons {
+    position: fixed;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2vw;
+    z-index: 10;
+}
+
+.btn {
+    padding: 1.5vh 3vw;
+    font-size: 1.8vw;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.5vw;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+/* --- Hit button --- */
+.btn-hit {
+    background-color: #2d5a3d;
+    border: 0.3vw solid #4a8f5c;
+    box-shadow: 0 0 12px rgba(74, 143, 92, 0.6), 0 0 24px rgba(74, 143, 92, 0.3);
+    animation: pulse-green 1.8s ease-in-out infinite;
+}
+
+.btn-hit:hover {
+    background-color: #4a8f5c;
+    box-shadow: 0 0 18px rgba(74, 143, 92, 0.9), 0 0 36px rgba(74, 143, 92, 0.5);
+    transform: translateY(-2px) scale(1.03);
+}
+
+.btn-hit:active {
+    transform: translateY(1px) scale(0.98);
+}
+
+/* --- Stand button --- */
+.btn-stand {
+    background-color: #5a3d2d;
+    border: 0.3vw solid #8f6c4a;
+    box-shadow: 0 0 12px rgba(143, 108, 74, 0.6), 0 0 24px rgba(143, 108, 74, 0.3);
+    animation: pulse-amber 1.8s ease-in-out infinite;
+}
+
+.btn-stand:hover {
+    background-color: #8f6c4a;
+    box-shadow: 0 0 18px rgba(143, 108, 74, 0.9), 0 0 36px rgba(143, 108, 74, 0.5);
+    transform: translateY(-2px) scale(1.03);
+}
+
+.btn-stand:active {
+    transform: translateY(1px) scale(0.98);
+}
+
+/* --- Disabled state (bust or player has stood) --- */
+.btn:disabled,
+.btn.disabled {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: #666;
+    box-shadow: none;
+    animation: none;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.45;
+}
+
+/* --- Pulse animations --- */
+@keyframes pulse-green {
+    0%, 100% { box-shadow: 0 0 12px rgba(74, 143, 92, 0.6), 0 0 24px rgba(74, 143, 92, 0.3); }
+    50%       { box-shadow: 0 0 20px rgba(74, 143, 92, 0.9), 0 0 40px rgba(74, 143, 92, 0.5); }
+}
+
+@keyframes pulse-amber {
+    0%, 100% { box-shadow: 0 0 12px rgba(143, 108, 74, 0.6), 0 0 24px rgba(143, 108, 74, 0.3); }
+    50%       { box-shadow: 0 0 20px rgba(143, 108, 74, 0.9), 0 0 40px rgba(143, 108, 74, 0.5); }
+}
+
+.score {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    font-size: 1.5vw;
+    font-weight: bold;
+    display: flex;
+    margin-top: 2vh;
+}
+
+.score-self {
+    margin-top: 5vh;
+}
+
+.score-dealer {
+    margin-top: 5vh;
+}
+
+@keyframes flipIn {
+    from {
+        transform: rotateY(90deg);
+        opacity: 0;
+    }
+
+    to {
+        transform: rotateY(0deg);
+        opacity: 1;
+    }
+}
+
+.OBJ_card.dealing {
+    /* animation for when card is dealt */
+    animation: flipIn 0.35s ease-out forwards;
+}
+
+.hidden {
+    visibility: hidden;
+}
