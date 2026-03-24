@@ -168,7 +168,6 @@
                 <h3 class="card-title">Scoreboard - Wins</h3>
             </header>
             <div id="wins-table" class="scrollable-div">
-
             </div>
         </section>
 
@@ -564,16 +563,23 @@
     // @Author Cam Clarke
     //
 
-    function populateWinsTable() {
+    async function populateWinsTable() {
         const winsTable = document.getElementById("wins-table")
 
-        // Temporary until integrate with back end
-        let playerName = "player"
-        let score = 20
-        let playerCount = 10
+        const response = await fetch("/get_wins")
+        const players = await response.json()
+
+        players.sort((a, b) => b[1] - a[1]);
+
+        if (players.length == 0) {
+            winsTable.innerHTML = `<p style="justify-self: center;">No scores yet!</p>`;
+            return;
+        }
 
         let _html = ``
-        for (i = 0; i < playerCount; i++) {
+        for (i = 0; i < players.length; i++) {
+            let playerName = players[i][0]
+            let score = players[i][1]
             let number = i + 1
 
             // Number spacing is so that all numbers take same 
