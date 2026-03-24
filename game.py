@@ -472,7 +472,21 @@ class BlackjackRound():
     # entity in this context is either dealer or player (both implement a hand_total field)
     @staticmethod
     def IsEntityBust(entity):
-        return entity.hand_total > 21
+        if entity.hand_total > 21: 
+            temp_hand = entity.hand.copy()
+
+            # scan for aces when bust 
+            for card_index in range(len(temp_hand)): 
+                card = temp_hand[card_index]
+                if card[0] == "A": 
+                    # treat it as a 1 instead 
+                    entity.hand_total -= 10 
+                    if entity.hand_total <= 21: 
+                        break 
+                        # don't scan for more aces if they are no longer bust 
+            return entity.hand_total > 21
+        else: 
+            return False 
 
     @staticmethod
     def DoesEntityHaveBlackjack(entity):
@@ -490,6 +504,8 @@ class BlackjackRound():
 
     @staticmethod
     def LosePlayers(losers):
+        for player in losers:
+            player.AddGameScore(0)
         pass
 
     def __init__(self, game, players):
@@ -537,7 +553,10 @@ class BlackjackRound():
             case "bust": 
                 winners = filter(lambda p: not BlackjackRound.IsEntityBust(p), self.__players_in_round)
                 BlackjackRound.WinPlayers(winners)
-            case "blackjack": BlackjackRound.LosePlayers(self.__players_in_round.copy())
+
+            case "blackjack": 
+                BlackjackRound.LosePlayers(self.__players_in_round.copy())
+
             case _:
                 score_to_beat = self.__game.dealer.hand_total
                 winners = filter(lambda p: p.hand_total > score_to_beat and not BlackjackRound.IsEntityBust(p), self.__players_in_round)
@@ -545,7 +564,6 @@ class BlackjackRound():
 
                 BlackjackRound.WinPlayers(winners)
                 BlackjackRound.LosePlayers(losers)
-
 
     def EvaluateDealer(self):
         dealer = self.__game.dealer
