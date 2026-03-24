@@ -488,13 +488,14 @@ class BlackjackRound():
             for card_index in range(len(temp_hand)): 
                 card = temp_hand[card_index]
                 if card[0] == "A": 
+                    print("ACE DETECTED")
                     # treat it as a 1 instead 
                     entity.set_hand_total(entity.hand_total - 10)
                     if entity.hand_total <= 21: 
-                        break 
+                        temp_hand[card_index] = "1" + card[1] 
+                        entity.set_hand(temp_hand)
+                        return False 
                         # don't scan for more aces if they are no longer bust
-                    temp_hand[card_index] = "1" + card[1] 
-                entity.set_hand(temp_hand)
             return entity.hand_total > 21
         else: 
             return False 
