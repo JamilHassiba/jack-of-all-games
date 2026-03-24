@@ -490,6 +490,8 @@ class BlackjackRound():
 
     @staticmethod
     def LosePlayers(losers):
+        for player in losers:
+            player.AddGameScore(0)
         pass
 
     def __init__(self, game, players):
