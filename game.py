@@ -253,9 +253,13 @@ class BlackjackPlayer():
     @property
     def hand(self):
         return self.__hand
+    def set_hand(self, hand): 
+        self.__hand = hand
     @property
     def hand_total(self):
         return self.__hand_total
+    def set_hand_total(self, val): 
+        self.__hand_total = val
     @property
     def deck(self):
         return self.__deck
@@ -330,9 +334,13 @@ class BlackjackDealer():
     @property
     def hand(self):
         return self.__hand
+    def set_hand(self, hand): 
+        self.__hand = hand 
     @property
     def hand_total(self):
         return self.__hand_total
+    def set_hand_total(self, val): 
+        self.__hand_total = val 
     @property
     def deck(self):
         return self.__deck
@@ -481,10 +489,12 @@ class BlackjackRound():
                 card = temp_hand[card_index]
                 if card[0] == "A": 
                     # treat it as a 1 instead 
-                    entity.hand_total -= 10 
+                    entity.set_hand_total(entity.hand_total - 10)
                     if entity.hand_total <= 21: 
                         break 
-                        # don't scan for more aces if they are no longer bust 
+                        # don't scan for more aces if they are no longer bust
+                    temp_hand[card_index] = "1" + card[1] 
+                entity.set_hand(temp_hand)
             return entity.hand_total > 21
         else: 
             return False 
