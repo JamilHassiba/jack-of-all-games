@@ -36,21 +36,42 @@ with db() as conn:
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL
+            password_hash TEXT NOT NULL,
+            wins INTEGER NOT NULL DEFAULT 0
         )
     """)
     # creates user table if it doesnt exist
+    try:
+        conn.execute("ALTER TABLE users ADD COLUMN wins INTEGER NOT NULL DEFAULT 0")
+    except sqlite3.OperationalError:
+        pass
+
+def record_win(username):
+    with db() as conn:
+        conn.execute("UPDATE users SET wins = wins + 1 WHERE username = ?", (username,))
 
 @app.route('/')
 def home_page():
-    session.clear()                               # temporarily used for conn_test
+    # session.clear()                               # temporarily used for conn_test
     server_ip = request.host_url.rstrip("/")
 
-    player = session.get("player_obj")
-    if not player:
-        return render_template("index.html")
+    # player = session.get("player_obj")
+    # if not player:
+    #     return render_template("index.html")
+    # else:
+    #     redirect("/room")
+
+    if "user_id" not in session:
+        return redirect("/login")
+    
+    room_id = session.get("room")
+    if room_id and room_id in rooms:
+        return redirect("/room")
     else:
-        redirect("/room")
+        session.pop("room", None)
+        session.pop("player_index", None)
+        session.pop("player_obj", None)
+    return render_template("index.html", username=session.get("username"))
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -125,7 +146,7 @@ def create_room():                   # frontend sends a POST request and we make
         num_players = int(data["num_players"])
         room = Room(socketio, game_type, num_players)
         rooms[room.id] = room                # store rooms in a dict for quick access 
-        return f"successfully created room with id {room.id}"
+        return room.id
     except:
         return "error, something went wrong. source: creating a room" 
 
@@ -286,16 +307,20 @@ def blackjack_player_join():
     room_id = session.get("room")
     room = rooms.get(room_id)
     game = room.game
-    blackjack_player = game.AddPlayer(request.sid)
+    username = session.get("username")
+    print("DEBUG username:", username)  # add this
+    print("DEBUG session:", dict(session))  # add this
+    blackjack_player = game.AddPlayer(request.sid, username)
     session["player_obj"] = blackjack_player
 
     # Tell other players to render this new player as a label
-    socketio.emit("relay_player_info", {"id" : request.sid,}, to=room_id)
+    socketio.emit("relay_player_info", {"id" : request.sid, "username": username,}, to=room_id)
 
     # Tell then newly connected player to render all previous players
     for player in game.players:
         socketio.emit("relay_player_info", {
             "id" : player.id,
+            "username": player.username,
             "game_score" : player.game_score,
             "hand" : player.hand,
             "hand_total" : player.hand_total,

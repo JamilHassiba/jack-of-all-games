@@ -1,80 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Blackjack | {{code}}</title>
 
-    <script src="../static/games/blackjack.js" type="module"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack | {{code}}</title>
+    <link rel="stylesheet" href="..\static\css\blackjack.css">
+    <script src="..\static\games\blackjack.js" type="module"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
         integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
         crossorigin="anonymous"></script>
 </head>
 
 <body>
+    <!-- The SVG code draws an arc border, as well as the semicircular blackjack table with cross hatches (ai generated)-->
+    <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
 
-<!-- Header -->
-<header>
-    <h1 id="title">Blackjack | {{code}}</h1>
-</header>
+            <!-- Felt fibre noise texture -->
+            <filter id="felt" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.65 0.75" numOctaves="4" seed="2" result="noise" />
+                <feColorMatrix type="saturate" values="0" in="noise" result="grey" />
+                <feBlend in="SourceGraphic" in2="grey" mode="multiply" result="blended" />
+                <feComponentTransfer in="blended">
+                    <feFuncR type="linear" slope="0.85" />
+                    <feFuncG type="linear" slope="0.92" />
+                    <feFuncB type="linear" slope="0.85" />
+                </feComponentTransfer>
+            </filter>
 
-<!-- Main Game Area -->
-<main style="display:flex; gap:20px;">
+            <!-- Tight crosshatch weave -->
+            <pattern id="weave" x="0" y="0" width="1.2" height="1.2" patternUnits="userSpaceOnUse">
+                <rect width="1.2" height="1.2" fill="none" />
+                <line x1="0" y1="0.6" x2="1.2" y2="0.6" stroke="#1a5c2a" stroke-width="0.25" opacity="0.4" />
+                <line x1="0.6" y1="0" x2="0.6" y2="1.2" stroke="#1a5c2a" stroke-width="0.25" opacity="0.4" />
+            </pattern>
 
-    <!-- Game Panel -->
-    <div id="game-panel" style="flex:3; display:flex; flex-direction:column; gap:20px;">
+            <!-- Radial vignette -->
+            <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+                <stop offset="40%" stop-color="transparent" />
+                <stop offset="100%" stop-color="#071a0d" stop-opacity="0.7" />
+            </radialGradient>
 
-        <!-- Dealer Section -->
-        <section id="dealer-section">
-            <h2>Dealer</h2>
+            <!-- Clip: everything above the arc -->
+            <clipPath id="arcClip">
+                <path d="M -5,35 Q 50,45 105,35 L 105,-5 L -5,-5 Z" />
+            </clipPath>
 
-            <div>
-                <strong>Hand:</strong>
-                <span id="dealer-hand"></span>
+        </defs>
+
+        <!-- Base felt green -->
+        <rect x="-5" y="-5" width="110" height="50" fill="#1a6b30" clip-path="url(#arcClip)" />
+
+        <!-- Woven crosshatch overlay -->
+        <rect x="-5" y="-5" width="110" height="50" fill="url(#weave)" clip-path="url(#arcClip)" />
+
+        <!-- Noise/fibre filter layer -->
+        <rect x="-5" y="-5" width="110" height="50" fill="#1e7a36" opacity="0.6" filter="url(#felt)"
+            clip-path="url(#arcClip)" />
+
+        <!-- Vignette darkening at edges -->
+        <rect x="-5" y="-5" width="110" height="50" fill="url(#vignette)" clip-path="url(#arcClip)" />
+
+        <!-- Gold border arc (wider, underneath) -->
+        <path d="M -5,35 Q 50,45 105,35" stroke="#c9a84c" stroke-width="1.4" fill="none" />
+        <!-- Black arc on top -->
+        <path d="M -5,35 Q 50,45 105,35" stroke="black" stroke-width="1" fill="none" />
+
+    </svg>
+
+
+    <div class="table-div">
+        <!-- Dealer Area -->
+        <div class="dealer-area seat">
+            <h3 id="seat-dealer">Dealer</h3> <!-- TODO add this in CSS-->
+            <div class="outer-hand-dealer">
+                <div id="dealer-hand" class="hand">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card self" alt="Card back">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card self" alt="Card back">
+                </div>
             </div>
+            <div id="dealer-score" class="score score-dealer">0</div>
+        </div>
 
-            <div>
-                <strong>Total:</strong>
-                <span id="dealer-hand-total">0</span>
+        <div class="seat p4">
+            <h4 id="seat-p4">Player 4 - Empty</h4>
+            <div class="outer-hand">
+                <div id="hand-p4" class="hand p4">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden" alt="Card back">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden" alt="Card back">
+                </div>
             </div>
-        </section>
+            <div id="score-p4" class="score">0</div>
+        </div>
 
-        <!-- Player Section -->
-        <section id="player-section">
-            <h2>Your Hand</h2>
-
-            <div>
-                <strong>Hand:</strong>
-                <span id="player-hand"></span>
+        <div class="seat p2">
+            <h4 id="seat-p2">Player 2 - Empty</h4>
+            <div class="outer-hand">
+                <div id="hand-p2" class="hand p2">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden" alt="Card back">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden" alt="Card back">
+                </div>
             </div>
+            <div id="score-p2" class="score">0</div>
+        </div>
 
-            <div>
-                <strong>Total:</strong>
-                <span id="player-hand-total">0</span>
+        <div class="seat p1">
+            <h3 id="seat-p1">You</h4>
+                <div class="outer-hand-p1">
+                    <div id="hand-p1" class="hand p1">
+                        <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden self"
+                            alt="Card back">
+                        <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden self"
+                            alt="Card back">
+                    </div>
+                </div>
+                <div id="score-p1" class="score score-self">0</div>
+        </div>
+        <div class="seat p3">
+            <h4 id="seat-p3">Player 3 - Empty</h4>
+            <div class="outer-hand">
+                <div id="hand-p3" class="hand p3">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden" alt="Card back">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden" alt="Card back">
+                </div>
             </div>
+            <div id="score-p3" class="score">0</div>
+        </div>
 
-            <div>
-                <strong>Game Score:</strong>
-                <span id="player-game-score">0</span>
+        <div class="seat p5">
+            <h4 id="seat-p5">Player 5 - Empty</h4>
+            <div class="outer-hand">
+                <div id="hand-p5" class="hand p5">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden" alt="Card back">
+                    <img src="https://deckofcardsapi.com/static/img/back.png" class="OBJ_card hidden" alt="Card back">
+                </div>
             </div>
-
-            <!-- Player Actions -->
-            <div id="player-actions" style="margin-top:10px;">
-                <button id="hit-btn">Hit</button>
-                <button id="stand-btn">Stand</button>
-            </div>
-        </section>
-
+            <div id="score-p5" class="score">0</div>
+        </div>
     </div>
 
-    <!-- Other Players -->
-    <aside id="side-panel" style="flex:1;">
-        <h2>Other Players</h2>
-        <ul id="other-players">
-        </ul>
-    </aside>
+    <!-- Game Status Box -->
+    <div class="game-status">
+        <p id="game-status-p">Connecting To Server</p>
+    </div>
 
-</main>
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="btn btn-hit disabled" id="hit-btn">Hit</button>
+        <button class="btn btn-stand disabled" id="stand-btn">Stand</button>
+    </div>
+
+    <!-- Score Status Box -->
+    <div class="score-status">
+        <div id="score-display">
+            <div id="my-score-info">You: 0 (+0)</div>
+            <div id="others-score-info"></div>
+        </div>
+    </div>
+
+
 
 </body>
+
 </html>
