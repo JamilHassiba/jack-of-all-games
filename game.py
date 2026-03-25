@@ -295,9 +295,11 @@ class BlackjackPlayer():
         self.__hand_total += Blackjack.convert_card_value_to_int(card_data["value"])
         self.__hand.append(card_data["code"])
 
+        fake_hand = [i if i[0]!="1" else "A"+i[1] for i in self.__hand]
+
         self.__game.socketio.emit(
             'relay_player_info',
-            {"id": self.id, "hand": self.hand, "hand_total": self.hand_total},
+            {"id": self.id, "hand": fake_hand, "hand_total": self.hand_total},
             to=self.__game.room.id)
         
     def ClearHand(self):
