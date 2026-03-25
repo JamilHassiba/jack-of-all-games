@@ -131,6 +131,80 @@ h4 {
     z-index: 10;
 }
 
+/* Room Info Box */
+.room-info {
+    position: fixed;
+    top: 2vh;
+    left: 2vw;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 0.2vw solid rgba(201, 168, 76, 0.4);
+    padding: 0.8vh 1.5vw;
+    border-radius: 0.5vw;
+    z-index: 10;
+    display: flex;
+    flex-direction: row;
+    gap: 1vw;
+    align-items: center;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.room-info:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 0.2vw solid rgba(201, 168, 76, 0.8);
+}
+
+.room-code-label {
+    color: rgba(201, 168, 76, 0.6);
+    font-size: 0.65vw;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05vw;
+}
+
+.room-info:hover .room-code-label {
+    color: #c9a84c;
+}
+
+.room-code-value {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85vw;
+    font-weight: bold;
+    font-family: monospace;
+    letter-spacing: 0.1vw;
+    min-width: 3vw;
+}
+
+.room-info:hover .room-code-value {
+    color: white;
+}
+
+.btn-leave {
+    background-color: rgba(139, 60, 60, 0.7);
+    border: 0.15vw solid rgba(200, 80, 80, 0.6);
+    box-shadow: none;
+    font-size: 0.55vw;
+    padding: 0.35vh 0.5vw;
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.btn-leave:hover {
+    background-color: rgba(180, 70, 70, 0.9);
+    border: 0.15vw solid rgba(220, 100, 100, 0.8);
+    box-shadow: 0 0 8px rgba(180, 70, 70, 0.5);
+    color: white;
+}
+
+/* Leave Button Container */
+.leave-button-container {
+    position: fixed;
+    top: 2vh;
+    right: 2vw;
+    z-index: 10;
+}
+
 .game-status p {
     margin: 0;
     color: #c9a84c;
@@ -148,6 +222,15 @@ h4 {
     padding: 2vh 2.5vw;
     border-radius: 0.5vw;
     z-index: 10;
+}
+
+.score-label {
+    color: #c9a84c;
+    font-size: 1.4vw;
+    font-weight: bold;
+    margin-bottom: 1vh;
+    text-transform: uppercase;
+    letter-spacing: 0.1vw;
 }
 
 #score-display {
@@ -236,13 +319,27 @@ h4 {
 
 /* --- Pulse animations --- */
 @keyframes pulse-green {
-    0%, 100% { box-shadow: 0 0 12px rgba(74, 143, 92, 0.6), 0 0 24px rgba(74, 143, 92, 0.3); }
-    50%       { box-shadow: 0 0 20px rgba(74, 143, 92, 0.9), 0 0 40px rgba(74, 143, 92, 0.5); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 12px rgba(74, 143, 92, 0.6), 0 0 24px rgba(74, 143, 92, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(74, 143, 92, 0.9), 0 0 40px rgba(74, 143, 92, 0.5);
+    }
 }
 
 @keyframes pulse-amber {
-    0%, 100% { box-shadow: 0 0 12px rgba(143, 108, 74, 0.6), 0 0 24px rgba(143, 108, 74, 0.3); }
-    50%       { box-shadow: 0 0 20px rgba(143, 108, 74, 0.9), 0 0 40px rgba(143, 108, 74, 0.5); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 12px rgba(143, 108, 74, 0.6), 0 0 24px rgba(143, 108, 74, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(143, 108, 74, 0.9), 0 0 40px rgba(143, 108, 74, 0.5);
+    }
 }
 
 .score {

@@ -4,6 +4,7 @@ from flask_socketio import emit, join_room, leave_room, SocketIO
 from game import Room, Game, War  
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+import numpy
 
 import traceback
 import random
@@ -284,6 +285,15 @@ def get_hand():
             game = room.game 
             player = game.players[session["player_index"]]
             return player.show()
+
+@app.route("/get_wins")
+def get_wins():
+    with db() as conn:
+        cur = conn.cursor()
+        cur.execute("""SELECT username, wins FROM users""")
+        rows = cur.fetchall()
+        wins = [[row[0], row[1]] for row in rows]
+        return wins
 
 
 # socketio routes
