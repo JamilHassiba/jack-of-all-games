@@ -11,7 +11,7 @@ import random
 import threading
 import time
 
-from static.states import fsm, state, blackjack_states
+from static.states import fsm, state, blackjack_states, crazyeights_states
 
 rooms = {}
 socketio_connected = {} 
@@ -144,7 +144,7 @@ def create_room():                   # frontend sends a POST request and we make
     try: 
         data = request.form 
         game_type = data["game_type"]
-        if not game_type in ["war", "blackjack"]: 
+        if not game_type in ["war", "blackjack", "crazyeights"]: 
             return "Cannot create room - game type not supported"
         num_players = int(data["num_players"])
         room = Room(socketio, game_type, num_players)
@@ -259,6 +259,9 @@ def frontend_room():
 
     if room.game_type == "blackjack":
         return render_template("blackjack.html", code=room_id)
+    
+    if room.game_type == "crazyeights":
+        return render_template("crazyeights.html", code=room_id)
 
     if room.game_type == "poker":
         pass  # extension example
@@ -376,6 +379,72 @@ def blackjack_stand_request():
     sid = request.sid
 
     room.game.PlayerStandRequest(sid)
+
+@socketio.on("crazyeights_player_join")
+def crazyeights_player_join():
+    if not socket_validate(session): return
+
+    room_id = session.get("room")
+    room = rooms.get(room_id)
+    game = room.game
+    username = session.get("username")
+    print("DEBUG username:", username)  # add this
+    print("DEBUG session:", dict(session))  # add this
+    crazyeights_player = game.AddPlayer(request.sid, username)
+    session["player_obj"] = crazyeights_player
+
+    # Tell player the room size
+    socketio.emit("crazyeights_room_size", {
+        "room_size": room.num_players
+    }, to=request.sid)
+
+    # Tell everyone else in the room to render this new player
+    socketio.emit("crazyeights_relay_player_info", {
+        "id" : request.sid,
+        "username": username,
+        "hand": crazyeights_player.hand,
+        "game_score": crazyeights_player.game_score
+    }, to=room_id)
+
+    # Tell this newly connected player about everyone who is already sitting at the table
+    for player in game.players:
+        socketio.emit("crazyeights_relay_player_info", {
+            "id" : player.id,
+            "username": player.username,
+            "game_score" : player.game_score,
+            "hand" : player.hand,
+            "state" : player.state,
+        }, to=request.sid)
+        
+    # If a round is already active, send them the current discard pile and active suit
+    if game.discard_pile:
+        socketio.emit("crazyeights_relay_board_info", {
+            "top_card": game.discard_pile[-1]["code"],
+            "current_suit": game.current_suit,
+            "current_value": game.current_value
+        }, to=request.sid)
+
+@socketio.on("crazyeights_play_card")
+def crazyeights_play_card(data):
+    if not socket_validate(session): return
+    
+    room_id = session.get("room")
+    room = rooms.get(room_id)
+    sid = request.sid
+    card_code = data.get("card_code")
+
+    room.game.PlayCardRequest(sid, card_code)
+
+@socketio.on("crazyeights_choose_suit")
+def crazyeights_choose_suit(data):
+    if not socket_validate(session): return
+
+    room_id = session.get("room")
+    room = rooms.get(room_id)
+    sid = request.sid
+    new_suit = data.get("suit")
+
+    room.game.ChooseSuitRequest(sid, new_suit)
 
 @socketio.on("connect")
 def socket_connect(*arg):

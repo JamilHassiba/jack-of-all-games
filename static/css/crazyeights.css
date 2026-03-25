@@ -1,0 +1,330 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #1a472a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    overflow: hidden;
+}
+
+#game-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#game-header {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #c9a84c;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+#game-header h2 { 
+    margin: 0; 
+    font-size: 1.5rem; 
+}
+
+#game-header p { 
+    margin: 0; 
+    color: #c9a84c; 
+    font-weight: bold; 
+}
+
+#card-table {
+    flex-grow: 1;
+    position: relative;
+    background: radial-gradient(circle, #225c36 0%, #12331d 100%);
+}
+
+#center-board {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.card-image {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+
+#discard-pile {
+    position: relative;
+    width: 100px;
+    height: 140px;
+}
+
+#discard-pile .card-image {
+    position: absolute;
+    top: 0; left: 0;
+}
+
+#suit-indicator {
+    font-size: 3rem;
+    background: white;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.player-area {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.player-info {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #c9a84c;
+    text-align: center;
+}
+
+.player-info .name { 
+    display: block; 
+    font-weight: bold; 
+    font-size: 1.1rem; 
+}
+
+.player-info .score { 
+    display: block; 
+    font-size: 0.9rem; 
+    color: #aaa; 
+}
+
+#area-bottom .player-info {
+    margin-bottom: 45px;
+}
+
+.bottom-area {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.top-area {
+    top: 20px;
+    left: 50%;
+    gap: 15px;
+    transform: translateX(-50%);
+}
+
+.left-area {
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+}
+
+.right-area {
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+.bottom-hand {
+    display: flex;
+    justify-content: center;
+    height: 150px;
+}
+
+#area-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 50px;
+}
+
+#area-right {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 50px;
+}
+
+.bottom-hand .card-image {
+    width: 110px;
+    margin-left: -40px;
+    transition: transform 0.2s, filter 0.2s;
+    cursor: pointer;
+}
+
+.bottom-hand .card-image:first-child { 
+    margin-left: 0;
+}
+
+.bottom-hand .card-image:hover {
+    transform: translateY(-20px) scale(1.1);
+    filter: drop-shadow(0 0 10px #c9a84c);
+}
+
+.opponent-hand {
+    display: flex;
+    justify-content: center;
+}
+
+.top-area .opponent-hand .card-image {
+    width: 80px;
+    margin-left: -30px;
+}
+
+.left-area .opponent-hand .card-image, .right-area .opponent-hand .card-image { 
+    width: 80px;
+    margin-top: -80px;
+    display: block; 
+}
+
+.left-area .opponent-hand, .right-area .opponent-hand {
+    flex-direction: column; 
+}
+
+.opponent-hand .card-image:first-child {
+    margin-left: 0;
+    margin-top: 0;
+}
+
+.active-turn .player-info {
+    box-shadow: 0 0 15px #ffd700;
+    border-color: #ffd700;
+}
+
+#hand-left, 
+#hand-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#hand-left .opponent-card,
+#hand-right .opponent-card {
+    margin-top: -60px;
+    transform: rotate(90deg);
+}
+
+#hand-left .opponent-card:first-child,
+#hand-right .opponent-card:first-child {
+    margin-top: 0;
+}
+
+#hand-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#hand-top .opponent-card {
+    margin-left: -40px;
+}
+
+#hand-top .opponent-card:first-child {
+    margin-left: 0;
+}
+
+.hidden {
+    display: none !important; 
+}
+
+#suit-picker {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+
+.picker-div {
+    background: #2a2a2a;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid #c9a84c;
+}
+
+.suit-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.suit-button {
+    font-size: 1.2rem; padding: 10px 20px;
+    border: none; border-radius: 8px; cursor: pointer;
+    background: #e0e0e0; font-weight: bold;
+    transition: transform 0.1s;
+}
+
+.suit-button:hover {
+    transform: scale(1.05);
+}
+
+.suit-button.red {
+    color: #d32f2f;
+}
+
+.suit-button.black {
+    color: #212121;
+}
+
+.game-end-screen {
+    position: fixed;
+    top: 0; left: 0; 
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.game-end-content {
+    background-color: #1e362d;
+    color: white;
+    padding: 40px 60px;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+    font-family: sans-serif;
+}
+
+.game-end-content h3 {
+    font-size: 1.5rem;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+.game-end-content hr {
+    border-color: #ffd700;
+    margin: 20px 0;
+}
+
+.game-end-content ul {
+    list-style-type: none;
+    padding: 0;
+    font-size: 1.5rem;
+}
+
+.game-end-content li {
+    margin: 10px 0;
+}
