@@ -38,18 +38,20 @@ with db() as conn:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
-            wins INTEGER NOT NULL DEFAULT 0
+            wins INTEGER NOT NULL DEFAULT 0,
+            games INTEGER NOT NULL DEFAULT 0
         )
     """)
     # creates user table if it doesnt exist
-    try:
-        conn.execute("ALTER TABLE users ADD COLUMN wins INTEGER NOT NULL DEFAULT 0")
-    except sqlite3.OperationalError:
-        pass
 
 def record_win(username):
     with db() as conn:
+        conn.execute("UPDATE users SET games = games + 1 WHERE username = ?", (username,))
         conn.execute("UPDATE users SET wins = wins + 1 WHERE username = ?", (username,))
+    
+def record_loss(username):
+    with db() as conn:
+        conn.execute("UPDATE users SET games = games + 1 WHERE username = ?", (username,))
 
 @app.route('/')
 def home_page():
@@ -295,6 +297,14 @@ def get_wins():
         wins = [[row[0], row[1]] for row in rows]
         return wins
 
+@app.route("/get_games")
+def get_games():
+    with db() as conn:
+        cur = conn.cursor()
+        cur.execute("""SELECT username, games FROM users""")
+        rows = cur.fetchall()
+        games = [[row[0], row[1]] for row in rows]
+        return games
 
 # socketio routes
 

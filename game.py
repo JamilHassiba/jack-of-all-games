@@ -516,8 +516,11 @@ class BlackjackRound():
 
     @staticmethod
     def LosePlayers(losers):
+        from backend import record_loss
         for player in losers:
             player.AddGameScore(0)
+            if player.username:
+                record_loss(player.username)
         pass
 
     def __init__(self, game, players):
@@ -538,6 +541,10 @@ class BlackjackRound():
             player.SetState('playing')
             player.HitMe()
             player.HitMe()
+            # 2 ACE TEST
+            # fake_ace = {"value": "ACE", "code": "AS", "suit": "SPADES", "image": ""}
+            # player.AddCardToHand(fake_ace)
+            # player.AddCardToHand(fake_ace)
 
     def EvaluatePlayer(self, player):
         is_bust = BlackjackRound.IsEntityBust(player)
