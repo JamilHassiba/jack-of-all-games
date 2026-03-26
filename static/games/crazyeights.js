@@ -67,7 +67,7 @@ const discardPile = document.getElementById("discard-pile");
 const suitIcon = document.getElementById("current-suit-icon");
 const suitPicker = document.getElementById("suit-picker");
 const suitButtons = document.querySelectorAll(".suit-button");
-const leaveButton = document.getElementById("leave-btn");
+const leaveButton = document.getElementById("leave-button");
 
 let myId = null;
 let opponentSeats = {}; 
@@ -210,9 +210,13 @@ suitButtons.forEach(btn => {
     });
 });
 
-leaveButton.addEventListener("click", function (event) {
-    socket.emit("leave_room");
-    fetch("/leave_room");
+leaveButton.addEventListener("click", async function (event) {
+    socket.emit("socketio_leave_room");
+    await fetch("/leave_room", {
+        method:"POST", 
+        credentials: "same-origin"
+    });
+    window.location.href = "/";
 });
 
 // Functions
