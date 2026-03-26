@@ -108,8 +108,9 @@ socket.on('relay_player_info', function (data) {
     console.log("relay_player_info received:", data);
     let id = data.id;
     let player = players.get(id);
-    if (player == null) {
+    if (player == null) {   
         player = new PlayerInfo(id);
+        console.log(data.username, "joined the game with id", id, socket.id, "is this player")
         players.set(id, player)        // Assign seat for new players (not self, not dealer)
         if (id != socket.id && id != "dealer") {
             addPlayer(data.username, id); // Use id as name for now
@@ -216,8 +217,8 @@ function ThisPlayer_HandTotalUpdated(playerid, new_hand_total) {
     }
 }
 function ThisPlayer_GameScoreUpdated(playerid, new_game_score) {
-    console.log("my new score")
-    console.log(new_game_score)
+    // console.log("my new score")
+    // console.log(new_game_score)
     // player_elements.game_score.innerHTML = new_game_score
 }
 function ThisPlayer_ScoreEvent(playerid, old_score, delta_score, new_game_score) {
@@ -455,9 +456,9 @@ function addPlayer(name, id) {
 }
 
 function getPlayerNum(player_id) {
-    console.log(player_id, "----")
+    // console.log(player_id, "----")
     for (let num in playerSeats) {
-        console.log(playerSeats[num])
+        // console.log(playerSeats[num])
         if (playerSeats[num] == player_id) {
             return num
         }
