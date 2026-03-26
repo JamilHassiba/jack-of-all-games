@@ -67,6 +67,7 @@ const discardPile = document.getElementById("discard-pile");
 const suitIcon = document.getElementById("current-suit-icon");
 const suitPicker = document.getElementById("suit-picker");
 const suitButtons = document.querySelectorAll(".suit-button");
+const leaveButton = document.getElementById("leave-btn");
 
 let myId = null;
 let opponentSeats = {}; 
@@ -207,6 +208,11 @@ suitButtons.forEach(btn => {
         socket.emit("crazyeights_choose_suit", {suit: chosenSuit});
         suitPicker.classList.add("hidden"); 
     });
+});
+
+leaveButton.addEventListener("click", function (event) {
+    socket.emit("leave_room");
+    fetch("/leave_room");
 });
 
 // Functions

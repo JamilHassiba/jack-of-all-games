@@ -20,6 +20,7 @@ body, html {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
     border-bottom: 2px solid #c9a84c;
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
@@ -30,9 +31,36 @@ body, html {
 }
 
 #game-header p { 
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     margin: 0; 
     color: #c9a84c; 
     font-weight: bold; 
+}
+
+#leave-button {
+    background-color: #962727; /* A clean, modern danger red */
+    color: rgb(225, 221, 221);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+#leave-button:hover {
+    background-color: #dc2626; /* Slightly darker red when hovered */
+    transform: scale(1.05);    /* Pops out just a tiny bit */
+}
+
+#leave-button:active {
+    transform: scale(0.95);    /* Squishes down when clicked */
 }
 
 #card-table {
