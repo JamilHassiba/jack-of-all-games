@@ -702,14 +702,14 @@
             let trophyClass = i < 3 ? "" : "scoreboard-trophy-hidden"
             let numberClass = i < 3 ? "scoreboard-number-top-3" : ""
 
-            // TODO - Implement profile picture. I was thinking default bitmap?
+            // TODO - Implement profile picture. I was thinking default bitmap? - FINISHED
             let template = `
             <div class="scoreboard-row">
                 <div class="scoreboard-lhs">
                     <span class="${numberClass} scoreboard-number">${number}</span>
                     <span class="scoreboard-number-spacing">${numberSpacing}</span>
                     <span class="${trophyClass} scoreboard-trophy">${trophy}</span>
-                    <span class="scoreboard-picture"></span>
+                    <span class="player-slot">\u{1F464}</span>
                     <span class="scoreboard-name">${playerName}</span>
                 </div>
                 <div class="scoreboard-rhs">
