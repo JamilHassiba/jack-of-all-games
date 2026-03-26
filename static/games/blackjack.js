@@ -158,6 +158,7 @@ socket.on('player_score_event', function (data) {
 function LeaveButtonClicked() {
     socket.emit("blackjack_player_leave");
     fetch("/leave_room");
+    //window.location.href = "/"
 }
 
 // Player Actions
