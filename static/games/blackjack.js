@@ -155,10 +155,13 @@ socket.on('player_score_event', function (data) {
     }
 })
 
-function LeaveButtonClicked() {
+async function LeaveButtonClicked() {
     socket.emit("blackjack_player_leave");
-    fetch("/leave_room");
-    //window.location.href = "/"
+    await fetch("/leave_room", {
+        method:"POST", 
+        credentials: "same-origin"
+    });
+    window.location.href = "/";
 }
 
 // Player Actions
