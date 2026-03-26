@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/css/style.css">
     <title>Play</title>
 </head>
 
@@ -87,7 +87,7 @@
                     <div class="configure-slider-container">
                         <input class="configure-slider" type="range" id="player-slider" name="player_count" min="2"
                             max="5" value="5">
-                        <span id="player-count-display">4</span>
+                        <span id="player-count-display"></span>
                     </div>
                 </div>
 
@@ -111,11 +111,12 @@
         <section class="card" id="join-room-card">
             <header class="join-card-header">
                 <h3 class="card-title">Rooms</h3>
-                <div class="join-header-controls">
+                <input class="join-search" type="search" id="room-search" placeholder="Search">
+                <!-- <div class="join-header-controls">
                     <button class="nav-btn" type="button" id="refresh-button"
                         onclick="populateRoomList()">Refresh</button>
                     <input class="join-search" type="search" id="room-search" placeholder="Search">
-                </div>
+                </div> -->
             </header>
 
             <div class="room-list scrollable-div" id="room-list">
@@ -224,6 +225,49 @@
     slider.addEventListener('input', sliderEventFunct);
     sliderEventFunct()
 
+    const gameLimits = {
+        'poker': { min: 2, max: 4 },
+        'war': { min: 2, max: 2 },
+        'blackjack': { min: 2, max: 5 },
+        'crazyeights': { min: 2, max: 4 }
+    };
+
+    const gameRadios = document.querySelectorAll('input[name="game_choice"]');
+    const playerSlider = document.getElementById('player-slider');
+    const playerDisplay = document.getElementById('player-count-display');
+
+    function updateSliderLimits(selectedGame) {
+        const limits = gameLimits[selectedGame];
+
+        if (selectedGame === 'war') {
+            playerSlider.style.display = 'none';
+        } else {
+            playerSlider.style.display = '';
+        }
+
+        playerSlider.min = limits.min;
+        playerSlider.max = limits.max;
+
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        playerDisplay.innerText = playerSlider.value;
+    }
+
+    gameRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                updateSliderLimits(e.target.value);
+            }
+        });
+    });
+
+    playerSlider.addEventListener('input', updateDisplay);
+
+    const defaultGame = document.querySelector('input[name="game_choice"]:checked').value;
+    updateSliderLimits(defaultGame);
+
 
     /* --- Password Lock Logic --- */
 
@@ -304,8 +348,9 @@
         }
 
         room_list.innerHTML = _html
+    }
 
-        room_list.addEventListener("click", (event) => {
+    room_list.addEventListener("click", (event) => {
             const btn = event.target.closest(".join-button")
             if (!btn) { return }
 
@@ -313,8 +358,9 @@
             const roomID = roomItem.dataset.roomId
 
             joinRoom(roomID)
-        })
-    }
+    })
+
+    setInterval(populateRoomList, 2000)
 
     async function getRoomsFromServer() {
         // create some rooms for test data
@@ -402,16 +448,12 @@
 
     const searchBar = document.getElementById('room-search');
 
-    searchBar.addEventListener('input', function (event) {
-        // Have to get room items upon input as the room items change their innerhtml from
-        // 'loading' to 'roomcode' using async function
+    function applySearchFilter() {
         let roomItems = document.querySelectorAll('.room-item');
+        const searchValue = searchBar.value.toLowerCase();
 
-        const searchValue = event.target.value.toLowerCase();
-
-        // Loop over room items
         roomItems.forEach(function (room) {
-            const roomText = room.querySelector('.room-id').textContent.toLowerCase();
+            const roomText = room.querySelector('.room-id').textContent.toLowerCase(); 
 
             if (roomText.includes(searchValue)) {
                 room.style.display = '';
@@ -420,19 +462,21 @@
                 room.style.display = 'none';
             }
         });
-    });
+    }
+
+    searchBar.addEventListener('input', applySearchFilter);
 
     /* --- Refresh Button Active State --- */
 
-    const refreshButton = document.getElementById('refresh-button');
+    // const refreshButton = document.getElementById('refresh-button');
 
-    refreshButton.addEventListener('mousedown', function () {
-        refreshButton.classList.add('active');
-    });
+    // refreshButton.addEventListener('mousedown', function () {
+    //     refreshButton.classList.add('active');
+    // });
 
-    refreshButton.addEventListener('mouseup', function () {
-        refreshButton.classList.remove('active');
-    });
+    // refreshButton.addEventListener('mouseup', function () {
+    //     refreshButton.classList.remove('active');
+    // });
 
 
     /* --- Navigation Buttons Logic --- */
@@ -617,7 +661,7 @@
                     <span class="${numberClass} scoreboard-number">${number}</span>
                     <span class="scoreboard-number-spacing">${numberSpacing}</span>
                     <span class="${trophyClass} scoreboard-trophy">${trophy}</span>
-                    <span class="scoreboard-picture"></span>
+                    <span class="player-slot">\u{1F464}</span>
                     <span class="scoreboard-name">${playerName}</span>
                 </div>
                 <div class="scoreboard-rhs">
