@@ -367,7 +367,7 @@ def blackjack_player_leave():
         game = room.game 
         if player_obj is not None: 
             del sid_player_obj_mapping[request.sid]
-            game.remove(player_obj)
+            game.RemovePlayer(player_obj)
 
 
 

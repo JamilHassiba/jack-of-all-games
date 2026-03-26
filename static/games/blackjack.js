@@ -21,6 +21,7 @@ let dealer_elements = {
 
 let hit_button = document.getElementById("hit-btn");
 let stand_button = document.getElementById("stand-btn");
+const leave_button = document.getElementById("leave-btn");
 
 let title = document.getElementById("game-status-p")
 
@@ -45,6 +46,7 @@ CanRequestActions(false);
 // Events
 hit_button.addEventListener("mousedown", HitButtonClicked);
 stand_button.addEventListener("mousedown", StandButtonClicked);
+leave_button.addEventListener("mousedown", LeaveButtonClicked);
 
 //// METHODS ////
 
@@ -152,6 +154,10 @@ socket.on('player_score_event', function (data) {
         OtherPlayer_ScoreEvent(id, old_score, delta_score, new_score)
     }
 })
+
+function LeaveButtonClicked() {
+    socket.emit("blackjack_player_leave");
+}
 
 // Player Actions
 function HitButtonClicked() {
