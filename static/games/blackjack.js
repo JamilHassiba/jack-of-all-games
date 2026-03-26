@@ -108,7 +108,7 @@ socket.on('relay_player_info', function (data) {
     console.log("relay_player_info received:", data);
     let id = data.id;
     let player = players.get(id);
-    if (player == null) {   
+    if (player == null) {
         player = new PlayerInfo(id);
         console.log(data.username, "joined the game with id", id, socket.id, "is this player")
         players.set(id, player)        // Assign seat for new players (not self, not dealer)
@@ -156,10 +156,26 @@ socket.on('player_score_event', function (data) {
     }
 })
 
+socket.on('refresh_players', function (data) {
+    // We need to clear all players, then the backend will
+    // resend relay_player_info for remaining players
+    players.clear()
+    this_player = new PlayerInfo(socket.id)
+    players.set(socket.id, this_player)
+    playerSeats = {
+        1: socket.id,
+        2: null,
+        3: null,
+        4: null,
+        5: null
+    }
+    resetUsernameLabels()
+})
+
 async function LeaveButtonClicked() {
     socket.emit("socketio_player_leave");
     await fetch("/leave_room", {
-        method:"POST", 
+        method: "POST",
         credentials: "same-origin"
     });
     window.location.href = "/";
@@ -250,7 +266,7 @@ function ThisPlayer_IsBust_Updated(playerid, is_bust) {
 }
 function ThisPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
     // if (has_blackjack)
-        // alert("Blackjack!");
+    // alert("Blackjack!");
 }
 
 // Other Player Handlers
@@ -307,11 +323,11 @@ function Dealer_HandTotalUpdated(dealerid, new_hand_total) {
 }
 function Dealer_IsBust_Updated(dealerid, is_bust) {
     // if (is_bust)
-        // alert("Dealer went bust!");
+    // alert("Dealer went bust!");
 }
 function Dealer_HasBlackjack_Updated(dealerid, has_blackjack) {
     // if (has_blackjack)
-        // alert("Dealer has blackjack!");
+    // alert("Dealer has blackjack!");
 }
 
 
