@@ -251,6 +251,9 @@ class BlackjackPlayer():
     @property
     def id(self):
         return self.__id
+    @id.setter
+    def id(self, new_id):
+        self.__id = new_id
     @property
     def game_score(self):
         return self.__game_score
@@ -422,12 +425,12 @@ class Blackjack():
         # Create a player object
         if len(self.__players) < self.__max_player_count:
             player = BlackjackPlayer(sid, self, username)
-            usernames = [i.username for i in self.__players]
-            if username not in usernames:
-                self.__players.append(player)
-                return player
-            else: 
-                return None 
+            for i in self.__players: 
+                if i.username == username: 
+                    i.id = sid 
+                    return i 
+            self.__players.append(player)
+            return player 
         else: 
             return None 
     
