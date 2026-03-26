@@ -796,6 +796,9 @@ class CrazyEights():
         player = CrazyEightsPlayer(sid, self, username)
         self.__players.append(player)
         return player
+    
+    def RemovePlayer(self, player_obj):
+        self.__players = [i for i in self.__players if i != player_obj] 
 
     def GetPlayerFromSID(self, sid):
         for player in self.__players:

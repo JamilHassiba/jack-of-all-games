@@ -369,7 +369,7 @@ def blackjack_player_join():
                 "hand_total" : game.dealer.hand_total,
             }, to=request.sid)
 
-@socketio.on("blackjack_player_leave")
+@socketio.on("socketio_player_leave")
 def blackjack_player_leave():
     if request.sid in sid_player_obj_mapping.keys():          # if sid exists in the mapping 
         player_obj = sid_player_obj_mapping[request.sid]
@@ -383,6 +383,26 @@ def blackjack_player_leave():
             room.player_count -= 1 
 
             game.EvaluateRound()
+
+                    # Tell other players to render this new player as a label
+            socketio.emit("relay_player_info", {"id" : request.sid, "username": username,}, to=room_id)
+
+            # Tell then newly connected player to render all previous players
+            for player in game.players:
+                socketio.emit("relay_player_info", {
+                    "id" : player.id,
+                    "username": player.username,
+                    "game_score" : player.game_score,
+                    "hand" : player.hand,
+                    "hand_total" : player.hand_total,
+                    "state" : player.state,
+                }, to=request.sid)
+            # As well as the dealer
+            socketio.emit("relay_player_info", {
+                    "id" : "dealer",
+                    "hand" : game.dealer.hand,
+                    "hand_total" : game.dealer.hand_total,
+                }, to=request.sid)
 
 
 
@@ -418,6 +438,7 @@ def crazyeights_player_join():
     print("DEBUG session:", dict(session))  # add this
     crazyeights_player = game.AddPlayer(request.sid, username)
     session["player_obj"] = crazyeights_player
+    sid_player_obj_mapping[request.sid] = crazyeights_player 
 
     # Tell player the room size
     socketio.emit("crazyeights_room_size", {
