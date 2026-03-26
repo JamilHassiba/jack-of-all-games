@@ -420,9 +420,19 @@ class Blackjack():
 
     def AddPlayer(self, sid, username):
         # Create a player object
-        player = BlackjackPlayer(sid, self, username)
-        self.__players.append(player)
-        return player
+        if len(self.__players) < self.__max_player_count:
+            player = BlackjackPlayer(sid, self, username)
+            usernames = [i.username for i in self.__players]
+            if username not in usernames:
+                self.__players.append(player)
+                return player
+            else: 
+                return None 
+        else: 
+            return None 
+    
+    def RemovePlayer(self, player_obj):
+        self.__players = [i for i in self.__players if i != player_obj] 
 
     # Game Routes
     def EvaluateGame(self):

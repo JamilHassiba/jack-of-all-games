@@ -16,6 +16,7 @@ from static.states import fsm, state, blackjack_states, crazyeights_states
 rooms = {}
 socketio_connected = {} 
 socketio_rooms = []                                        # WARNING: NO GARBAGE COLLECTION - POTENTIAL MEMORY LEAK 
+sid_player_obj_mapping = {}                                # sid->player_obj, required to handle leaving rooms
 app = Flask(__name__)
 app.secret_key = "jack_of_all_games_secret_key"
 app.config['SECRET_KEY'] = 'jack_of_all_games_secret_key'  
@@ -334,31 +335,41 @@ def blackjack_player_join():
     print("DEBUG username:", username)  # add this
     print("DEBUG session:", dict(session))  # add this
     blackjack_player = game.AddPlayer(request.sid, username)
-    session["player_obj"] = blackjack_player
+    if blackjack_player is not None:                                  # check if successfully added the player - game might be full 
+        sid_player_obj_mapping[request.sid] = blackjack_player        # globally accessible dictionary - not bound to a room
 
-    # Tell other players to render this new player as a label
-    socketio.emit("relay_player_info", {"id" : request.sid, "username": username,}, to=room_id)
+        # Tell other players to render this new player as a label
+        socketio.emit("relay_player_info", {"id" : request.sid, "username": username,}, to=room_id)
 
-    # Tell then newly connected player to render all previous players
-    for player in game.players:
+        # Tell then newly connected player to render all previous players
+        for player in game.players:
+            socketio.emit("relay_player_info", {
+                "id" : player.id,
+                "username": player.username,
+                "game_score" : player.game_score,
+                "hand" : player.hand,
+                "hand_total" : player.hand_total,
+                "state" : player.state,
+            }, to=request.sid)
+        # As well as the dealer
         socketio.emit("relay_player_info", {
-            "id" : player.id,
-            "username": player.username,
-            "game_score" : player.game_score,
-            "hand" : player.hand,
-            "hand_total" : player.hand_total,
-            "state" : player.state,
-        }, to=request.sid)
-    # As well as the dealer
-    socketio.emit("relay_player_info", {
-            "id" : "dealer",
-            "hand" : game.dealer.hand,
-            "hand_total" : game.dealer.hand_total,
-        }, to=request.sid)
+                "id" : "dealer",
+                "hand" : game.dealer.hand,
+                "hand_total" : game.dealer.hand_total,
+            }, to=request.sid)
 
 @socketio.on("blackjack_player_leave")
-def blackjack_player_leave(): 
-    pass 
+def blackjack_player_leave():
+    if request.sid in sid_player_obj_mapping.keys():          # if sid exists in the mapping 
+        player_obj = sid_player_obj_mapping[request.sid]
+        room_id = session.get("room")
+        room = rooms.get(room_id)
+        game = room.game 
+        if player_obj is not None: 
+            del sid_player_obj_mapping[request.sid]
+            game.remove(player_obj)
+
+
 
 @socketio.on("blackjack_hit_request")
 def blackjack_hit_request():
