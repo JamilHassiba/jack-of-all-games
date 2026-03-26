@@ -633,7 +633,9 @@ class BlackjackRound():
         if self.__game.FSM.current_state_name != "players_turn": return
 
         player = self.GetPlayerFromSID(sid)
-        if not player: return
+        if not player: 
+            print("Cannot find player")
+            return 
         if player.state != "playing": return
 
         player.HitMe()
@@ -647,11 +649,16 @@ class BlackjackRound():
         if player.state != "playing": return
 
         player.Stand()
-        self.__players_finished.append(player)
+        self.UpdatePlayersFinished()
 
 
     def AreAllPlayersFinished(self):
+        self.UpdatePlayersFinished()
         return len(self.__players_in_round) == len(self.__players_finished)
+
+    
+    def UpdatePlayersFinished(self): 
+        self.__players_finished = [i for i in self.__game.players if i.state == "finished"]
     
 
 class CrazyEightsPlayer():

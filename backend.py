@@ -180,6 +180,17 @@ def backend_join_room():
     except Exception:
         return "error, something went wrong. source: joining room"
 
+@app.route("/leave_room", methods=["POST"])
+def backend_leaveroom():
+    if "room" in session.keys():
+        room_id = session["room"]
+        room = rooms[room_id] 
+        del session["room"]
+    if "player_index" in session.keys(): 
+        del session["player_index"]
+    
+    return redirect("/")
+
 
 @app.route("/search_rooms", methods=["POST", "GET"])
 def search_rooms(): 
@@ -366,8 +377,12 @@ def blackjack_player_leave():
         room = rooms.get(room_id)
         game = room.game 
         if player_obj is not None: 
+            player_obj.ClearHand()
             del sid_player_obj_mapping[request.sid]
             game.RemovePlayer(player_obj)
+            room.player_count -= 1 
+
+            game.EvaluateRound()
 
 
 
