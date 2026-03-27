@@ -392,6 +392,7 @@ def blackjack_player_leave():
             # socketio.emit("relay_player_info", {"id" : request.sid, "username": username,}, to=room_id)
 
             # Tell then newly connected player to render all previous players
+            socketio.emit("refresh_players")
             for player in game.players:
                 socketio.emit("relay_player_info", {
                     "id" : player.id,
@@ -407,9 +408,6 @@ def blackjack_player_leave():
                     "hand" : game.dealer.hand,
                     "hand_total" : game.dealer.hand_total,
                 }, to=request.sid)
-
-            socketio.emit("refresh_players")
-
 
 
 @socketio.on("blackjack_hit_request")
