@@ -178,7 +178,7 @@ socket.on('refresh_players', function (data) {
 })
 
 async function LeaveButtonClicked() {
-    socket.emit("socketio_player_leave");
+    socket.emit("blackjack_player_leave");
     await fetch("/leave_room", {
         method: "POST",
         credentials: "same-origin"

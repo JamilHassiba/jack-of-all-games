@@ -230,7 +230,6 @@ function drawMyHand(handArray) {
         img.className = "card-image clickable-card";
         img.dataset.code = cardCode; 
         
-        // Add the click listener
         img.addEventListener("click", () => {
             console.log("Attempting to play:", cardCode);
             socket.emit("crazyeights_play_card", {card_code: cardCode});

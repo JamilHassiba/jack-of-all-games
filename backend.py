@@ -369,7 +369,7 @@ def blackjack_player_join():
                 "hand_total" : game.dealer.hand_total,
             }, to=request.sid)
 
-@socketio.on("socketio_player_leave")
+@socketio.on("blackjack_player_leave")
 def blackjack_player_leave():
     if request.sid in sid_player_obj_mapping.keys():          # if sid exists in the mapping 
         player_obj = sid_player_obj_mapping[request.sid]
