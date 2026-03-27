@@ -375,11 +375,15 @@ def blackjack_player_leave():
         player_obj = sid_player_obj_mapping[request.sid]
         room_id = session.get("room")
         room = rooms.get(room_id)
-        game = room.game 
+        game = room.game
+        print("Leave:", player_obj, room, sid_player_obj_mapping.keys())
         if player_obj is not None: 
             player_obj.ClearHand()
             del sid_player_obj_mapping[request.sid]
-            game.RemovePlayer(player_obj)
+            try:
+                game.RemovePlayer(player_obj)
+            except:
+                pass
             room.player_count -= 1 
 
             game.EvaluateRound()

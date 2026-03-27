@@ -163,6 +163,7 @@ socket.on('player_score_event', function (data) {
 socket.on('refresh_players', function (data) {
     // We need to clear all players, then the backend will
     // resend relay_player_info for remaining players
+    console.log("refresh", data)
     players.clear()
     this_player = new PlayerInfo(socket.id)
     players.set(socket.id, this_player)
@@ -530,7 +531,11 @@ function getPlayerNum(player_id) {
 }
 
 function resetUsernameLabels() {
-    // STUB
+    for (let seat = 2; seat <= 5; seat++) {
+        document.getElementById("seat-p" + seat).innerHTML = "Player " + seat + " - Empty"
+        document.getElementById("score-p" + seat).innerHTML = "0"
+        document.getElementById("hand-p" + seat).innerHTML = ""
+    }
 }
 
 function setupTabListeners() {
