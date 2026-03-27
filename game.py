@@ -436,6 +436,7 @@ class Blackjack():
     
     def RemovePlayer(self, player_obj):
         self.__players = [i for i in self.__players if i != player_obj] 
+        self.__current_round.RemovePlayer(player_obj)
 
     # Game Routes
     def EvaluateGame(self):
@@ -652,14 +653,15 @@ class BlackjackRound():
         self.UpdatePlayersFinished()
 
 
+    def RemovePlayer(self, player_obj):
+        self.__players_in_round.remove(player_obj)
+
     def AreAllPlayersFinished(self):
         self.UpdatePlayersFinished()
         return len(self.__players_in_round) == len(self.__players_finished)
-
     
     def UpdatePlayersFinished(self): 
         self.__players_finished = [i for i in self.__game.players if i.state == "finished"]
-        self.__players_in_round = self.__game.players.copy()
     
 
 class CrazyEightsPlayer():
