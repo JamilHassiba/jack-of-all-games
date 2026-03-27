@@ -42,6 +42,7 @@ const title_base = "";
 //// START ////
 title.innerHTML = title_base.concat("Waiting for the next round to start...")
 CanRequestActions(false);
+setupTabListeners();
 
 // Events
 hit_button.addEventListener("mousedown", HitButtonClicked);
@@ -111,6 +112,9 @@ socket.on('relay_player_info', function (data) {
     if (player == null) {
         player = new PlayerInfo(id);
         console.log(data.username, "joined the game with id", id, socket.id, "is this player")
+        if (data.username != undefined) {
+            joinRoomEvent(data.username)
+        }
         players.set(id, player)        // Assign seat for new players (not self, not dealer)
         if (id != socket.id && id != "dealer") {
             addPlayer(data.username, id); // Use id as name for now
@@ -229,6 +233,24 @@ function ThisPlayer_HandTotalUpdated(playerid, new_hand_total) {
     // player_elements.hand_total.innerHTML = new_hand_total
     let seat = getPlayerNum(playerid)
     if (seat) {
+        let player = players.get(playerid)
+        if (new_hand_total > 21) {
+            new_hand_total += " - Bust!"
+        } else if (player.state == "finished") {
+            new_hand_total += " - Stood!"
+        } else if (player.state == "playing") {
+            new_hand_total += " - Playing"
+        } else if (player.state == "finished" && new_hand_total == 0) {
+            // This has to be here bc the backend process goes like:
+            // Round Ends
+            // Players hand wiped and score set to 0
+            // Players state then set to lobby
+
+            // Otherwise there will be a brief period where the player total looks like:
+            // 0 - Stood! which is wrong
+            // 
+            new_hand_total = "0 - Waiting"
+        }
         document.getElementById("score-p" + seat).innerHTML = new_hand_total
     }
 }
@@ -239,34 +261,61 @@ function ThisPlayer_GameScoreUpdated(playerid, new_game_score) {
 }
 function ThisPlayer_ScoreEvent(playerid, old_score, delta_score, new_game_score) {
     document.getElementById("my-score-info").innerHTML = `You: ${new_game_score} (+${delta_score})`;
+    if (delta_score > 0) {
+        winEvent()
+    } else if (delta_score == 0) {
+        dealerWinEvent()
+    }
 }
 function ThisPlayer_StateUpdated(playerid, new_state) {
-    switch (new_state) {
-        case "lobby": {
-            break;
+    console.log(playerid, "state updated to", new_state)
+    let player_seat = getPlayerNum(playerid)
+    if (new_state == "finished") {
+        let hand_total = document.getElementById("score-p" + player_seat).innerHTML
+        if (!hand_total.includes("Bust") && !hand_total.includes("Stood")) {
+            hand_total = hand_total.replace(" - Playing", "")
+            hand_total += " - Stood"
+            document.getElementById("score-p" + player_seat).innerHTML = hand_total
         }
+    } else if (new_state == "lobby") {
+        let hand_total = "0 - Waiting"
+        document.getElementById("score-p" + player_seat).innerHTML = hand_total
+    }
+    if (playerid == socket.id) {
+        // This player's state changed so enable/disable btns
+        // Kinda have to do this bc OtherPlayer_StateUpdated
+        // calls this to avoid reusing logic
+        switch (new_state) {
+            case "lobby": {
+                break;
+            }
 
-        case "playing": {
-            CanRequestActions(true);
-            break;
-        }
+            case "playing": {
+                CanRequestActions(true);
+                break;
+            }
 
-        case "finished": {
-            CanRequestActions(false);
-            break;
+            case "finished": {
+                CanRequestActions(false);
+                break;
+            }
+
         }
     }
 }
+
 function ThisPlayer_IsBust_Updated(playerid, is_bust) {
     if (is_bust) {
         lockStandButton()
         lockHitButton()
+        bustEvent()
     }
     // alert("You are bust!");
 }
 function ThisPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
     // if (has_blackjack)
     // alert("Blackjack!");
+    blackjackEvent()
 }
 
 // Other Player Handlers
@@ -292,25 +341,16 @@ function OtherPlayer_ScoreEvent(playerid, old_score, delta_score, new_score) {
     document.getElementById("others-score-info").appendChild(div);
 }
 function OtherPlayer_StateUpdated(playerid, new_state) {
-    switch (new_state) {
-        case "lobby": {
-            break;
-        }
-
-        case "playing": {
-            break;
-        }
-
-        case "finished": {
-            break;
-        }
-    }
+    ThisPlayer_StateUpdated(playerid, new_state) // Just reuse same logic - don't know why these need to be separate?
 }
 function OtherPlayer_IsBust_Updated(playerid, is_bust) {
+    let playerName = players.get(playerid).name
+    bustEvent(playerName)
 
 }
 function OtherPlayer_HasBlackjack_Updated(playerid, has_blackjack) {
-
+    let playerName = players.get(playerid).name
+    blackjackEvent(playerName)
 }
 
 // Dealer State Change Methods
@@ -319,15 +359,18 @@ function Dealer_HandUpdated(dealerid, new_hand) {
 }
 function Dealer_HandTotalUpdated(dealerid, new_hand_total) {
     // dealer_elements.hand_total.innerHTML = new_hand_total
+    new_hand_total = (new_hand_total > 21) ? new_hand_total + " - Bust!" : new_hand_total
     document.getElementById("dealer-score").innerHTML = new_hand_total
 }
 function Dealer_IsBust_Updated(dealerid, is_bust) {
     // if (is_bust)
     // alert("Dealer went bust!");
+    bustEvent("Dealer")
 }
 function Dealer_HasBlackjack_Updated(dealerid, has_blackjack) {
     // if (has_blackjack)
     // alert("Dealer has blackjack!");
+    blackjackEvent("Dealer")
 }
 
 
@@ -338,6 +381,7 @@ function Game_EnteredIntermissionState() {
 }
 function Game_EnteredRoundStartState() {
     SetRoomStatus("Dealing initial cards...")
+    roundStartEvent()
 }
 function Game_EnteredPlayersTurnState() {
     unlockHitButton()
@@ -473,6 +517,9 @@ function addPlayer(name, id) {
 
 function getPlayerNum(player_id) {
     // console.log(player_id, "----")
+    if (player_id == socket.id) {
+        return 1
+    }
     for (let num in playerSeats) {
         // console.log(playerSeats[num])
         if (playerSeats[num] == player_id) {
@@ -480,4 +527,73 @@ function getPlayerNum(player_id) {
         }
     }
     return null
+}
+
+function resetUsernameLabels() {
+    // STUB
+}
+
+function setupTabListeners() {
+    const tabButtons = document.querySelectorAll(".tab-button");
+    tabButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const tabName = this.getAttribute("data-tab");
+            switchTab(tabName);
+        });
+    });
+}
+
+function switchTab(tabName) {
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabPanes = document.querySelectorAll(".tab-pane");
+
+    tabButtons.forEach(btn => {
+        if (btn.getAttribute("data-tab") === tabName) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+
+    tabPanes.forEach(pane => {
+        if (pane.id === tabName + "-tab") {
+            pane.classList.add("active");
+        } else {
+            pane.classList.remove("active");
+        }
+    });
+}
+
+function addEvent(message) {
+    const eventsDisplay = document.getElementById("events-display");
+    const eventItem = document.createElement("div");
+    eventItem.className = "event-item";
+    eventItem.innerHTML = message;
+    eventsDisplay.appendChild(eventItem);
+
+    eventsDisplay.scrollTop = eventsDisplay.scrollHeight;
+}
+
+function bustEvent(username = "You") {
+    addEvent(`${username} went bust!`);
+}
+
+function winEvent(username = "You") {
+    addEvent(`${username} win!`);
+}
+
+function dealerWinEvent() {
+    addEvent(`Unlucky - Dealer wins!`);
+}
+
+function joinRoomEvent(username) {
+    addEvent(`${username} joined the room!`);
+}
+
+function blackjackEvent(username = "You") {
+    addEvent(`${username} got a blackjack!`);
+}
+
+function roundStartEvent() {
+    addEvent(`New round started!`);
 }
