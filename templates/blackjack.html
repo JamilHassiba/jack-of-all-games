@@ -164,11 +164,22 @@
 
     <!-- Score Status Box -->
     <div class="score-status">
-        <div class="score-label">Scores</div>
-        <div id="score-display">
-
-            <div id="my-score-info">You: 0 (+0)</div>
-            <div id="others-score-info"></div>
+        <div class="tabs">
+            <button class="tab-button active" data-tab="scores">Scores</button>
+            <button class="tab-button" data-tab="events">Events</button>
+        </div>
+        
+        <div class="tab-content">
+            <div id="scores-tab" class="tab-pane active">
+                <div id="score-display">
+                    <div id="my-score-info">You: 0 (+0)</div>
+                    <div id="others-score-info"></div>
+                </div>
+            </div>
+            
+            <div id="events-tab" class="tab-pane">
+                <div id="events-display"></div>
+            </div>
         </div>
     </div>
 

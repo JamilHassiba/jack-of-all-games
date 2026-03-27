@@ -385,7 +385,7 @@ def blackjack_player_leave():
             game.EvaluateRound()
 
                     # Tell other players to render this new player as a label
-            socketio.emit("relay_player_info", {"id" : request.sid, "username": username,}, to=room_id)
+            # socketio.emit("relay_player_info", {"id" : request.sid, "username": username,}, to=room_id)
 
             # Tell then newly connected player to render all previous players
             for player in game.players:
