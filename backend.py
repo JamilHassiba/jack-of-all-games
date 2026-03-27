@@ -46,19 +46,13 @@ with db() as conn:
     # creates user table if it doesnt exist
 
 def record_win(username):
-    try: 
-        with db() as conn:
-            conn.execute("UPDATE users SET games = games + 1 WHERE username = ?", (username,))
-            conn.execute("UPDATE users SET wins = wins + 1 WHERE username = ?", (username,))
-    except: 
-        print("Database Error")
+    with db() as conn:
+        conn.execute("UPDATE users SET games = games + 1 WHERE username = ?", (username,))
+        conn.execute("UPDATE users SET wins = wins + 1 WHERE username = ?", (username,))
     
 def record_loss(username):
-    try: 
-        with db() as conn:
-            conn.execute("UPDATE users SET games = games + 1 WHERE username = ?", (username,))
-    except: 
-        print("Database Error")
+    with db() as conn:
+        conn.execute("UPDATE users SET games = games + 1 WHERE username = ?", (username,))
 
 @app.route('/')
 def home_page():
