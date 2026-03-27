@@ -200,6 +200,17 @@ socket.on('crazyeights_game_over', function (data) {
     document.getElementById("game-end-popup").classList.remove("hidden");
 });
 
+socket.on("crazyeights_player_left", function(data) {
+
+    if (data.id === myId) {
+        window.location.href = "/";
+    }
+
+    const position = opponentSeats[data.username];
+    document.getElementById(`area-${position}`).innerText = "";
+    delete opponentSeats[data.username];
+});
+
 // ------------------------------- //
 
 suitButtons.forEach(btn => {
@@ -210,8 +221,8 @@ suitButtons.forEach(btn => {
     });
 });
 
-leaveButton.addEventListener("click", async function (event) {
-    socket.emit("blackjack_leave_room");
+leaveButton.addEventListener("click", async function leaveRoom (event) {
+    socket.emit("crazyeights_leave_room");
     await fetch("/leave_room", {
         method:"POST", 
         credentials: "same-origin"

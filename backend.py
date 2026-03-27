@@ -497,6 +497,40 @@ def crazyeights_choose_suit(data):
 
     room.game.ChooseSuitRequest(sid, new_suit)
 
+@socketio.on("crazyeights_leave_room")
+def crazyeights_leave_room():
+    if request.sid in sid_player_obj_mapping.keys():
+        player_obj = sid_player_obj_mapping[request.sid]
+        room_id = session.get("room")
+        room = rooms.get(room_id)
+        game = room.game
+
+        if player_obj is not None: 
+            player_obj.ClearHand()
+            del sid_player_obj_mapping[request.sid]
+            game.RemovePlayer(player_obj)
+            room.player_count -= 1
+            room.num_players -= 1
+            print("Player left")
+            socketio.emit("crazyeights_message", {"msg": f"{player_obj.username} left"}, to=room_id) 
+
+            if len(game.players) == 1:
+                last_player = game.players[0]
+
+                socketio.emit("crazyeights_player_left", {
+                    "id": last_player.id, 
+                    "username":last_player.username
+                }, to=room_id)
+                
+                game.RemovePlayer(last_player)
+                del rooms[room_id]
+                print("Room deleted")
+            else:
+                socketio.emit("crazyeights_player_left", {
+                    "id": request.sid, 
+                    "username": player_obj.username
+                }, to=room_id)
+
 @socketio.on("connect")
 def socket_connect(*arg):
     if not socket_validate(session): return

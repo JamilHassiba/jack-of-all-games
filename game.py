@@ -754,7 +754,7 @@ class CrazyEightsPlayer():
         self.__hand = []
         self.__game.socketio.emit(
             'crazyeights_relay_player_info',
-            {"id": self.id, "hand": self.hand},
+            {"id": self.id, "username": self.username, "hand": self.hand},
             to=self.__game.room.id)
 
 
@@ -801,7 +801,16 @@ class CrazyEights():
         return player
     
     def RemovePlayer(self, player_obj):
-        self.__players = [i for i in self.__players if i != player_obj] 
+        leaving_index = self.__players.index(player_obj)
+        self.__players.remove(player_obj)
+
+        if len(self.__players) == 0:
+            return
+
+        if leaving_index < self.active_player_index:
+            self.active_player_index -= 1
+
+        self.active_player_index = (self.active_player_index) % len(self.__players)
 
     def GetPlayerFromSID(self, sid):
         for player in self.__players:
