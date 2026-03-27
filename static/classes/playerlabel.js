@@ -10,4 +10,8 @@ export class PlayerLabel {
                             | Hand: ${playerinfo.hand}
                             | Total: ${playerinfo.hand_total}`
     }
+
+    destroy() {
+        this.e.remove();       
+    }
 }
