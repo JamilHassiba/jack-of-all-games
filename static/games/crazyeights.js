@@ -211,7 +211,7 @@ suitButtons.forEach(btn => {
 });
 
 leaveButton.addEventListener("click", async function (event) {
-    socket.emit("socketio_leave_room");
+    socket.emit("blackjack_leave_room");
     await fetch("/leave_room", {
         method:"POST", 
         credentials: "same-origin"
