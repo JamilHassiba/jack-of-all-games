@@ -384,7 +384,11 @@ def blackjack_player_leave():
                 game.RemovePlayer(player_obj)
             except:
                 pass
-            room.player_count -= 1 
+            room.player_count -= 1
+
+            if len(game.players) == 0:
+                del rooms[room_id]
+                print("Room deleted") 
 
             game.EvaluateRound()
 
