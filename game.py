@@ -855,12 +855,18 @@ class CrazyEights():
         return False
         
     def FindWinner(self):
+        from backend import record_win
+        from backend import record_loss
         lowest_score = 1000
         winner = None
         for player in self.__players:
             if player.game_score < lowest_score:
                 lowest_score = player.game_score
                 winner = player
+        record_win(winner.username)
+        for player in self.__players:
+            if player.username != winner.username:
+                record_loss(player.username)
         return winner
     
     def PlayCardRequest(self, sid, card_code):
