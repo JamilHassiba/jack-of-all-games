@@ -659,6 +659,7 @@ class BlackjackRound():
     
     def UpdatePlayersFinished(self): 
         self.__players_finished = [i for i in self.__game.players if i.state == "finished"]
+        self.__players_in_round = self.__game.players.copy()
     
 
 class CrazyEightsPlayer():
