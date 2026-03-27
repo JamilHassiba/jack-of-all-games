@@ -404,7 +404,7 @@ def blackjack_player_leave():
                     "hand_total" : game.dealer.hand_total,
                 }, to=request.sid)
 
-            socketio.emit("refresh players")
+            socketio.emit("refresh_players")
 
 
 
