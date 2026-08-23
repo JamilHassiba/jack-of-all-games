@@ -119,3 +119,7 @@ async function createRoom() {
 //
 // End of @author Thomas McPhee
 //
+
+document
+    .getElementById("create-room-button")
+    .addEventListener("click", createRoom);

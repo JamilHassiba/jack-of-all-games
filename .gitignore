@@ -5,7 +5,7 @@ __pycache__/
 venv/
 
 # Flask
-/flask_session/
+flask_session/
 
 # Local database / secrets - never commit real data or credentials
 *.db
