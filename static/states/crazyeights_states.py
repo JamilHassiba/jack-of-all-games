@@ -1,14 +1,14 @@
 '''
-            Crazy Eights States:
-                - intermission -> Waiting for room to get full
-                - round_start -> Shuffles deck, deals 5 cards to everyone, and flips the first discard card
-                - turn_start -> Determines whose turn it is next and evaluates if they have any valid cards to play
-                - wait_for_action -> If player has a valid card, the game waits for them to play a card
-                - auto_draw -> Else, the game draws cards for the player until they have a valid card or 3 cards are drawn
-                - score -> Adds points to each player when the round is over
-                - evaluate_game -> Checks if any player hit 100 points, if so, find winner and end game
-                - game_end -> Resets the scores and waits few seconds for the popup
-        '''
+    Crazy Eights States:
+        - intermission -> Waiting for room to get full
+        - round_start -> Shuffles deck, deals 5 cards to everyone, and flips the first discard card
+        - turn_start -> Determines whose turn it is next and evaluates if they have any valid cards to play
+        - wait_for_action -> If player has a valid card, the game waits for them to play a card
+        - auto_draw -> Else, the game draws cards for the player until they have a valid card or 3 cards are drawn
+        - score -> Adds points to each player when the round is over
+        - evaluate_game -> Checks if any player hit 100 points, if so, find winner and end game
+        - game_end -> Resets the scores and waits few seconds for the popup
+'''
 
 from static.states.state import State
 

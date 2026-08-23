@@ -59,7 +59,7 @@ class Game:
         print("game finished")
     
 
-class War(Game): 
+
     def __init__(self, num_decks, num_players, shuffle=True, jokers=False): 
         super().__init__(num_decks, num_players, shuffle, jokers)
         self.max_draws = 1 
@@ -192,7 +192,7 @@ class Room:
             self.id = id
 
         if game_type == "war": 
-            self.game = War(1, num_players)
+            pass
         elif game_type == "poker": 
             pass 
             # this is an example of how we would extend
