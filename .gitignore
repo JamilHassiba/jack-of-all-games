@@ -1,5 +1,20 @@
-/__pycache__
-/flask_session
-/lib/__pycache__
-/lib/states/__pycache__
-/static/states/__pycache__
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Flask
+/flask_session/
+
+# Local database / secrets - never commit real data or credentials
+*.db
+.env
+.env.local
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
