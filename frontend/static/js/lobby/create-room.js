@@ -17,8 +17,6 @@ slider.addEventListener('input', sliderEventFunct);
 sliderEventFunct()
 
 const gameLimits = {
-    'poker': { min: 2, max: 4 },
-    'war': { min: 2, max: 2 },
     'blackjack': { min: 2, max: 5 },
     'crazyeights': { min: 2, max: 4 }
 };
@@ -29,12 +27,6 @@ const playerDisplay = document.getElementById('player-count-display');
 
 function updateSliderLimits(selectedGame) {
     const limits = gameLimits[selectedGame];
-
-    if (selectedGame === 'war') {
-        playerSlider.style.display = 'none';
-    } else {
-        playerSlider.style.display = '';
-    }
 
     playerSlider.min = limits.min;
     playerSlider.max = limits.max;
@@ -64,15 +56,18 @@ updateSliderLimits(defaultGame);
 
 const lockToggle = document.getElementById('lock-toggle');
 const passwordBox = document.getElementById('password-input');
-passwordBox.style.display = 'none';
+
+// Toggle visibility rather than display: the hidden box keeps its space in the
+// row, so ticking the checkbox doesn't change the container's height.
+passwordBox.style.visibility = 'hidden';
 
 lockToggle.addEventListener('change', function () {
     if (lockToggle.checked) {
-        passwordBox.style.display = 'block';
+        passwordBox.style.visibility = 'visible';
         passwordBox.focus()
     }
     else {
-        passwordBox.style.display = 'none';
+        passwordBox.style.visibility = 'hidden';
     }
 });
 

@@ -239,13 +239,6 @@ body {
     cursor: pointer;
 }
 
-#players-list {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 10px;
-}
-
 .player-slot {
     width: 35px;
     height: 35px;
@@ -262,35 +255,6 @@ body {
 
 .player-slot.empty {
     border: 2px dashed #7e8083ca;
-}
-
-.create-label {
-    position: absolute;
-    top: -20px;
-    font-size: 13px;
-    color: #545a67;
-}
-
-.kick-btn {
-    position: absolute;
-    bottom: -5px;
-    right: -5px;
-    width: 18px;
-    height: 18px;
-    background-color: #ef4444;
-    color: white;
-    border-radius: 50%;
-    border-color: transparent;
-    cursor: pointer;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-}
-
-.kick-btn:hover {
-    background-color: #dc2626;
 }
 
 .submit-button {

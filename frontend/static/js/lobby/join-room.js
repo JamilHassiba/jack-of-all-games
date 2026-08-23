@@ -75,16 +75,6 @@ room_list.addEventListener("click", (event) => {
 setInterval(populateRoomList, 2000)
 
 async function getRoomsFromServer() {
-    // create some rooms for test data
-    // for (let i = 0; i < 10; i++) {
-    //     const postdata = new FormData();
-    //     postdata.append("game_type", "war");
-    //     postdata.append("num_players", "5");
-    //     const response = await fetch("/create_room", {
-    //         method: "POST",
-    //         body: postdata,
-    //     });
-    // }
 
     const response = await fetch("/search_rooms");
     let data = await response.json();
