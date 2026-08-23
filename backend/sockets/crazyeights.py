@@ -91,16 +91,19 @@ def crazyeights_leave_room():
             print("Player left")
             socketio.emit("crazyeights_message", {"msg": f"{player_obj.username} left"}, to=room_id) 
 
-            if len(game.players) == 1:
-                last_player = game.players[0]
+            if len(game.players) <= 1:
+                if game.players:
+                    last_player = game.players[0]
 
-                socketio.emit("crazyeights_player_left", {
-                    "id": last_player.id, 
-                    "username":last_player.username
-                }, to=room_id)
+                    socketio.emit("crazyeights_player_left", {
+                        "id": last_player.id,
+                        "username": last_player.username
+                    }, to=room_id)
+
+                    game.RemovePlayer(last_player)
+                    print('player removed')
                 
-                game.RemovePlayer(last_player)
-                del rooms[room_id]
+                rooms.pop(room_id)
                 print("Room deleted")
             else:
                 socketio.emit("crazyeights_player_left", {
