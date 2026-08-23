@@ -1,14 +1,9 @@
 import requests
 
 # DOCUMENTATION 
-#
-# Developed by Ryan. 
 # If you want to make a new deck just do Deck(). It will automatically call the api and make a new deck and assign the correct id. 
 # You can customise the deck you want with the parameters, but right now I only support a single deck per deck object. 
-# If you want multiple decks please make multiple deck objects. It's way less trouble for me. 
-# 
-
-# Updated by Thomas - fixed some bugs + added documentation
+# If you want multiple decks please make multiple deck objects. It's way less trouble for me.
 
 # ---------------------------
 # Deck Class

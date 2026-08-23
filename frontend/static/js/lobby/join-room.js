@@ -1,7 +1,5 @@
 // Join Room panel: room list polling, search filtering, and joining.
 
-//
-// @Author Cam Clarke
 // functionality for showing rooms in the "join room" tab
 const room_list = document.getElementById("room-list")
 
@@ -109,10 +107,6 @@ async function joinRoom(room_id) {
     }
 }
 
-
-// 
-// End of @Author Cam Clarke
-//
 
 /* --- Join Room Search Logic --- */
 

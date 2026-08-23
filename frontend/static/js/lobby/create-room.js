@@ -76,9 +76,6 @@ lockToggle.addEventListener('change', function () {
     }
 });
 
-//
-// @Author Thomas McPhee
-//
 
 async function createRoom() {
     // Selected game (radio)
@@ -116,9 +113,6 @@ async function createRoom() {
     }
 }
 
-//
-// End of @author Thomas McPhee
-//
 
 document
     .getElementById("create-room-button")

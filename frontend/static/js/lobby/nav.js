@@ -36,9 +36,6 @@ createButton.addEventListener('click', switchToCreate);
 switchToJoin();
 
 
-//
-// @Author Cam Clarke
-// 
 const winsButton = document.querySelector('button[data-view="wins"]');
 const gamesButton = document.querySelector('button[data-view="games"]')
 
@@ -108,10 +105,6 @@ scoreboardButton.addEventListener('click', switchToScoreboard);
 // Default to 'Play' when page loads
 switchToPlay();
 
-//
-// End of @Author Cam Clarke
-//
-
 
 /* --- User Menu Logic --- */
 
@@ -143,6 +136,3 @@ if (signOutButton) {
 // Hide dropdown when page loads
 userDropdown.style.display = 'none';
 
-//
-// @Author Cam Clarke
-//

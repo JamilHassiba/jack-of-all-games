@@ -378,7 +378,6 @@ body {
     border-color: #9ca3af;
 }
 
-/* @Author Cam Clarke */
 .scrollable-div {
     height: 25pc;
     overflow-y: scroll;
@@ -448,5 +447,3 @@ body {
 .scoreboard-score {
     font-weight: bold;
 }
-
-/* end of @Author Cam Clarke */

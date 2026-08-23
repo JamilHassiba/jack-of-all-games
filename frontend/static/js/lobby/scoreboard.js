@@ -101,6 +101,3 @@ export async function populateGamesTable() {
     gamesTable.innerHTML = _html
 }
 
-//
-// End of @Author Cam Clarke
-//

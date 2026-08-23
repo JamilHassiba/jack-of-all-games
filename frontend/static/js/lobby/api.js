@@ -1,8 +1,5 @@
 // Shared helper for posting form data to the Flask backend.
 
-// @Author Thomas McPhee
-// This is very bad, it is copied from utils.js
-// Ideally we should be importing frmo utils.js, but given this js is in <script> - we can't do that
 export async function SendData(route, data) {
     const formData = new FormData();
 
