@@ -10,7 +10,7 @@
         - game_end -> Resets the scores and waits few seconds for the popup
 '''
 
-from static.states.state import State
+from states.state import State
 
 class intermission(State):
     def __init__(self, fsm):

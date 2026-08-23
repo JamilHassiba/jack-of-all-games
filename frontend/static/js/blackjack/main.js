@@ -1,3 +1,22 @@
+import { socket } from "./socket.js";
+import {
+  createCardLink,
+  addCardToHand,
+  wipeHand,
+  updatePlayerLabelHand,
+} from "./cards.js";
+import { addPlayer, getPlayerNum, resetUsernameLabels } from "./seats.js";
+import {
+  setupTabListeners,
+  addEvent,
+  bustEvent,
+  winEvent,
+  dealerWinEvent,
+  joinRoomEvent,
+  blackjackEvent,
+  roundStartEvent,
+} from "./ui.js";
+
 console.log("blackjack.js is running...");
 
 class PlayerInfo {
@@ -37,7 +56,7 @@ let title = document.getElementById("game-status-p");
 
 // Data
 // Create socket object;
-var socket = io();
+
 
 let this_player;
 
@@ -476,200 +495,4 @@ function CanRequestActions(bool) {
 
 function SetRoomStatus(room_status) {
   title.innerHTML = room_status;
-}
-
-// Card Utility
-function createCard(id) {
-  return `<img src="${createCardLink(id)}" class="OBJ_card" alt="${id}">`;
-}
-
-function createCardLink(id) {
-  return "https://deckofcardsapi.com/static/img/" + id + ".png";
-}
-
-function addCardToHand(
-  hand_container,
-  card_id,
-  selfplayer = false,
-  dealer = false,
-) {
-  // if first 2 cards are invisible - replace their source with card
-  // and make visible again - else add new card to hand
-  let cards = hand_container.getElementsByClassName("OBJ_card");
-  for (let i = 0; i < cards.length; i++) {
-    if (cards[i].classList.contains("back")) {
-      cards[i].src = createCardLink(card_id);
-      cards[i].alt = card_id;
-      cards[i].classList.remove("hidden");
-      cards[i].classList.remove("back");
-      animateDeal(cards[i]);
-
-      if (selfplayer) {
-        // If self player make cards bigger
-        cards[i].classList.add("self");
-      }
-      return;
-    }
-  }
-  let card = createCard(card_id);
-  if (selfplayer) {
-    card = card.replace("OBJ_card", "OBJ_card self");
-  }
-  hand_container.innerHTML += card;
-  animateDeal(hand_container.lastElementChild);
-}
-
-function animateDeal(cardEl) {
-  // deals card with a flip animation for smoothness
-  cardEl.classList.remove("dealing");
-  void cardEl.offsetWidth; // force reflow so re-adding works
-  cardEl.classList.add("dealing");
-}
-
-function wipeHand(hand_container, is_dealer = false) {
-  // Recommended because it preserves layout of page
-  // make first 2 cards invisible - then remove extra cards
-  let cards = hand_container.getElementsByClassName("OBJ_card");
-  for (let i = cards.length - 1; i >= 0; i--) {
-    // iterate backwards because hand is a live collection
-    if (i < 2) {
-      cards[i].src = "https://deckofcardsapi.com/static/img/back.png";
-      cards[i].alt = "Card back";
-      cards[i].classList.add("hidden");
-      cards[i].classList.add("back");
-    } else {
-      cards[i].remove();
-    }
-  }
-  if (is_dealer) {
-    // Dealer should always show 2 back cards
-    for (let i = 0; i < 2; i++) {
-      cards[i].classList.remove("hidden");
-    }
-  }
-}
-
-function bruteWipeHand(hand_container) {
-  // Not Recommended because it will shift layout of page around
-  hand_container.innerHTML = "";
-}
-function updatePlayerLabelHand(player_id, hand) {
-  let handcontainer;
-  if (player_id == "dealer") {
-    handcontainer = document.getElementById("dealer-hand");
-  } else {
-    handcontainer = document.getElementById("hand-p" + getPlayerNum(player_id));
-  }
-  let isSelfPlayer = player_id == socket.id || player_id == "dealer";
-  wipeHand(handcontainer, player_id == "dealer");
-  for (let card_id of hand) {
-    addCardToHand(handcontainer, card_id, isSelfPlayer);
-  }
-}
-
-// Adding Players to the game
-document.getElementById("seat-p1").innerHTML = "You!";
-
-function addPlayer(name, id) {
-  // Find next available seat (2-5)
-  for (let seat = 2; seat <= 5; seat++) {
-    if (playerSeats[seat] === null) {
-      playerSeats[seat] = id;
-      document.getElementById("seat-p" + seat).innerHTML = name;
-      // Initialize score display
-      let div = document.createElement("div");
-      div.innerHTML = `${name}: 0 (+0)`;
-      div.id = `score-${id}`;
-      document.getElementById("others-score-info").appendChild(div);
-      break;
-    }
-  }
-}
-
-function getPlayerNum(player_id) {
-  // console.log(player_id, "----")
-  if (player_id == socket.id) {
-    return 1;
-  }
-  for (let num in playerSeats) {
-    // console.log(playerSeats[num])
-    if (playerSeats[num] == player_id) {
-      return num;
-    }
-  }
-  return null;
-}
-
-function resetUsernameLabels() {
-  for (let seat = 2; seat <= 5; seat++) {
-    document.getElementById("seat-p" + seat).innerHTML =
-      "Player " + seat + " - Empty";
-    document.getElementById("score-p" + seat).innerHTML = "0";
-    document.getElementById("hand-p" + seat).innerHTML = "";
-  }
-}
-
-function setupTabListeners() {
-  const tabButtons = document.querySelectorAll(".tab-button");
-  tabButtons.forEach((button) => {
-    button.addEventListener("click", function () {
-      const tabName = this.getAttribute("data-tab");
-      switchTab(tabName);
-    });
-  });
-}
-
-function switchTab(tabName) {
-  const tabButtons = document.querySelectorAll(".tab-button");
-  const tabPanes = document.querySelectorAll(".tab-pane");
-
-  tabButtons.forEach((btn) => {
-    if (btn.getAttribute("data-tab") === tabName) {
-      btn.classList.add("active");
-    } else {
-      btn.classList.remove("active");
-    }
-  });
-
-  tabPanes.forEach((pane) => {
-    if (pane.id === tabName + "-tab") {
-      pane.classList.add("active");
-    } else {
-      pane.classList.remove("active");
-    }
-  });
-}
-
-function addEvent(message) {
-  const eventsDisplay = document.getElementById("events-display");
-  const eventItem = document.createElement("div");
-  eventItem.className = "event-item";
-  eventItem.innerHTML = message;
-  eventsDisplay.appendChild(eventItem);
-
-  eventsDisplay.scrollTop = eventsDisplay.scrollHeight;
-}
-
-function bustEvent(username = "You") {
-  addEvent(`${username} went bust!`);
-}
-
-function winEvent(username = "You") {
-  addEvent(`${username} win!`);
-}
-
-function dealerWinEvent() {
-  addEvent(`Unlucky - Dealer wins!`);
-}
-
-function joinRoomEvent(username) {
-  addEvent(`${username} joined the room!`);
-}
-
-function blackjackEvent(username = "You") {
-  addEvent(`${username} got a blackjack!`);
-}
-
-function roundStartEvent() {
-  addEvent(`New round started!`);
 }

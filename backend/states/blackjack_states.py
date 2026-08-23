@@ -1,4 +1,4 @@
-from static.states.state import State
+from states.state import State
 
 class intermission(State):
     def __init__(self, fsm):

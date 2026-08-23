@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Play</title>
+</head>
+
+<body>
+
+    <header>
+
+        <div class="user-profile-container">
+            <div class="user-profile" id="user-profile-button">
+                <span>👤</span>
+                <span class="username">{{ username }}</span>
+            </div>
+            <div class="user-dropdown-div" id="user-dropdown">
+                <button class="sign-out-btn" type="button" id="sign-out-button">Sign Out</button>
+            </div>
+        </div>
+
+        <div class="brand">
+            <h1>Jack Of All Games</h1>
+        </div>
+
+        <nav class="nav-menu" id="main-nav">
+            <div class="nav-group">
+                <button class="nav-btn active" data-view="play">Play</button>
+                <button class="nav-btn" data-view="scoreboard">Scoreboard</button>
+            </div>
+
+            <div class="nav-group" id="play-nav">
+                <button class="nav-btn active" data-view="join">Join Room</button>
+                <button class="nav-btn" data-view="create">Create Room</button>
+            </div>
+
+            <div class="nav-group" id="scoreboard-nav">
+                <button class="nav-btn active" data-view="wins">Wins</button>
+                <button class="nav-btn" data-view="games">Games</button>
+            </div>
+        </nav>
+    </header>
+
+    <div id="play-card-group"> <!-- @Author Cam Clarke - enclosed create/join room cards in DIV -->
+
+        <section class="card" id="create-room-card">
+            <header class="create-card-header">
+                <h3 class="card-title">Create Room</h3>
+                <span class="card-room-id">| <span id="room-id">#RoomID</span></span>
+            </header>
+
+            <div class="form-section">
+                <p class="form-section-title">Game</p>
+
+                <div class="game-grid">
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="poker" checked>
+                        <span class="game-button-ish">Poker</span>
+                    </label>
+
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="war">
+                        <span class="game-button-ish">War</span>
+                    </label>
+
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="blackjack">
+                        <span class="game-button-ish">Blackjack</span>
+                    </label>
+
+                    <label class="game-option">
+                        <input type="radio" name="game_choice" value="crazyeights">
+                        <span class="game-button-ish">Crazy Eights</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <p class="form-section-title">Configure</p>
+
+                <div class="configure-row">
+                    <span class="configure-label">Player Count</span>
+
+                    <div class="configure-slider-container">
+                        <input class="configure-slider" type="range" id="player-slider" name="player_count" min="2"
+                            max="5" value="5">
+                        <span id="player-count-display"></span>
+                    </div>
+                </div>
+
+                <div class="configure-row">
+                    <span class="configure-label">Locked (Not Implemented)</span>
+
+                    <div class="configure-locking-container">
+                        <input class="password-box" id="password-input" type="password" name="room_password"
+                            placeholder="Password">
+
+                        <input class="lock-checkbox" type="checkbox" id="lock-toggle" name="is_locked" disabled>
+                        <!-- @Cam "disabled because backend currently doesn't support this"-->
+                    </div>
+                </div>
+            </div>
+
+            <button class="submit-button" onclick="createRoom()" type="submit">Create Room</button>
+
+        </section>
+
+        <section class="card" id="join-room-card">
+            <header class="join-card-header">
+                <h3 class="card-title">Rooms</h3>
+                <input class="join-search" type="search" id="room-search" placeholder="Search">
+                <!-- <div class="join-header-controls">
+                    <button class="nav-btn" type="button" id="refresh-button"
+                        onclick="populateRoomList()">Refresh</button>
+                    <input class="join-search" type="search" id="room-search" placeholder="Search">
+                </div> -->
+            </header>
+
+            <div class="room-list scrollable-div" id="room-list">
+                <div class="room-item">
+                    <div class="room-info">
+                        <span class="room-type">Loading</span>
+                        <span class="card-room-id">| <span id="room-id">Loading</span></span>
+                    </div>
+                    <div class="room-icons">
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                    </div>
+                    <button class="join-button" type="button">Join</button>
+                </div>
+
+                <div class="room-item">
+                    <div class="room-info">
+                        <span class="room-type">Loading</span>
+                        <span class="card-room-id">| <span id="room-id">Loading</span></span>
+                    </div>
+                    <div class="room-icons">
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                    </div>
+                    <button class="join-button" type="button">Join</button>
+                </div>
+
+                <div class="room-item">
+                    <div class="room-info">
+                        <span class="room-type">Loading</span>
+                        <span class="card-room-id">| <span id="room-id">Loading</span></span>
+                    </div>
+                    <div class="room-icons">
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                        <span class="player-slot empty"></span>
+                    </div>
+                    <button class="join-button" type="button">Join</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- @Author Cam Clarke -->
+    <!-- Cards for the scoreboard tab -->
+    <div id="scoreboard-card-group">
+        <section class="card" id="wins-card">
+            <header class="wins-card-header">
+                <h3 class="card-title">Scoreboard - Wins</h3>
+            </header>
+            <div id="wins-table" class="scrollable-div">
+            </div>
+        </section>
+
+        <section class="card" id="games-card">
+            <header class="games-card-header">
+                <h3 class="card-title">Scoreboard - Games</h3>
+            </header>
+            <div id="games-table" class="scrollable-div">
+
+            </div>
+        </section>
+    </div>
+    <!-- End of @Author Cam Clarke -->
+
+    <script type="module" src="{{ url_for('static', filename='js/lobby/main.js') }}"></script>
+</body>
+
+</html>
