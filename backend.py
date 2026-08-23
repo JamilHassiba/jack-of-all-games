@@ -1,17 +1,13 @@
 from flask import Flask, request, render_template, redirect, session, jsonify
 from flask_session import Session 
 from flask_socketio import emit, join_room, leave_room, SocketIO
-from game import Room, Game, War  
+from game import Room
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
-import numpy
 
 import traceback
-import random
 import threading
 import time
-
-from static.states import fsm, state, blackjack_states, crazyeights_states
 
 rooms = {}
 socketio_connected = {} 
@@ -29,7 +25,7 @@ socketio = SocketIO(app)
 # need a secret key for the session retained data
 def db():
     # best way to operate on db with sqlite
-    conn = sqlite3.connect("../users.db")
+    conn = sqlite3.connect("./users.db")
     conn.row_factory = sqlite3.Row
     return conn
 

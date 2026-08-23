@@ -13,7 +13,7 @@ class intermission(State):
     def Update(self, dt):
         self.elapsed += dt
 
-        if self.elapsed >= 10:
+        if self.elapsed >= 2:
             self.fsm.SetState("round_start")
 
     def OnExit(self):
@@ -64,7 +64,7 @@ class dealer_turn(State):
 
     def Update(self, dt):
         self.elapsed += dt
-        if self.elapsed >= 2:
+        if self.elapsed >= 1:
             self.elapsed = 0
 
             if self.fsm.root.dealer.ShouldIDraw():
@@ -87,7 +87,7 @@ class score(State):
 
     def Update(self, dt):
         self.elapsed += dt
-        if self.elapsed >= 5:
+        if self.elapsed >= 1:
             self.fsm.SetState('cleanup')
 
     def OnExit(self):
@@ -123,7 +123,7 @@ class evaluate_game(State):
 
     def Update(self, dt):
         self.elapsed += dt
-        if self.elapsed >= 3:
+        if self.elapsed >= 1:
             self.fsm.SetState('intermission')
 
     def OnExit(self):

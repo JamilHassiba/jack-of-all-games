@@ -1,5 +1,4 @@
 from api import Deck, Pile
-from time import sleep
 
 # Thomas McPhee
 from static.states.fsm import fsm
