@@ -1,22 +1,21 @@
-# Jack of All Games
+# 🃏 Jack of All Games
 
 A real-time multiplayer card game platform built with Flask and Socket.IO. Create a room, share the code, and play Blackjack or Crazy Eights live with friends!
 
 ![Gameplay Demo](docs/demo.gif)
 
-## Features
+## ✨ Features
 
 - **Real-time multiplayer** — rooms are created and joined with a short code; every action (draw, hit, stand, play a card) is broadcast to the table instantly over Socket.IO.
 - **Two full games** — Blackjack (dealer AI, bust/blackjack detection, per-round scoring) and Crazy Eights (suit-matching, wild-eight suit selection, penalty draws).
 - **Accounts and stats** — registration with hashed passwords, persistent win/loss tracking per user.
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-**Frontend:** JavaScript, Socket.IO client
-
+**Frontend:** JavaScript, Socket.IO client <br>
 **Backend:** Python, Flask, Flask-SocketIO, SQLite, Werkzeug (auth)
 
-## Architecture
+## 🏗️ Architecture
 
 Each game's round-by-round flow is driven by a finite-state-machine. The fsm class deals with moving through states and updating them while the state class offers the template for creating new states and adding them to the fsm. This makes adding new games straightforward: implement the state interface, and the FSM handles the rest. Here is Crazy Eights' FSM as an example:
 
@@ -24,13 +23,13 @@ Each game's round-by-round flow is driven by a finite-state-machine. The fsm cla
 
 Each state consists of 3 phases `OnEnter` / `Update` / `OnExit`:
 
-**OnEnter:** Usually consists of a state's setup code, like rendering "Player X Turn" on the screen before a player starts their turn or shuffling the deck before the round starts.
+▸ **OnEnter:** Usually consists of a state's setup code, like rendering "Player X Turn" on the screen before a player starts their turn or shuffling the deck before the round starts.
 
-**Update:** Usually contains the state's main body, like the loop waiting for a player to play a card or drawing cards for the `Auto Draw` state.
+▸ **Update:** Usually contains the state's main body, like the loop waiting for a player to play a card or drawing cards for the `Auto Draw` state.
 
-**OnExit:** Usually consists of a state's cleanup code before moving on to the next state.
+▸ **OnExit:** Usually consists of a state's cleanup code before moving on to the next state.
 
-## Project Structure
+## 📁 Project Structure
 
 The backend and frontend are separated, and each game's code is grouped together,
 so adding a new game means adding a folder per side rather than editing shared files.
@@ -49,7 +48,7 @@ frontend/
   static/css/
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
 ```bash
 git clone https://github.com/JamilHassiba/jack-of-all-games.git
@@ -66,6 +65,6 @@ Requires Python 3.10+. <br>
 The app runs at `http://localhost:5000`. <br>
 Open it in two browser windows (or send the room code to a friend) to test multiplayer.
 
-## Team
+## 👥 Team
 
 Built as a first-year group project by Jamil Hassiba, Ryan Chan, Thomas McPhee, Cam Clarke, and Abhi Kalakoti.
