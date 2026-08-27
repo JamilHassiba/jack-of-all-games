@@ -9,7 +9,6 @@ A real-time multiplayer card game platform built with Flask and Socket.IO. Creat
 - **Real-time multiplayer** — rooms are created and joined with a short code; every action (draw, hit, stand, play a card) is broadcast to the table instantly over Socket.IO.
 - **Two full games** — Blackjack (dealer AI, bust/blackjack detection, per-round scoring) and Crazy Eights (suit-matching, wild-eight suit selection, penalty draws).
 - **Accounts and stats** — registration with hashed passwords, persistent win/loss tracking per user.
-- **Built to add more games** — each game plugs into the same room/socket infrastructure through a shared interface, so a new game type is additive rather than a rewrite.
 
 ## Tech Stack
 
@@ -31,6 +30,25 @@ Each state consists of 3 phases `OnEnter` / `Update` / `OnExit`:
 
 **OnExit:** Usually consists of a state's cleanup code before moving on to the next state.
 
+## Project Structure
+
+The backend and frontend are separated, and each game's code is grouped together,
+so adding a new game means adding a folder per side rather than editing shared files.
+
+```
+backend/
+  app.py          # Flask entry point: config, blueprint registration, startup
+  routes/         # HTTP endpoints (auth, rooms, scoreboard)
+  sockets/        # Real-time event handlers, one module per game
+  games/          # Game engines: rules, scoring, player state
+  states/         # The FSM and the state classes for each game's round flow
+
+frontend/
+  templates/      # HTML Pages
+  static/js/      # Browser modules, one folder per page
+  static/css/
+```
+
 ## Getting Started
 
 ```bash
@@ -41,21 +59,11 @@ python3 -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
 
 pip install -r requirements.txt
-python3 backend.py
+python3 backend/app.py
 ```
 
+Requires Python 3.10+. <br>
 The app runs at `http://localhost:5000`. Open it in two browser windows (or send the room code to a friend) to test multiplayer.
-
-## Project Structure
-
-```
-backend.py              # Flask app, routes, Socket.IO event handlers
-game.py                 # Game/player domain logic (Blackjack, Crazy Eights)
-api.py                  # Client for the external deck-of-cards API
-static/states/          # Finite-state-machine classes driving each game's round flow
-static/games/           # Per-game frontend controllers
-templates/              # Pages
-```
 
 ## Team
 
