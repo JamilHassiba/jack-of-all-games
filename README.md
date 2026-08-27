@@ -2,7 +2,7 @@
 
 A real-time multiplayer card game platform built with Flask and Socket.IO. Create a room, share the code, and play Blackjack or Crazy Eights live with friends!
 
-<!-- ![Gameplay Demo](docs/demo.gif) -->
+![Gameplay Demo](docs/demo.gif)
 
 ## Features
 
@@ -63,7 +63,8 @@ python3 backend/app.py
 ```
 
 Requires Python 3.10+. <br>
-The app runs at `http://localhost:5000`. Open it in two browser windows (or send the room code to a friend) to test multiplayer.
+The app runs at `http://localhost:5000`. <br>
+Open it in two browser windows (or send the room code to a friend) to test multiplayer.
 
 ## Team
 
