@@ -5,6 +5,21 @@ import { socket } from "./socket.js";
 // Adding Players to the game
 document.getElementById("seat-p1").innerHTML = "You!";
 
+// Maps seat number (1-5) to the socket id sitting there. Seat 1 is always
+// this client; the rest fill in arrival order as players join.
+let playerSeats = {};
+
+// Called on connect and whenever the server asks for a full refresh.
+export function resetSeats() {
+  playerSeats = {
+    1: socket.id,
+    2: null,
+    3: null,
+    4: null,
+    5: null,
+  };
+}
+
 export function addPlayer(name, id) {
   // Find next available seat (2-5)
   for (let seat = 2; seat <= 5; seat++) {

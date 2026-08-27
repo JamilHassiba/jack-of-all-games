@@ -5,7 +5,12 @@ import {
   wipeHand,
   updatePlayerLabelHand,
 } from "./cards.js";
-import { addPlayer, getPlayerNum, resetUsernameLabels } from "./seats.js";
+import {
+  addPlayer,
+  getPlayerNum,
+  resetSeats,
+  resetUsernameLabels,
+} from "./seats.js";
 import {
   setupTabListeners,
   addEvent,
@@ -61,7 +66,6 @@ let title = document.getElementById("game-status-p");
 let this_player;
 
 let players = new Map();
-let playerSeats;
 
 let room_state = "unknown";
 
@@ -83,13 +87,7 @@ leave_button.addEventListener("mousedown", LeaveButtonClicked);
 socket.on("connect", function () {
   this_player = new PlayerInfo(socket.id);
   players.set(socket.id, this_player);
-  playerSeats = {
-    1: socket.id,
-    2: null,
-    3: null,
-    4: null,
-    5: null,
-  };
+  resetSeats();
   document.getElementById("my-score-info").innerHTML = "You: 0 (+0)";
   socket.emit("blackjack_player_join");
 });
@@ -249,13 +247,7 @@ socket.on("refresh_players", function (data) {
   players.clear();
   this_player = new PlayerInfo(socket.id);
   players.set(socket.id, this_player);
-  playerSeats = {
-    1: socket.id,
-    2: null,
-    3: null,
-    4: null,
-    5: null,
-  };
+  resetSeats();
   resetUsernameLabels();
 });
 
